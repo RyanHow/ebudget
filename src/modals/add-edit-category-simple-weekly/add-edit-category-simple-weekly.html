@@ -1,0 +1,32 @@
+<ion-header>
+    <ion-toolbar>
+    <ion-buttons start>
+        <button (click)="cancel()">Cancel</button>
+    </ion-buttons>
+
+    <ion-title>Category Settings</ion-title>
+
+    <ion-buttons end>
+        <button (click)="submit($event)" [disabled]="!form.valid">Save</button>
+    </ion-buttons>
+
+    </ion-toolbar>
+</ion-header>
+<ion-content padding>
+    <form #form="ngForm" (submit)="submit($event)">
+        <ion-item>
+            <ion-label>Balance</ion-label>
+            <ion-input currency-field name="balance" [(ngModel)]="balance" required></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label>Weekly Amount</ion-label>
+            <ion-input currency-field name="weeklyAmount" [(ngModel)]="weeklyAmount" required></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label>Balance Date</ion-label>
+                <ion-datetime displayFormat="MMM D, YYYY" pickerFormat="MMM D YYYY" name="balanceDate" [(ngModel)]="balanceDate"></ion-datetime>
+        </ion-item>
+    </form>
+
+
+</ion-content>

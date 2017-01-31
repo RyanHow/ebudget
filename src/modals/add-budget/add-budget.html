@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons start>
+      <button (click)="cancel()">Cancel</button>
+    </ion-buttons>
+
+    <ion-title>Add Budget</ion-title>
+
+    <ion-buttons end>
+      <button (click)="submit($event)" [disabled]="!form.valid">{{editing ? "Save" : "Create"}}</button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+<ion-content padding>
+
+    <form #form="ngForm" (submit)="submit($event)">
+        <ion-item>
+            <ion-label>Budget Name</ion-label>
+            <ion-input type="text" [(ngModel)]="budgetName" name="budgetName" autofocus required></ion-input>
+        </ion-item>
+    </form>
+</ion-content>

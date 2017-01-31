@@ -1,0 +1,46 @@
+<ion-header>
+    <ion-toolbar>
+    <ion-buttons start>
+        <button (click)="cancel()">Cancel</button>
+    </ion-buttons>
+
+    <ion-title>Transfer</ion-title>
+
+    <ion-buttons end>
+        <button (click)="submit($event)" [disabled]="!form.valid">{{editing ? "Save" : "Create"}}</button>
+    </ion-buttons>
+
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <div padding>
+        <form #form="ngForm" (submit)="submit($event)">
+            <ion-item>
+                <ion-label>Amount</ion-label>
+                <ion-input currency-field required name="amount" [(ngModel)]="data.amount" [attr.autofocus]="editing ? null : true"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>From</ion-label>
+                <ion-select required name="categoryFrom" [(ngModel)]="data.categoryFrom">
+                    <ion-option *ngFor="let c of categories" value="{{c.id}}">{{c.name}}</ion-option>    
+                </ion-select>
+            </ion-item>
+            <ion-item>
+                <ion-label>To</ion-label>
+                <ion-select required name="categoryTo" [(ngModel)]="data.categoryTo">
+                    <ion-option *ngFor="let c of categories" value="{{c.id}}">{{c.name}}</ion-option>    
+                </ion-select>
+            </ion-item>
+            <ion-item>
+                <ion-label>Optional Note</ion-label>
+                <ion-input type="text" name="description" [(ngModel)]="data.description"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Date</ion-label>
+                <ion-datetime displayFormat="MMM D, YYYY" pickerFormat="MMM D YYYY" name="date" [(ngModel)]="data.date"></ion-datetime>
+            </ion-item>
+        </form>
+    </div>
+    <button *ngIf="editing" danger clear small (click)="deleteTransactionConfirm()">Delete</button>
+
+</ion-content>

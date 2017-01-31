@@ -1,0 +1,13 @@
+main-menu-content {
+    
+    .selectedBudget {
+        display:none;
+        font-weight: bold;
+    }
+    .button-icon-only ion-icon.spinner-size-icon {
+        width:32px;
+        height:32px;
+        line-height:32px;
+        font-size:26px;
+    }
+}

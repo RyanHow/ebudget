@@ -1,0 +1,137 @@
+.share-budget-page {
+
+    text-align: center;
+
+    .circ {
+        opacity: 0;
+        stroke-dasharray: 130;
+        stroke-dashoffset: 130;
+        transition: all 1s;
+    }
+    .tick {
+        stroke-dasharray: 50;
+        stroke-dashoffset: 50;
+        transition: stroke-dashoffset 1s 0.5s ease-out;
+    }
+    .drawn + svg .path {
+        opacity: 1;
+        stroke-dashoffset: 0;
+    }
+
+    svg {
+        transition: opacity 3s 5s;
+    }
+
+    .drawn + svg {
+        opacity: 0;
+    }
+
+    error-label {
+        position: absolute;
+        margin-top: 70px;
+        left: 50%;
+        margin-left: -150px;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s;
+        z-index: 2;
+        width: 300px;
+
+        &.shown {
+            visibility: visible;
+            opacity: 1;
+        }
+
+    }
+
+    .working-container {
+        margin: auto;
+        width: 50%;
+        height: 200px;
+        position: relative;
+        text-align: left;
+        margin-top: 30px;
+        z-index: -1;
+    }
+
+    #share-spinner, #link-spinner {
+        width: 100%;
+        height: 100%;
+        margin: auto;
+        position: absolute;
+        opacity: 0;
+        transition: opacity 0.5s;
+
+        &.shown {
+            opacity: 1;
+        }
+    }
+
+    #share-tick, #link-tick {
+        width: 100%;
+        height: 100%;
+        margin: auto;
+        position: absolute;
+    }
+
+    .link-budget-container {
+        margin-top: 30px;
+    }
+
+    .share-code-input {
+        padding: 5px;
+        font-size: 120%;
+        line-height: 70px;
+        height: 70px;
+        width: 210px;
+        vertical-align: middle;
+    }
+
+    .share-code-link {
+        height: 70px;
+        vertical-align: middle;
+    }
+
+    .share-code-text {
+        resize: none;
+        padding: 20px;
+        font-size: 140%;
+        line-height: 70px;
+        height: 70px;
+        width: 280px;
+        vertical-align: middle;
+        margin-top:30px;
+        cursor: text;
+        text-align:center;
+
+    }
+
+    .share-code-text-wrapper {
+        opacity: 0;
+        transition: opacity 1s 2s;
+        visibility: hidden;
+
+        &.shown {
+            opacity: 1;
+            visibility: visible;
+        }
+
+    }
+
+    .enable-sharing-button-wrapper {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 70px;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+        visibility: hidden;
+
+        &.shown {
+            opacity: 1;
+            visibility: visible;;
+        }
+
+    }
+}

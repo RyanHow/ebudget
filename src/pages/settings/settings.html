@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-navbar>
+    <button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Settings</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-item>
+    <ion-label>Logging</ion-label>
+    <ion-select [(ngModel)]="configuration.loglevel">
+      <ion-option value="Standard">Standard</ion-option>
+      <ion-option value="Debug">Debug</ion-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Simplified Currency Input</ion-label>
+    <ion-toggle [(ngModel)]="configuration.currencyNumericInput"></ion-toggle>
+  </ion-item>
+
+  
+</ion-content>

@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>{{category.name}}</ion-title>
+    <ion-buttons end>
+      <button (click)="addTransaction()"><ion-icon name="add"></ion-icon></button>
+      <button (click)="addTransfer()"><ion-icon name="shuffle"></ion-icon></button>
+      <button (click)="showMore($event)"><ion-icon name="more"></ion-icon></button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="category-page">
+  <replication-error></replication-error>
+  <ion-list>
+    <button ion-item detail-none (click)="editSimpleWeekly()">
+        Balance
+        <currency-display highlightNegative [value]="category.balance" item-right></currency-display>
+    </button>
+    <button ion-item detail-none (click)="editSimpleWeekly()">
+        Weekly Amount
+        <currency-display highlightNegative [value]="categoryWeeklyAmount()" item-right></currency-display>
+    </button>
+    <button class="category-transaction-item" ion-item detail-none (click)="editTransaction(t)" *ngFor="let t of transactions.data()">
+      <span item-left>{{t.date | dFormat}}</span> {{t.description}}
+        <ion-note small item-right *ngIf="t.config.transactionType == 'InitCategoryTransferTransaction'">
+          <ion-icon small name="shuffle"></ion-icon>
+          {{transferOtherCategoryName(t)}}
+        </ion-note>
+      <currency-display invertedCurrency highlightPositive showPositive [value]="t.amount" item-right></currency-display>
+    </button>
+  </ion-list>    
+</ion-content>

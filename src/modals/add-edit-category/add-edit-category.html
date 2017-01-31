@@ -1,0 +1,25 @@
+<ion-header>
+    <ion-toolbar>
+    <ion-buttons start>
+        <button (click)="cancel()">Cancel</button>
+    </ion-buttons>
+
+    <ion-title>{{editing ? "Edit" : "Add"}} Category</ion-title>
+
+    <ion-buttons end>
+        <button (click)="submit($event)" [disabled]="!form.valid">{{editing ? "Save" : "Create"}}</button>
+    </ion-buttons>
+
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <div padding>
+        <form #form="ngForm" (submit)="submit($event)">
+            <ion-item>
+                <ion-label>Category Name</ion-label>
+                <ion-input type="text" name="categoryName" [(ngModel)]="categoryName" [attr.autofocus]="editing ? null : true" required></ion-input>
+            </ion-item>
+        </form>
+    </div>
+    <button *ngIf="editing" danger clear small (click)="deleteCategoryConfirm()">Delete</button>
+</ion-content>

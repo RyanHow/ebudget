@@ -1,0 +1,26 @@
+.category-page {
+  
+  [ion-item] currency-display {
+      flex-basis: 3.5em;
+      text-align:right;
+  }
+
+  [item-left] {
+      min-width: 3.5em;
+  }
+
+  .category-transaction-item ion-note ion-icon {
+      margin-right:10px;
+      vertical-align:middle;
+  }
+
+  .category-transaction-item ion-note {
+      font-size:0.8em;
+      width: 30%;
+      min-width:90px;
+      max-width:180px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+  }
+}

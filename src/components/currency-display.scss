@@ -1,0 +1,9 @@
+currency-display {
+  .positive-currency {
+    color: $currency-display-positive;
+  }
+  
+  .negative-currency {
+    color: $currency-display-negative;
+  }
+}

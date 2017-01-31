@@ -1,0 +1,9 @@
+<ion-menu swipeEnabled="false" #menu [content]="content">
+    <div class="statusbar-spacer"></div>
+    <ion-content>
+      <main-menu-content [menu]="menu" [nav]="content"></main-menu-content>
+    </ion-content>
+</ion-menu>
+
+
+<ion-nav id="nav" [root]="rootPage" #content swipeBackEnabled="true"></ion-nav>
