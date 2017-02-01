@@ -1,13 +1,13 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons start>
-      <button (click)="cancel()">Cancel</button>
+      <button ion-button (click)="cancel()">Cancel</button>
     </ion-buttons>
 
     <ion-title>Add Budget</ion-title>
 
     <ion-buttons end>
-      <button (click)="submit($event)" [disabled]="!form.valid">{{editing ? "Save" : "Create"}}</button>
+      <button ion-button (click)="submit($event)" [disabled]="!form.valid">{{editing ? "Save" : "Create"}}</button>
     </ion-buttons>
 
   </ion-toolbar>

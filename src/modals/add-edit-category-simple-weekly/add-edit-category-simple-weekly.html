@@ -1,13 +1,13 @@
 <ion-header>
     <ion-toolbar>
     <ion-buttons start>
-        <button (click)="cancel()">Cancel</button>
+        <button ion-button (click)="cancel()">Cancel</button>
     </ion-buttons>
 
     <ion-title>Category Settings</ion-title>
 
     <ion-buttons end>
-        <button (click)="submit($event)" [disabled]="!form.valid">Save</button>
+        <button ion-button (click)="submit($event)" [disabled]="!form.valid">Save</button>
     </ion-buttons>
 
     </ion-toolbar>

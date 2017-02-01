@@ -43,7 +43,7 @@ export class Configuration {
     configure(): Promise<void> {
         this.persistence = this.persistenceProviderManager.provide();
 
-        if ((<any>this.persistence).createDbTables) return (<any>this.persistence).createDbTables(this.cId).then(() => {
+//        if ((<any>this.persistence).createDbTables) return (<any>this.persistence).createDbTables(this.cId).then(() => {
 
             this.initLogLevel();
 
@@ -70,7 +70,8 @@ export class Configuration {
 
             this.configured = true;
 
-        });
+//        });
+        return Promise.resolve();
     }
 
     initLogLevel() {

@@ -130,7 +130,7 @@ export class CategoryPage {
     </ion-list>
   `
 })
-class CategoryPopover {
+export class CategoryPopover {
 
   private categoryPage: CategoryPage;
 

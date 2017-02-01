@@ -49,7 +49,7 @@ export class BudgetPage {
   }
 
 
-  ionViewDidUnload() {
+  ionViewDidLeave() {
     // TODO: CHeck this is called appropriately (ie. on a different setRoot(), but not on navigating to a child page)
    // this.budget.deactivate();
   }

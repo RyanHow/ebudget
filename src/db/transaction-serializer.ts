@@ -11,7 +11,7 @@ export class TransactionSerializer {
 
     registerType<T extends Transaction>(type: {new(): T}) {
         this.transactionTypeIdMap.set(new type().getTypeId(), type);
-        this.logger.info('Registered Transaction Type ' + type + ' as ' + new type().getTypeId());
+        this.logger.info('Registered Transaction Type ' + new type().getTypeId());
     }
     
     newTransaction<T>(typeId: string, jsonObject?: Object): T {

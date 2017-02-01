@@ -1,14 +1,6 @@
-import {Directive, ElementRef} from '@angular/core';
+import {ElementRef} from '@angular/core';
 import {NgModel} from '@angular/forms';
 
-@Directive({
-  selector: '[ngModel][priceFormat]',
-  providers: [NgModel],
-  host: {
-  '(ngModelChange)': 'onNgModelChange($event)',
-  '(input)': 'onInput($event)'
-    }
-})
 export class PriceFormat {
 
     /* tslint:disable */

@@ -1,8 +1,8 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons start>
-            <button *ngIf="!linking && !sharing" (click)="close()">Close</button>
-            <button *ngIf="linking || sharing" (click)="cancel()">Cancel</button>
+            <button ion-button *ngIf="!linking && !sharing" (click)="close()">Close</button>
+            <button ion-button *ngIf="linking || sharing" (click)="cancel()">Cancel</button>
         </ion-buttons>
         <ion-title>
             {{!budget ? "Link Budget" : "Share Budget"}}
@@ -14,14 +14,14 @@
     <!-- Share Budget -->
     <div *ngIf="budget && !newlyLinkedBudget">
         <div [class.shown]="!isShared()" class="enable-sharing-button-wrapper">
-            <button large class="button" (click)="shareBudget()" [disabled]="sharing || isShared()">Enable Sharing</button>
+            <button ion-button large class="button" (click)="shareBudget()" [disabled]="sharing || isShared()">Enable Sharing</button>
         </div>
 
         <div class="share-code-text-wrapper" [class.shown]="isShared()">
             Send the share code to others to join<br>
             <input class="share-code-text" value="{{budget.id}}" readonly>
             <br><br>
-            <button class="button" (click)="shareOptions()">Share...</button>
+            <button ion-button class="button" (click)="shareOptions()">Share...</button>
         </div>
 
         <error-label [class.shown]="sharingError" [message]="sharingErrorMessage"></error-label>
@@ -40,7 +40,7 @@
     <!-- Link Budget -->
     <div class="link-budget-container" *ngIf="!budget || newlyLinkedBudget">
         <input type="text" class="share-code-input" placeholder="Paste Share Code" [(ngModel)]="linkBudgetId" (input)="tryLink(linkBudgetId)" [disabled]="linking || newlyLinkedBudget">
-        <button class="button share-code-link" (click)="link(linkBudgetId)" [disabled]="linking || newlyLinkedBudget || !linkBudgetId">Link</button>
+        <button ion-button class="button share-code-link" (click)="link(linkBudgetId)" [disabled]="linking || newlyLinkedBudget || !linkBudgetId">Link</button>
 
         <div></div>
         <error-label [class.shown]="linkingError" [message]="linkingErrorMessage"></error-label>

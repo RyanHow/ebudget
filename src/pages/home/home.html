@@ -1,6 +1,6 @@
 <ion-header>
   <ion-navbar>
-    <button *ngIf="projectMenuEnabled" menuToggle>
+    <button ion-button *ngIf="projectMenuEnabled" menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title ng-if=false>Getting Started</ion-title>
@@ -10,6 +10,6 @@
 <ion-content padding class="getting-started">
 
   <h3>Lets Get Started</h3>
-  <button primary (click)="addBudget()">Create New Budget</button>
-  <button primary (click)="linkBudget()">Link to a Shared Budget</button>
+  <button ion-button color="primary" (click)="addBudget()">Create New Budget</button>
+  <button ion-button color="primary" (click)="linkBudget()">Link to a Shared Budget</button>
 </ion-content>

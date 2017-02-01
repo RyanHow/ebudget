@@ -1,6 +1,6 @@
 <ion-header>
   <ion-navbar>
-    <button menuToggle>
+    <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title>Dev</ion-title>
@@ -10,7 +10,7 @@
 
   
   <ion-item>
-  <label>toUpper1</label><input [(ngModel)]="testamount1" uppercase/>
+  <label>toUpper1</label><input [(ngModel)]="testamount1"/>
   </ion-item>
   <ion-item>
   <h2>{{testamount1}}</h2>
@@ -26,14 +26,14 @@
   
     <ion-item>
   <ion-label>Price Format</ion-label>
-  <ion-input [(ngModel)]="testamount3" priceFormat pattern="[0-9]*" step="0.01" inputmode="numeric" novalidate></ion-input>
+  <ion-input [(ngModel)]="testamount3" pattern="[0-9]*" step="0.01" inputmode="numeric" novalidate></ion-input>
   </ion-item>
   <ion-item>
   <h2>{{testamount3}}</h2>
   </ion-item>
 
   <ion-item>
-    <button (click)="testError()">Test Error</button>
+    <button ion-button (click)="testError()">Test Error</button>
   </ion-item>
 
 </ion-content>
