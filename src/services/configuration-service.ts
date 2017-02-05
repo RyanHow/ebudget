@@ -41,36 +41,38 @@ export class Configuration {
     }
     
     configure(): Promise<void> {
+        // Note: This has already been initialised....
+
         this.persistence = this.persistenceProviderManager.provide();
 
-//        if ((<any>this.persistence).createDbTables) return (<any>this.persistence).createDbTables(this.cId).then(() => {
+        this.initLogLevel();
 
-            this.initLogLevel();
-
-            if (this.platform.is('cordova')) {
-            this.logger.info('Running cordova');
-                this.native = true;
+        if (this.platform.is('cordova')) {
+        this.logger.info('Running cordova');
+            this.native = true;
             this.logger.info('Device Info');
-            this.logger.info(Device);
-            }
-            if (!this.platform.is('cordova')) {
-            this.logger.info('Running web browser');
-                this.native = false;
-            } 
+            this.logger.info("name: " +  Device.name);
+        }
+        if (!this.platform.is('cordova')) {
+        this.logger.info('Running web browser');
+            this.native = false;
+        } 
 
-            // Device and install Ids
-            if (! this.persistence.keyStore(this.cId, 'installationId')) this.persistence.keyStore(this.cId, 'installationId', 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random() * 16 | 0, v = c === 'x' ? r : r & 0x3 | 0x8; return v.toString(16); }));
-            this.installationId = this.persistence.keyStore(this.cId, 'installationId');
-            this.logger.info('Installation Id: ' + this.installationId);
-            this.deviceId = this.native ? Device.uuid.toLowerCase() : this.installationId;
-            this.deviceName = !this.native ? 'Web Browser' : Device.name || Device.model || 'Mobile Device';
-            if (! this.persistence.keyStore(this.cId, 'deviceId')) this.persistence.keyStore(this.cId, 'deviceId', this.deviceId);
-            // Unique to this device and installation
-            this.deviceInstallationId = this.deviceId + '-' + this.installationId;
+        // Device and install Ids
+        if (! this.persistence.keyStore(this.cId, 'installationId')) this.persistence.keyStore(this.cId, 'installationId', 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random() * 16 | 0, v = c === 'x' ? r : r & 0x3 | 0x8; return v.toString(16); }));
+        this.installationId = this.persistence.keyStore(this.cId, 'installationId');
+        this.logger.info('Installation Id: ' + this.installationId);
+        this.deviceId = Device.uuid ? Device.uuid.toLowerCase() : this.installationId;
+        this.logger.info("Device id: " +  this.deviceId);
+        this.deviceName = !this.native ? 'Web Browser' : Device.name || Device.model || 'Mobile Device';
+        if (this.deviceName.length <= 3) this.deviceName = this.deviceName + "___";
+        this.logger.info("Device name: " +  this.deviceName);
+        if (! this.persistence.keyStore(this.cId, 'deviceId')) this.persistence.keyStore(this.cId, 'deviceId', this.deviceId);
+        // Unique to this device and installation
+        this.deviceInstallationId = this.deviceId + '-' + this.installationId;
 
-            this.configured = true;
+        this.configured = true;
 
-//        });
         return Promise.resolve();
     }
 

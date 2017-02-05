@@ -1,6 +1,5 @@
 import {NgModule, ErrorHandler} from '@angular/core';
 import {IonicApp, IonicModule} from 'ionic-angular';
-import {Storage} from '@ionic/storage';
 import {BudgetApp} from './app.component';
 import {AppExceptionHandler} from './app-exception-handler';
 import {HomePage} from '../pages/home/home';
@@ -82,7 +81,6 @@ import {CFormatPipe} from '../components/currency-format';
   Dbms,
   TransactionSerializer,
   EngineFactory,
-  Replication,
-  Storage]
+  Replication]
 })
 export class AppModule {}

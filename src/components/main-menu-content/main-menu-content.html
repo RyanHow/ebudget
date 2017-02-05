@@ -1,7 +1,7 @@
 <ion-item-group *ngIf="lastOpenedBudget()">
     <button ion-item detail-none menuClose (click)="isBudgetPageOpen() || openBudget(lastOpenedBudget())">Back to {{budgetName(lastOpenedBudget())}}</button>
     <button ion-item detail-none menuClose (click)="shareBudget()">Share Budget...
-        <button ion-button *ngIf="shared" item-right clear dark (click)="sync($event);$event.stopPropagation();"><ion-icon *ngIf="!syncing" dark name="refresh" class="spinner-size-icon"></ion-icon><ion-spinner *ngIf="syncing"></ion-spinner></button>
+        <button ion-button icon-only *ngIf="shared" item-right clear dark (click)="sync($event);$event.stopPropagation();"><ion-icon *ngIf="!syncing" dark name="refresh" class="spinner-size-icon"></ion-icon><ion-spinner *ngIf="syncing"></ion-spinner></button>
     </button>
     <button ion-item detail-none menuClose (click)="renameBudget()">Rename Budget...</button>
     <button ion-item detail-none menuClose (click)="deleteBudget()">Delete Budget...</button>
