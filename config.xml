@@ -56,6 +56,11 @@
     <splash src="resources\ios\splash\Default@2x~iphone.png" width="640" height="960"/>
     <splash src="resources\ios\splash\Default~iphone.png" width="320" height="480"/>
   </platform>
+  <platform name="wp8">
+    <icon src="resources\wp8\icon\ApplicationIcon.png" width="99" height="99"/>
+    <icon src="resources\wp8\icon\Background.png" width="159" height="159"/>
+    <splash src="resources\wp8\splash\SplashScreenImage.png" width="768" height="1280"/>
+  </platform>
   <preference name="webviewbounce" value="false"/>
   <preference name="UIWebViewBounce" value="false"/>
   <preference name="DisallowOverscroll" value="true"/>

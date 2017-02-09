@@ -11,7 +11,11 @@
     "favicon-generate": "node node_modules\\cli-real-favicon\\real-favicon.js generate faviconDescription.json faviconData.json src\\assets\\icon && move /Y src\\assets\\icon\\favicon.ico src\\favicon.ico",
     "favicon-inject": "node node_modules\\cli-real-favicon\\real-favicon.js inject faviconData.json src src\\index_pwa.html",
     "favicon": "node node_modules\\cli-real-favicon\\real-favicon.js check-for-update --fail-on-update faviconData.json || npm run favicon-generate && npm run favicon-inject",
-    "email-android-debug-apk": "node scripts\\email-android-debug-apk.js"
+    "email-android-debug-apk": "node scripts\\email-android-debug-apk.js",
+    "ionic-login": "ionic login -e ryan@bitworks.com.au -p Ly6gwrMZit4aoZAM08kx",
+    "ionic-package-ios-adhoc-release": "ionic package build ios --release --profile ebudget_adhoc_release",
+    "ionic-package-download-ios-release": "node scripts\\check-wait-ionic-package.js && ionic package download -d platforms\\ios\\build\\release",
+    "appsendr-ios-release": "node scripts\\appsendr-ios-release.js"
   },
   "dependencies": {
     "@angular/common": "2.2.1",
