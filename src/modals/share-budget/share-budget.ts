@@ -10,7 +10,7 @@ import {Configuration} from '../../services/configuration-service';
 import {Replication} from '../../services/replication-service';
 import {Component} from '@angular/core';
 import {Logger} from '../../services/logger';
-import * as Clipboard from 'clipboard';
+import Clipboard from 'clipboard';
 
 @Component({
   templateUrl: 'share-budget.html'

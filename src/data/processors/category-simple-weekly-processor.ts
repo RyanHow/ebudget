@@ -1,5 +1,5 @@
 import {Processor} from '../../engine/processor';
-import * as moment from 'moment';
+import moment from 'moment';
 import {TransactionProcessor} from '../../db/transaction-processor';
 import {Category} from '../records/category';
 import {Transaction} from '../records/transaction';

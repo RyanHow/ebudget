@@ -48,6 +48,8 @@ export class Db {
     }
     
     activate() {
+        // TODO: Return promise and run this async...
+        
         if (!this.initialised) throw new Error('Activate called when not yet initialised.');
         if (this.active) return;
         

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Db} from './db';
 import {DbPersistenceProvider} from './db-persistence-provider';
 import {PersistenceProviderManager} from './persistence-provider-manager';
-import * as Loki from 'lokijs';
+import Loki from 'lokijs';
 import {TransactionSerializer} from './transaction-serializer';
 
 @Injectable()

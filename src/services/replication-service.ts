@@ -5,7 +5,7 @@ import {Dbms} from '../db/dbms';
 import {Db} from '../db/db';
 import {Transaction} from '../db/transaction';
 import {TransactionSerializer} from '../db/transaction-serializer';
-import * as JsonStableStringify from 'json-stable-stringify';
+import stringify from 'json-stable-stringify';
 import {Logger} from './logger';
 
 /**
@@ -202,7 +202,7 @@ export class Replication {
     checksumObject(o): number {
         let i;
         let chk = 0x12345678;
-        let s = JsonStableStringify(o);
+        let s = stringify(o);
 
         for (i = 0; i < s.length; i++) {
             chk += (s.charCodeAt(i) * (i + 1));
@@ -304,7 +304,7 @@ export class Replication {
                 let pushDb = found ? replData.push[i] : replData.push[replData.push.push({ 'dbId': dbId, 'repl': [] }) - 1];
 
                 replMap.forEach((r, key) => {
-                    let replDataRecord = { 'deviceReplId': r.deviceReplId, 'replData': JsonStableStringify({ transaction: r.transaction, 'timestamp': r.timestamp, 'checksum': r.checksum }), 'id': r.id };
+                    let replDataRecord = { 'deviceReplId': r.deviceReplId, 'replData': stringify({ transaction: r.transaction, 'timestamp': r.timestamp, 'checksum': r.checksum }), 'id': r.id };
                     pushDb.repl.push(replDataRecord);
                     totalPushCount++;
                 });
