@@ -4,6 +4,7 @@ import {Transaction} from './transaction';
 import {TransactionProcessor} from './transaction-processor';
 import {TransactionSerializer} from './transaction-serializer';
 import {Logger} from '../services/logger';
+import {ChunkedTask} from '../services/chunked-task';
 
 export class Db {
 
@@ -47,23 +48,35 @@ export class Db {
         return this.active;
     }
     
-    activate() {
-        // TODO: Return promise and run this async...
-        
+    activate(progressCallback?: (value: number, of: number) => void): Promise<void> {
+        // If already active, then skip and return straight away
+        if (this.active) return Promise.resolve();
+
+        this.logger.info("Activating Budget " + this.name());
+
         if (!this.initialised) throw new Error('Activate called when not yet initialised.');
-        if (this.active) return;
-        
-        // Only if active... so do this on "activate" ?
-        this.activating = true;
-        for (var index = 0; index < this.sortedTransactions.data().length; index++) {
-            this.applyTransaction(this.sortedTransactions.data()[index]);
+
+        if (this.activating) {
+            this.logger.info("Budget Already Activating " + this.name());
+            return Promise.resolve();
         }
-        this.activating = false;
-
-        this.active = true;
         
-        this.fireEvent('activated', {db: this});
+        this.activating = true;
 
+        let p = ChunkedTask.execute((iterator, resolve, reject) => {
+            // Can update this to just pass in the array... Put it in the initialiser... Really this is pretty neat though and not used elsewhere...
+            // Or: Can move the: "Size" to a property and just have a single statement here...
+            if (iterator.getValue() === 0) iterator.setExpectedSize(this.sortedTransactions.data().length);
+            this.applyTransaction(this.sortedTransactions.data()[iterator.getValue()]);
+            if (iterator.getValue() == this.sortedTransactions.data().length - 1) resolve();
+        }, {progressCallback: progressCallback}).then(() => {
+            this.activating = false;
+            this.active = true;
+            this.logger.info("Activated Budget " + this.name());                
+            this.fireEvent('activated', {db: this});
+        });
+
+        return p;
     }
     
     isActivating() {

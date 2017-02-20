@@ -24,13 +24,14 @@ export class HomePage {
     modal.onDidDismiss((data) => {
       if (data && data.budgetName !== '') {
         this.dbms.createDb().then(db => {
-          db.activate();
-          let t = new InitBudgetTransaction();
-          t.budgetName = data.budgetName;
-          db.applyTransaction(t);
-          db.deactivate();
+          db.activate().then(() => {
+            let t = new InitBudgetTransaction();
+            t.budgetName = data.budgetName;
+            db.applyTransaction(t);
+            db.deactivate();
 
-          this.nav.setRoot(BudgetPage, {'budget' : db});
+            this.nav.setRoot(BudgetPage, {'budget' : db});
+          });
         });
       }
     });

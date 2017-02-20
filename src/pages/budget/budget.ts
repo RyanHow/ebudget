@@ -1,5 +1,5 @@
 import {NavController, NavParams, ModalController} from 'ionic-angular';
-import {Component} from '@angular/core';
+import {Component, ChangeDetectorRef} from '@angular/core';
 import {Dbms} from '../../db/dbms';
 import {Db} from '../../db/db';
 import {Category} from '../../data/records/category';
@@ -9,26 +9,37 @@ import {AddEditCategoryModal} from '../../modals/add-edit-category/add-edit-cate
 import {EngineFactory} from '../../engine/engine-factory';
 import {Configuration} from '../../services/configuration-service';
 import {InitCategorySimpleWeeklyTransaction} from '../../data/transactions/init-category-simple-weekly-transaction';
+import {Logger} from '../../services/logger';
+
 
 @Component({
   templateUrl: 'budget.html'
 })
 export class BudgetPage {
+
+  private logger: Logger = Logger.get('BudgetPage');
+
   budget: Db;
   budgetRecord: Budget;
   categories: Category[];
+
+  activated: boolean;
+  activatedProgress: number;
+  activatedOf: number;
   
-  constructor(private nav: NavController, private dbms: Dbms, private params: NavParams, private engineFactory: EngineFactory, private modalController: ModalController, private configuration: Configuration) {
+  constructor(private changeDetectorRef: ChangeDetectorRef, private nav: NavController, private dbms: Dbms, private params: NavParams, private engineFactory: EngineFactory, private modalController: ModalController, private configuration: Configuration) {
     this.nav = nav;
     this.dbms = dbms;
     
     this.budget = this.params.data.budget;
     engineFactory.getEngine(this.budget);
-    this.budget.activate();
-    
-    this.categories = this.budget.transactionProcessor.table(Category).data;
-    this.budgetRecord = this.budget.transactionProcessor.single(Budget);
+
+    this.activated = false;
+
+    this.logger.debug("Calling activate budget");
   }
+
+
   
   addCategory() {
     let modal = this.modalController.create(AddEditCategoryModal);
@@ -56,8 +67,22 @@ export class BudgetPage {
 
   ionViewDidEnter() {
     this.configuration.lastOpenedBudget(this.budget.id);
+
+    this.budget.activate(this.activateProgressCallback.bind(this)).then(() => {    
+      this.logger.debug("Activate Budget Resolved");
+
+      this.categories = this.budget.transactionProcessor.table(Category).data;
+      this.budgetRecord = this.budget.transactionProcessor.single(Budget);
+
+      this.activated = true;
+    });
+
+  } 
+
+  activateProgressCallback(value: number, of: number) {
+    this.activatedProgress = value;
+    this.activatedOf = of;
   }
-  
 
 
 }

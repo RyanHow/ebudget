@@ -14,6 +14,7 @@
 
 <ion-content class="budget-page">
   <replication-error></replication-error>
+  <div style="margin-top:50px;text-align:center;z-index:100;" *ngIf="!activated">{{activatedProgress}} / {{activatedOf}}</div>
   <ion-list>
     <button ion-item detail-none *ngFor="let c of categories" (click)="openCategory(c)">
       <div>{{c.name}}</div>
@@ -22,6 +23,6 @@
         <p><ion-note><currency-display showPositive [value]="categoryWeeklyAmount(c)"></currency-display></ion-note></p>
       </div>
     </button>
-  </ion-list>    
+  </ion-list>
 
 </ion-content>
