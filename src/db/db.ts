@@ -64,9 +64,16 @@ export class Db {
         this.activating = true;
 
         let p = ChunkedTask.execute((iterator, resolve, reject) => {
-            // Can update this to just pass in the array... Put it in the initialiser... Really this is pretty neat though and not used elsewhere...
+            // Can update this to just pass in the array... Put it in the initialiser...
             // Or: Can move the: "Size" to a property and just have a single statement here...
-            if (iterator.getValue() === 0) iterator.setExpectedSize(this.sortedTransactions.data().length);
+            if (iterator.getValue() === 0) {
+                // To handle when the array is empty
+                if (this.sortedTransactions.data().length == 0) {
+                    resolve();
+                    return;
+                }
+                iterator.setExpectedSize(this.sortedTransactions.data().length);
+            }
             this.applyTransaction(this.sortedTransactions.data()[iterator.getValue()]);
             if (iterator.getValue() == this.sortedTransactions.data().length - 1) resolve();
         }, {progressCallback: progressCallback}).then(() => {

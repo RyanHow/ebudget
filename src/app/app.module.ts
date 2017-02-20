@@ -29,6 +29,7 @@ import {ReplicationErrorDisplay} from '../components/replication-error-display';
 import {CurrencyDisplay} from '../components/currency-display';
 import {DFormatPipe} from '../components/date-format';
 import {CFormatPipe} from '../components/currency-format';
+import {CuteProgressBar} from '../components/cute-progress-bar';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import {CFormatPipe} from '../components/currency-format';
     DFormatPipe,
     MainMenuContent,
     CategoryPopover,
-    CFormatPipe
+    CFormatPipe,
+    CuteProgressBar
   ],
   imports: [
     IonicModule.forRoot(BudgetApp)
