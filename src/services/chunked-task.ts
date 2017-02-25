@@ -38,6 +38,11 @@ class ChunkedTaskIterator {
     private iterationStartTime: number;
     private ended: boolean;
     private expectedSize: number;
+    private breaktime = this.useRequestAnimationFrame() ? 30 : 60;
+
+    public useRequestAnimationFrame(): boolean {
+        return "requestAnimationFrame" in window;
+    }
     
     progressCallback: (value: number, of?: number) => void;
 
@@ -72,10 +77,20 @@ class ChunkedTaskIterator {
             this.execute();
         }
         
-        setTimeout(() => {
+        if ("hidden" in document && document.hidden) {
             this.execute();
             if (this.progressCallback) this.progressCallback(this.value, this.expectedSize);
-        }, 5);
+        } else if (this.useRequestAnimationFrame()) {
+            window.requestAnimationFrame(() => {
+                this.execute();
+                if (this.progressCallback) this.progressCallback(this.value, this.expectedSize);
+            });
+        } else {
+            setTimeout(() => {
+                this.execute();
+                if (this.progressCallback) this.progressCallback(this.value, this.expectedSize);
+            }, 4);
+        }
     }
 
     public setExpectedSize(value: number) {
@@ -101,7 +116,7 @@ class ChunkedTaskIterator {
 
 
     public needsBreak(): boolean {
-        return Date.now() - this.iterationStartTime > 50;
+        return Date.now() - this.iterationStartTime > this.breaktime;
     }
 
     // TODO: Iteration time, iteration count, counter, progress

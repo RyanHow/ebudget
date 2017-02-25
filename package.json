@@ -1,10 +1,14 @@
 {
   "name": "ebudget",
+  "version": "0.0.2",
   "author": "BitWorks",
   "homepage": "https://ebudgetapp.com",
   "private": true,
   "scripts": {
     "clean": "ionic-app-scripts clean",
+    "version-patch": "npm version patch --no-git-tag-version",
+    "version": "npm run inject-build-info",
+    "inject-build-info": "node scripts\\inject-build-info.js",
     "build": "ionic-app-scripts build",
     "ionic:build": "ionic-app-scripts build",
     "ionic:serve": "ionic-app-scripts serve",
@@ -56,6 +60,7 @@
     "cli-real-favicon": "0.0.6",
     "google-closure-compiler": "^20170124.0.0",
     "mailgun-js": "^0.8.1",
+    "replace-in-file": "^2.4.0",
     "typescript": "2.0.9"
   },
   "cordovaPlugins": [

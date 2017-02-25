@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button *ngIf="projectMenuEnabled" menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>About eBudget</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list>
+    <ion-item>Application<div item-right>eBudget</div></ion-item>
+    <ion-item>Version<div item-right>{{buildInfo.version}}</div></ion-item>
+    <ion-item>Build Date<div item-right>{{buildInfo.buildDateYYYYMMDD}}</div></ion-item>
+  </ion-list>
+
+</ion-content>

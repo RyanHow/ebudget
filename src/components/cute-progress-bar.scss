@@ -1,6 +1,10 @@
+/*@keyframes cute-progress-bar-colour-cycle { 
+    0%{top:0%}
+    100%{top:-290%}
+}*/
 cute-progress-bar {
     width: 150px;
-    height: 10px;
+    height: 7px;
     border: 1px solid #0077ee;
     border-radius: 5px;
     display: block;
@@ -8,10 +12,22 @@ cute-progress-bar {
     position: absolute;
     top: 50%;
     left: 50%;
+    overflow: hidden;
 
     .cute-progress-indicator {
         border-radius: 3px;
+        //height: 400%;
         height: 100%;
-        background-color: lighten(#0077ee, 10);
+        margin-left:-100%;
+        width:100%;
+        top: 0;
+        position: relative;
+        background: lighten(#0077ee, 10);
+        box-shadow: 0 0 4px lighten(#0077ee, 40) inset;
+        //Note: colour cycle can be cool, but animation can sometimes be choppy, and it honestly doesn't look that awesome
+        //TODO: If cycling animation, then wrap it again inside this div so we can keep the shadow, rounded border, etc.. it could be done using a ::after element
+        //background: repeating-linear-gradient(45deg, lighten(#0077ee, 40) 0, lighten(#0077ee, 40) 0.5em, lighten(#0077ee, 10) 0.5em, lighten(#0077ee, 10) 1em);
+        background-position: 0 0;
+        //animation: cute-progress-bar-colour-cycle 0.4s linear infinite;
     }
 }

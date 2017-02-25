@@ -10,6 +10,7 @@ import {InitBudgetTransaction} from '../../data/transactions/init-budget-transac
 import {AddBudgetModal} from '../../modals/add-budget/add-budget';
 import {DevPage} from '../../pages/dev/dev';
 import {SettingsPage} from '../../pages/settings/settings';
+import {AboutPage} from '../../pages/about/about';
 
 // -- //
 import {ShareBudgetModal} from '../../modals/share-budget/share-budget';
@@ -65,6 +66,10 @@ export class MainMenuContent {
 
   goSettings() {
     this.nav.setRoot(SettingsPage);
+  }
+
+  goAbout() {
+    this.nav.setRoot(AboutPage);
   }
 
   addBudget() {

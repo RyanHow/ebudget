@@ -2,7 +2,7 @@ import {Component, Input} from '@angular/core';
 
 @Component({
   selector: 'cute-progress-bar',
-  template: '<div class="cute-progress-indicator" [style.width]="cssWidth()"></div>'
+  template: '<div class="cute-progress-indicator" [style.left]="cssWidth()"></div>'
 })
 
 export class CuteProgressBar {
