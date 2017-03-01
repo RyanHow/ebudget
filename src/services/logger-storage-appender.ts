@@ -38,11 +38,11 @@ export class LoggerStorageAppender implements LoggerAppender {
          let logLevel = logLine.level === 1 ? 'D' : logLine.level === 3 ? 'E' : 'I';
          let dataString = '';
          if (logLine.data.length > 0) dataString = Logger.stringValue(logLine.data[0]);
-         if (logLine.data.length > 1) dataString += '--------\n';
+         //if (logLine.data.length > 1) dataString += '\n--------';
          for (let i = 1; i < logLine.data.length; i++) {
-             dataString = '\n' + Logger.stringValue(logLine.data[i]);
+             dataString += '\n' + Logger.stringValue(logLine.data[i]);
          }
-         if (logLine.data.length > 1) dataString += '--------\n';
+         //if (logLine.data.length > 1) dataString += '\n--------';
          return '[' + logLevel + ' ' + dateString + '] ' + dataString;
      }
 }

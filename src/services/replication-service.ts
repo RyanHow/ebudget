@@ -7,6 +7,7 @@ import {Transaction} from '../db/transaction';
 import {TransactionSerializer} from '../db/transaction-serializer';
 import stringify from 'json-stable-stringify';
 import {Logger} from './logger';
+import {Configuration} from './configuration-service';
 
 /**
 * The Repl service listens to the database transactions, add/edit/delete and generates replication records. It then "syncs" those. It also fetched remote replication records and creates transactions out of them for the database to process...
@@ -25,7 +26,7 @@ export class Replication {
     incrementingReplId: number = 100;
     processingTransaction: boolean;
 
-    constructor(private dbms: Dbms, private http: Http, private transactionSerializer: TransactionSerializer) {
+    constructor(private dbms: Dbms, private http: Http, private transactionSerializer: TransactionSerializer, private configuration: Configuration) {
         
         // TODO: Move the syncing promise to an observable, so we can just "subscribe" ?
         
@@ -83,6 +84,7 @@ export class Replication {
             if (eventName === 'activated') {
                 // Add a head just incase initalised without any transactions (which happens on linking)
                 this.updateHead(db, { 'id': 0, 'deviceReplId': this.enabled(db) });
+                this.scheduleSync(10);
             }
             if (eventName === 'deleted') {
                 this.disable(db);
@@ -260,6 +262,7 @@ export class Replication {
         let syncing = this.syncing;
 
         this.syncing.q = new Promise((success, fail) => {
+
             this.doSync(() => {
                 syncing.running = false;
                 this.logger.debug('SYNC: Success');
@@ -335,6 +338,8 @@ export class Replication {
         .subscribe((response) => {
             this.logger.debug(() => response);
             try {
+                if (this.configuration.temporary.simulateSyncError) throw new Error("Simulated Sync Error");
+
                 // Process the data I got
                 if (response.processed) {
                     let totalIncomingProcessed = 0;
@@ -369,11 +374,34 @@ export class Replication {
                     }
                 }
 
-                if (response.repl) {
-                    response.repl.forEach((replRecord) => {
+            } catch (e) {
+                let errorData = new SyncErrorData();
+                errorData.error = e;
+                errorData.message = 'Internal Error in Handling Sync Processed Response';
+                errorData.internalIssue = true;
+                error(errorData);
+                return;
+            }
+
+            if (response.repl) {
+                this.logger.info('Processing ' + response.repl.length + ' Incoming Repl Records');
+
+                let processedCount = 0;
+                let skippedCount = 0;
+                let errorCalled = false;
+
+                response.repl.forEach((replRecord) => {
+
+                    try {
+
                         replRecord.replId = parseInt(replRecord.replId);
                         let dbId = replRecord.dbId;
                         let db = this.dbms.getDb(dbId);
+                        
+                        if (db.isActivating()) {
+                            skippedCount++;
+                            return;
+                        }
                         // dbId, replId, deviceReplId, replData
                         // replData -> transaction, timestamp, checksum
                         this.logger.debug('Processing incoming replRecord - ', () =>  JSON.stringify(replRecord));
@@ -446,21 +474,34 @@ export class Replication {
                         this.updateHead(db, transaction.x.repl[0]);
 
                         this.logger.debug('- End Processing incoming replRecord');
+                        processedCount++;
+
+                        return true; // Continue;
+                    } catch (e) {
+                        let errorData = new SyncErrorData();
+                        this.logger.info("Dump of internal error in repl", e);
+                        errorData.error = e;
+                        errorData.message = 'Internal Error in Processing New Repl Record During Sync: ' + JSON.stringify(replRecord);
+                        errorData.internalIssue = true;
+                        error(errorData);
+                        errorCalled = true;
+                        return false; // Break;
+                    }
 
 
-                    });
+                });
 
-                    this.logger.info('Processed ' + response.repl.length + ' Incoming Repl Records');
+                if (processedCount) this.logger.info('Processed ' + processedCount + ' Incoming Repl Records');
+                if (skippedCount) {
+                    this.logger.info('Skipped ' + skippedCount + ' Incoming Repl Records');
                 }
 
-            } catch (e) {
-                let errorData = new SyncErrorData();
-                errorData.error = e;
-                errorData.message = 'Internal Error in Processing Sync Response';
-                errorData.internalIssue = true;
-                error(errorData);
-                return;
+                if (errorCalled) {
+                    return;
+                }
+
             }
+
 
             success();
         }, (response) => {

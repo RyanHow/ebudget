@@ -36,7 +36,24 @@
   </ion-item>
 
   <ion-item>
-    <button ion-button (click)="testError()">Test Error</button>
+    <button ion-button (click)="testError()">Test Uncaught Error</button>
+  </ion-item>
+
+  <ion-item>
+    <button ion-button (click)="testAngularError()">Test Angular Error</button>
+  </ion-item>
+
+  <ion-item>
+    <button ion-button (click)="testPromiseRejection()">Test Uncaught Promise Rejection</button>
+  </ion-item>
+
+ <ion-item>
+    <button ion-button (click)="openErrorHandler()">Open Error Handler Dialog</button>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Simulate Sync Error</ion-label>
+    <ion-toggle [(ngModel)]="configuration.temporary.simulateSyncError"></ion-toggle>
   </ion-item>
 
 </ion-content>

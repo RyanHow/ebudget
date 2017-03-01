@@ -1,3 +1,4 @@
+import {BuildInfo} from '../app/build-info';
 import {LoggerAppender, Logger} from './logger';
 import {LoggerStorageAppender} from './logger-storage-appender';
 import {Device} from 'ionic-native';
@@ -485,10 +486,11 @@ class DefaultLoggerUINotifierAppenderHandler implements LoggerUINotifierAppender
             'time' : new Date().toISOString(),
             'userAgent' : navigator.userAgent,
             'platform' : navigator.platform,
-            'devicePlatform' : Device && Device ? Device.platform : 'undefined',
-            'deviceModel' : Device && Device ? Device.model : 'undefined',
-            'deviceVersion' : Device && Device ? Device.version : 'undefined',
-            'deviceNative' : Device && Device ? Device.cordova : 'undefined',
+            'version' : BuildInfo.version,
+            'devicePlatform' : Device && Device.platform ? Device.platform : 'undefined',
+            'deviceModel' : Device && Device.model ? Device.model : 'undefined',
+            'deviceVersion' : Device && Device.version ? Device.version : 'undefined',
+            'deviceNative' : Device && Device.cordova ? Device.cordova : 'undefined',
             'contactInfo' : 'true' === localStorage.getItem('error-do-not-contact') ? 'Do Not Contact' : localStorage.getItem('error-contact-info')
         };
 
@@ -537,8 +539,16 @@ class DefaultLoggerUINotifierAppenderHandler implements LoggerUINotifierAppender
 export class LoggerUINotifierAppender implements LoggerAppender {
 
     public static instance: LoggerUINotifierAppender = new LoggerUINotifierAppender();
+    private _handler: LoggerUINotifierAppenderHandler;
 
-    public handler: LoggerUINotifierAppenderHandler;
+    public get handler(): LoggerUINotifierAppenderHandler {
+        return this._handler || this.defaultHandler;
+    }
+
+    public set handler(value: LoggerUINotifierAppenderHandler) {
+        this._handler = value;
+    }
+
     private defaultHandler: LoggerUINotifierAppenderHandler = new DefaultLoggerUINotifierAppenderHandler();
 
     constructor() {

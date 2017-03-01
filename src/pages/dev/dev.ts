@@ -1,6 +1,9 @@
 import {NavController} from 'ionic-angular';
 import {Component} from '@angular/core';
 import {Dbms} from '../../db/dbms';
+import {Logger} from '../../services/logger';
+import {Configuration} from '../../services/configuration-service';
+import {LoggerUINotifierAppender} from '../../services/logger-ui-notifier-appender';
 
 @Component({
   templateUrl: 'dev.html'
@@ -17,7 +20,7 @@ export class DevPage {
   }
   testamount3 = 'ASD';
   
-  constructor(private nav: NavController, private dbms: Dbms) {
+  constructor(private nav: NavController, private dbms: Dbms, public configuration: Configuration) {
 
   }
     
@@ -26,6 +29,24 @@ export class DevPage {
   }
 
   testError() {
+    Logger.get("dev").info({message: "about to throw an error"}, "And trying a multi part log before it");
     throw new Error('Muahahaha');
   }
+
+  testLogError() {
+    Logger.get("dev").info({message: "about to log an error"});
+    Logger.get('dev').error("Logging an error");
+  }
+
+  testPromiseRejection() {
+    Logger.get("dev").info("Unhandled Promise Rejection Test");
+    new Promise((resolve, reject) => {
+      reject("Simulated Error");
+    }).then(() => {Logger.get('dev').info('This should never be logged')});
+  }
+
+  openErrorHandler() {
+    LoggerUINotifierAppender.instance.handler.handle('Opening Error Handler');
+  }
+
 }

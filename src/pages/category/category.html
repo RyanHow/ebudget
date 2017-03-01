@@ -20,7 +20,7 @@
         Weekly Amount
         <currency-display highlightNegative [value]="categoryWeeklyAmount()" item-right></currency-display>
     </button>
-    <button class="category-transaction-item" ion-item detail-none (click)="editTransaction(t)" *ngFor="let t of transactions.data()">
+    <button class="category-transaction-item" ion-item detail-none (click)="editTransaction(t)" *ngFor="let t of transactionsPaged">
       <span item-left>{{t.date | dFormat}}</span> {{t.description}}
         <ion-note small item-right *ngIf="t.config.transactionType == 'InitCategoryTransferTransaction'">
           <ion-icon small name="shuffle"></ion-icon>
@@ -28,5 +28,8 @@
         </ion-note>
       <currency-display invertedCurrency highlightPositive showPositive [value]="t.amount" item-right></currency-display>
     </button>
-  </ion-list>    
+  </ion-list>
+  <ion-infinite-scroll (ionInfinite)="doInfinite($event)" threshold="50%">
+   <ion-infinite-scroll-content></ion-infinite-scroll-content>
+ </ion-infinite-scroll>
 </ion-content>

@@ -18,6 +18,7 @@ export class Configuration {
     public native: boolean;
     private persistence: DbPersistenceProvider;
     private cId: string = 'conf';
+    public temporary: any = {};
     
     get currencyNumericInput(): boolean {
         return this.persistence.keyStore(this.cId, 'currencyNumericInput') === 'true';

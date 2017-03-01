@@ -1,4 +1,4 @@
-import {NavController, NavParams, ViewController, ModalController, PopoverController} from 'ionic-angular';
+import {NavController, NavParams, ViewController, ModalController, PopoverController, InfiniteScroll} from 'ionic-angular';
 import {Component} from '@angular/core';
 import {Dbms} from '../../db/dbms';
 import {Db} from '../../db/db';
@@ -25,7 +25,9 @@ export class CategoryPage {
   category: Category;
   transactions: LokiDynamicView<Transaction>;
   transactionTable: LokiCollection<Transaction>;
-  
+  transactionDisplayLimit: number;
+  transactionDisplayPageSize: number;
+
   constructor(private nav: NavController, private dbms: Dbms, private params: NavParams, private editorProvider: EditorProvider, private modalController: ModalController, private popoverController: PopoverController) {
     this.nav = nav;
     this.dbms = dbms;
@@ -37,6 +39,15 @@ export class CategoryPage {
     this.transactionTable = this.budget.transactionProcessor.table(Transaction);
 
     this.transactions = <any> {data: function() {return []; }};
+    this.transactionDisplayPageSize = window.innerHeight / 30;
+    if (this.transactionDisplayPageSize < 6) this.transactionDisplayPageSize = 10;
+
+    this.transactionDisplayLimit = this.transactionDisplayPageSize;
+  }
+
+  get transactionsPaged() {
+    if (!this.transactionDisplayLimit) return this.transactions.data();
+    return this.transactions.data().slice(0, this.transactionDisplayLimit);
   }
 
   transferOtherCategoryName(t: Transaction): string {
@@ -49,9 +60,7 @@ export class CategoryPage {
   
   showMore(event) {
     let popover = this.popoverController.create(CategoryPopover, {categoryPage: this});
-    popover.present({
-      ev: event
-    });
+    popover.present({ev: event});
   }
  
   editCategory() {
@@ -117,6 +126,20 @@ export class CategoryPage {
 
   }
   
+  doInfinite(infiniteScroll: InfiniteScroll) {
+    // This is used just to stage the DOM loading for a responsive UI rather than an async operation
+    // We can't use virtualscroll as we can have different elements / heights
+
+    this.transactionDisplayLimit += this.transactionDisplayPageSize;
+    this.transactionDisplayPageSize *= 1.5;
+
+    if (this.transactions.data().length <= this.transactionDisplayLimit) {
+      this.transactionDisplayLimit = 0;
+      infiniteScroll.enable(false);
+    } else {
+      infiniteScroll.complete();
+    }
+  }
 }
 
 

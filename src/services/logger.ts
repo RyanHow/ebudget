@@ -70,21 +70,25 @@ export class Logger {
 
             // TODO: test for certain kind of objects and run through the values of them ?.
             let cache = [];
-            let json = JSON.stringify(value, function(key, value) {
-                if (typeof value === 'object' && value !== null) {
-                    if (cache.indexOf(value) !== -1) {
-                        // Circular reference found, discard key
-                        return '[circular]';
+            try {
+                let json = JSON.stringify(value, function(key, value) {
+                    if (typeof value === 'object' && value !== null) {
+                        if (cache.indexOf(value) !== -1) {
+                            // Circular reference found, discard key
+                            return '[circular]';
+                        }
+                        // Store value in our collection
+                        cache.push(value);
                     }
-                    // Store value in our collection
-                    cache.push(value);
-                }
-                return value;
-            });
+                    return value;
+                });
+                if (json.length > 2000) json = json.substr(0, 2000) + '...[truncated]';
 
-            if (json.length > 2000) json = json.substr(0, 2000) + '...[truncated]';
+                return json;
+            } catch (err) {
+                return "Error Stringifying value: " + value;
+            }
 
-            return json;
         }
 
     }

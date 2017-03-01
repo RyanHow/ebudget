@@ -128,44 +128,50 @@ export class Db {
      */
     applyTransaction(transaction: Transaction) {
 
-        if (transaction.id) this.updateTransactionIdHead(transaction);
-        
-        // Ignore deleted transactions
-        if (transaction.deleted) {
-            if (! transaction.id) {
-                // Ignore this, it's been deleted and never persisted...
-                return;
-            } else if (!transaction.applied) {
-                // If it's not applied and it's deleted, that is the final state we want for the transaction, so lets leave it here...
-            } else {
-                // It's deleted AND applied, so we need to processes the deletion
-                this.deleteTransaction(transaction);
-                // Transaction applied is called in delete...
-                return;
-            }
-        } else {
-            // Give a new transaction an Id
-            if (!transaction.id) {
-                transaction.id = this.nextTransactionId();
-                this.updateTransactionIdHead(transaction);
-            }
+        try {
+
+            if (transaction.id) this.updateTransactionIdHead(transaction);
             
-            // Process transactions
-            if (this.active || this.activating) {
-                if (!transaction.applied) {
-                    transaction.apply(this.transactionProcessor);
-                    transaction.applied = true;
-                    
+            // Ignore deleted transactions
+            if (transaction.deleted) {
+                if (! transaction.id) {
+                    // Ignore this, it's been deleted and never persisted...
+                    return;
+                } else if (!transaction.applied) {
+                    // If it's not applied and it's deleted, that is the final state we want for the transaction, so lets leave it here...
                 } else {
-                    transaction.update(this.transactionProcessor);
+                    // It's deleted AND applied, so we need to processes the deletion
+                    this.deleteTransaction(transaction);
+                    // Transaction applied is called in delete...
+                    return;
+                }
+            } else {
+                // Give a new transaction an Id
+                if (!transaction.id) {
+                    transaction.id = this.nextTransactionId();
+                    this.updateTransactionIdHead(transaction);
+                }
+                
+                // Process transactions
+                if (this.active || this.activating) {
+                    if (!transaction.applied) {
+                        transaction.apply(this.transactionProcessor);
+                        transaction.applied = true;
+                        
+                    } else {
+                        transaction.update(this.transactionProcessor);
+                    }
+                }
+                if (!this.activating) {
+                    this.saveTransaction(transaction);
                 }
             }
-            if (!this.activating) {
-                this.saveTransaction(transaction);
-            }
-        }
 
-        this.fireEvent('transaction-applied', {'transaction': transaction});
+            this.fireEvent('transaction-applied', {'transaction': transaction});
+        } catch (err) {
+            this.logger.info("Error applying transaction. Nested error to follow.", transaction);
+            throw err;
+        }
     }
     
     getTransaction<T extends Transaction>(transactionId: number): T {
