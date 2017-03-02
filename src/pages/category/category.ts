@@ -1,5 +1,5 @@
 import {NavController, NavParams, ViewController, ModalController, PopoverController, InfiniteScroll} from 'ionic-angular';
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {Dbms} from '../../db/dbms';
 import {Db} from '../../db/db';
 import {Category} from '../../data/records/category';
@@ -28,6 +28,9 @@ export class CategoryPage {
   transactionDisplayLimit: number;
   transactionDisplayPageSize: number;
 
+  @ViewChild(InfiniteScroll)
+  infiniteScroll: InfiniteScroll;
+
   constructor(private nav: NavController, private dbms: Dbms, private params: NavParams, private editorProvider: EditorProvider, private modalController: ModalController, private popoverController: PopoverController) {
     this.nav = nav;
     this.dbms = dbms;
@@ -39,7 +42,7 @@ export class CategoryPage {
     this.transactionTable = this.budget.transactionProcessor.table(Transaction);
 
     this.transactions = <any> {data: function() {return []; }};
-    this.transactionDisplayPageSize = window.innerHeight / 30;
+    this.transactionDisplayPageSize = window.innerHeight / 40;
     if (this.transactionDisplayPageSize < 6) this.transactionDisplayPageSize = 10;
 
     this.transactionDisplayLimit = this.transactionDisplayPageSize;
@@ -118,6 +121,12 @@ export class CategoryPage {
 
     this.logger.debug('WIll Enter Dynamic Views ' + this.transactionTable.DynamicViews.length);
 
+    if (this.transactions.data().length <= this.transactionDisplayLimit) {
+      this.transactionDisplayLimit = 0;
+      this.infiniteScroll.enable(false);
+    }
+
+
   }
   ionViewDidLeave() {
     this.transactionTable.removeDynamicView(this.transactions.name);
@@ -131,7 +140,7 @@ export class CategoryPage {
     // We can't use virtualscroll as we can have different elements / heights
 
     this.transactionDisplayLimit += this.transactionDisplayPageSize;
-    this.transactionDisplayPageSize *= 1.5;
+    this.transactionDisplayPageSize *= 2;
 
     if (this.transactions.data().length <= this.transactionDisplayLimit) {
       this.transactionDisplayLimit = 0;

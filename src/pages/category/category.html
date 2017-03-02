@@ -32,4 +32,5 @@
   <ion-infinite-scroll (ionInfinite)="doInfinite($event)" threshold="50%">
    <ion-infinite-scroll-content></ion-infinite-scroll-content>
  </ion-infinite-scroll>
+ <ion-note *ngIf="!infiniteScroll.enabled" class="item-list-footnote">{{transactionsPaged.length == 0 ? 'No items to display' : 'End of items'}}</ion-note>
 </ion-content>

@@ -1,6 +1,6 @@
 import {Directive, ElementRef} from '@angular/core';
 import {NgControl} from '@angular/forms';
-import MaskedInput from 'ionic2-input-mask';
+//import MaskedInput from 'ionic2-input-mask';
 import {Configuration} from '../services/configuration-service';
 import {Platform} from 'ionic-angular';
 
@@ -12,33 +12,61 @@ import {Platform} from 'ionic-angular';
 })
 export class CurrencyField {
     
-    maskedInput: MaskedInput;
+    //maskedInput: MaskedInput;
+    htmlInputElement: HTMLInputElement;
 
-    constructor(private elementRef: ElementRef, ngControl: NgControl, private platform: Platform, private configuration: Configuration) {
+    constructor(private elementRef: ElementRef, private ngControl: NgControl, private platform: Platform, private configuration: Configuration) {
         if (!(this.platform.is('ios') || this.platform.is('android'))) {
-            this.maskedInput = new MaskedInput(elementRef, ngControl);
-            this.maskedInput.textMaskConfig = <any> {mask: this.numberMask.bind(this), placeholderChar: '0'};
+//            this.maskedInput = new MaskedInput(elementRef, ngControl);
+//            this.maskedInput.textMaskConfig = <any> {mask: this.numberMask.bind(this), placeholderChar: '0'};
         }
     }
     ngAfterViewInit(): void {
-        if (this.maskedInput) {
-            this.maskedInput.ngAfterViewInit();
-        }
+        this.htmlInputElement = this.elementRef.nativeElement.children[0];
+
+        //if (this.maskedInput) {
+            //this.maskedInput.ngAfterViewInit();
+        //}
         if (this.platform.is('ios') || this.platform.is('android')) {
-            this.elementRef.nativeElement.children[0].setAttribute('type', 'number');
-            this.elementRef.nativeElement.children[0].setAttribute('step', '0.01');
+            this.htmlInputElement.setAttribute('type', 'number');
+            this.htmlInputElement.setAttribute('step', '0.01');
         }
 
-        this.elementRef.nativeElement.children[0].setAttribute('placeholder', '0.00');
+/*        this.htmlInputElement.addEventListener('input', (ev) => {
+            let val = this.htmlInputElement.value;
+            let parts = val.split('.');
+            if (parts.length > 1) {
+                let cents = parts[1];
+                if (cents.length > 2) cents = cents.substring(0,2);
+                val = parts[0] + '.' + cents;
+            }
+            val = val.replace(/[^0-9.]/g, '');
+            if (val !== this.htmlInputElement.value) this.htmlInputElement.value = val;
+        });
+*/
+
+        this.htmlInputElement.setAttribute('placeholder', '0.00');
 
     }
     onInput(): void {
-        if (this.maskedInput) this.maskedInput.onInput();
+        let val = this.htmlInputElement.value;
+
+        val = val.replace(/[^0123456789.]/g, '');
+
+        let parts = val.split('.');
+        if (parts.length > 1) {
+            let cents = parts[1];
+            if (cents.length > 2) cents = cents.substring(0,2);
+            val = parts[0] + '.' + cents;
+        }
+        if (val !== this.htmlInputElement.value) this.htmlInputElement.value = val;
+
+        this.ngControl.viewToModelUpdate(this.htmlInputElement.value)
     }
 
 
 
-
+/*
     dollarSign = '$';
     emptyString = '';
     comma = ',';
@@ -126,7 +154,7 @@ export class CurrencyField {
     return n.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparatorSymbol);
     }
 
-
+*/
 
 
 }

@@ -8,9 +8,9 @@ import {Platform} from 'ionic-angular';
   host: {
     '(input)': 'onInput()'
   },
-  selector: 'ion-input[currency-field]'
+  selector: 'ion-input[currency-field-ion-input-mask]'
 })
-export class CurrencyField2 {
+export class CurrencyFieldIonInputMask {
     
     maskedInput: MaskedInput;
 

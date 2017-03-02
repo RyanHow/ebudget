@@ -71,7 +71,7 @@ export class BudgetPage {
     this.budget.activate(this.activateProgressCallback.bind(this)).then(() => {    
       this.logger.debug("Activate Budget Resolved");
 
-      this.categories = this.budget.transactionProcessor.table(Category).data;
+      this.categories = this.budget.transactionProcessor.table(Category).data.sort((a, b) => (a.name+'').localeCompare(b.name+''));
       this.budgetRecord = this.budget.transactionProcessor.single(Budget);
 
       this.activated = true;

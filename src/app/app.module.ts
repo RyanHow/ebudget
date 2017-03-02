@@ -14,7 +14,6 @@ import {AddEditCategoryModal} from '../modals/add-edit-category/add-edit-categor
 import {AddEditCategorySimpleWeeklyModal} from '../modals/add-edit-category-simple-weekly/add-edit-category-simple-weekly';
 import {AddEditTransactionModal} from '../modals/add-edit-transaction/add-edit-transaction';
 import {AddEditTransferModal} from '../modals/add-edit-transfer/add-edit-transfer';
-import {CurrencyField} from '../components/currency-field';
 import {MainMenuContent} from '../components/main-menu-content/main-menu-content';
 import {Dbms} from '../db/dbms';
 import {PersistenceProviderManager} from '../db/persistence-provider-manager';
@@ -23,7 +22,7 @@ import {Configuration} from '../services/configuration-service';
 import {Replication} from '../services/replication-service';
 import {TransactionSerializer} from '../db/transaction-serializer';
 import {EngineFactory} from '../engine/engine-factory';
-import {CurrencyField2} from '../components/currency-field-2';
+import {CurrencyField} from '../components/currency-field';
 import {NoFocusDirective} from '../components/no-focus';
 import {ErrorLabel} from '../components/error-label';
 import {ReplicationErrorDisplay} from '../components/replication-error-display';
@@ -48,7 +47,6 @@ import {CuteProgressBar} from '../components/cute-progress-bar';
     AddEditTransferModal,
     AddEditCategorySimpleWeeklyModal,
     CurrencyField,
-    CurrencyField2,
     NoFocusDirective,
     ErrorLabel,
     ReplicationErrorDisplay,
