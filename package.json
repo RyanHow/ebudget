@@ -1,6 +1,6 @@
 {
   "name": "ebudget",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "author": "BitWorks",
   "homepage": "https://ebudgetapp.com",
   "private": true,
@@ -49,7 +49,7 @@
     "ionic2-input-mask": "0.16.2",
     "ionicons": "3.0.0",
     "json-stable-stringify": "^1.0.1",
-    "lokijs": "^1.4.2",
+    "lokijs": "^1.4.3",
     "moment": "^2.13.0",
     "rxjs": "5.0.0-beta.12",
     "sw-toolbox": "3.4.0",

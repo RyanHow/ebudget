@@ -169,7 +169,7 @@ export class Db {
 
             this.fireEvent('transaction-applied', {'transaction': transaction});
         } catch (err) {
-            this.logger.info("Error applying transaction. Nested error to follow.", transaction);
+            this.logger.info("Error applying transaction. Throwing Error.", transaction, err);
             throw err;
         }
     }
