@@ -6,6 +6,16 @@ import {TransactionSerializer} from './transaction-serializer';
 import {Logger} from '../services/logger';
 import {ChunkedTask} from '../services/chunked-task';
 
+export interface DbEvent {
+    eventName: 'transaction-applied' | 'transaction-undone' | 'db-activated' | 'db-deleted' | 'transaction-batch-start' | 'transaction-batch-end';
+    data?: {transaction?: Transaction, transactions?: Array<Transaction>};
+    db?: Db;
+}
+
+export interface DbEventListener {
+    (dbEvent: DbEvent): void;
+}
+
 export class Db {
 
     private logger: Logger = Logger.get('Db');
@@ -13,10 +23,11 @@ export class Db {
     private transactions: LokiCollection<Transaction>;
     public sortedTransactions: LokiDynamicView<Transaction>;
     private active: boolean;
+    private batchProcessing: boolean;
     private initialised: boolean;
     private activating: boolean;
     private transactionIdHead: number;
-    private eventListeners: Array<any>;
+    private eventListeners: Array<DbEventListener>;
     transactionProcessor: TransactionProcessor;
 
     toJSON() {
@@ -47,6 +58,10 @@ export class Db {
     isActive(): boolean {
         return this.active;
     }
+
+    isBatchProcessing(): boolean {
+        return this.batchProcessing;
+    }
     
     activate(progressCallback?: (value: number, of: number) => void): Promise<void> {
         // If already active, then skip and return straight away
@@ -62,6 +77,8 @@ export class Db {
         }
         
         this.activating = true;
+        this.batchProcessing = true;
+        this.fireEvent({eventName: 'transaction-batch-start'});
 
         let p = ChunkedTask.execute((iterator, resolve, reject) => {
             // Can update this to just pass in the array... Put it in the initialiser...
@@ -80,7 +97,14 @@ export class Db {
             this.activating = false;
             this.active = true;
             this.logger.info("Activated Budget " + this.name());                
-            this.fireEvent('activated', {db: this});
+            this.fireEvent({eventName: 'db-activated'});
+            this.batchProcessing = false;
+            this.fireEvent({eventName: 'transaction-batch-end'});
+        }).catch(reason => {
+            this.activating = false;
+            this.active = false;
+            this.batchProcessing = false;
+            this.logger.error("Error activating db", reason);
         });
 
         return p;
@@ -167,7 +191,7 @@ export class Db {
                 }
             }
 
-            this.fireEvent('transaction-applied', {'transaction': transaction});
+            this.fireEvent({eventName : 'transaction-applied', data: {transaction: transaction}});
         } catch (err) {
             this.logger.info("Error applying transaction. Throwing Error.", transaction, err);
             throw err;
@@ -215,20 +239,25 @@ export class Db {
         if (!transaction.applied) return;
         transaction.undo(this.transactionProcessor);
         transaction.applied = false;
-        this.fireEvent('transaction-undone', {'transaction': transaction});
+        this.fireEvent({eventName: 'transaction-undone', data: {transaction: transaction}});
     }
     
     
     
-    addEventListener(listener) {
+    addEventListener(listener: DbEventListener) {
         this.eventListeners.push(listener);
     }
     
+    deleteInternal() {
+        this.fireEvent({eventName: 'db-deleted'});
+        this.eventListeners.length = 0;
+    }
 
-    fireEvent(eventName, data) {
-        // TODO: Register dbs.service as a listener, and have it emit events, so replication can listen at a "global" level rather than to every db
-        this.logger.debug(eventName + ' data: ', () =>  data);
-        this.eventListeners.forEach(function(l) {l(eventName, data); });
+    fireEvent(dbEvent: DbEvent) {
+        if (!dbEvent.db) dbEvent.db = this;
+
+        this.logger.debug(() => dbEvent);
+        this.eventListeners.forEach((listener) => {listener(dbEvent)});
     }
 
 

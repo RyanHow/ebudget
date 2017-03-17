@@ -28,6 +28,7 @@ export class MainMenuContent {
   @Input()
   nav: Nav;
   budgets: Db[];
+  window: Window = window;
 
   private syncing: boolean;
 

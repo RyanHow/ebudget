@@ -8,7 +8,7 @@
 importScripts('./build/sw-toolbox.js');
 
 self.toolbox.options.cache = {
-  name: 'ionic-cache'
+  name: 'eBudget-cache-%BUILD_INFO_VERSION%'
 };
 
 // pre-cache our key assets
@@ -27,4 +27,4 @@ self.toolbox.router.any('/*', self.toolbox.cacheFirst);
 
 // for any other requests go to the network, cache,
 // and then only use that cached resource if your user goes offline
-self.toolbox.router.default = self.toolbox.networkFirst;
+//self.toolbox.router.default = self.toolbox.networkFirst;

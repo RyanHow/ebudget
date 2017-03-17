@@ -33,6 +33,8 @@ replication-error > div {
     &.show {
         height: 30px;
         transition: top 0.3s linear 1s, background-color 1s, color 1s, height 0s linear 1s;
+        position: sticky;
+        z-index: 1;
         top: 0;
         background-color: orange;
         color: black;

@@ -4,6 +4,7 @@ import {Dbms} from '../../db/dbms';
 import {Logger} from '../../services/logger';
 import {Configuration} from '../../services/configuration-service';
 import {LoggerUINotifierAppender} from '../../services/logger-ui-notifier-appender';
+import {InAppBrowser} from 'ionic-native';
 
 @Component({
   templateUrl: 'dev.html'
@@ -47,6 +48,21 @@ export class DevPage {
 
   openErrorHandler() {
     LoggerUINotifierAppender.instance.handler.handle('Opening Error Handler');
+  }
+
+  launchInAppBrowserTest1() {
+    let browser = new InAppBrowser('https://www.google.com', '_blank');
+    let subscription = browser.on('loadstop').subscribe(ev => {
+        let js = 'alert(5 + 7);location.href="http://www.example.com";5 + 7;';
+        Logger.get("dev").info("executing js: " + js);
+        browser.executeScript({code: js}).then((val) => {
+          Logger.get("dev").info(val);
+          alert(val);          
+        }).catch(err => {
+          Logger.get("dev").error(err.message, err);
+        });
+        subscription.unsubscribe();
+    });
   }
 
 }

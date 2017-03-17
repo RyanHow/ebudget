@@ -57,11 +57,18 @@ export class BudgetApp {
 
         this.ready = true;
           if (configuration.lastOpenedBudget()) {
+            let lastOpenedBudgetId = configuration.lastOpenedBudget();
             try {
-              let budget = dbms.getDb(configuration.lastOpenedBudget());
-              this.nav.setRoot(BudgetPage, {'budget': budget});
+              let budget = dbms.getDb(lastOpenedBudgetId);
+              if (!budget) {
+                this.logger.info('Budget ' + lastOpenedBudgetId + ' not found for auto opening');
+                this.nav.setRoot(HomePage);
+              } else {
+                this.nav.setRoot(BudgetPage, {'budget': budget});
+              }
             } catch (e) {
-              this.logger.error({msg: 'Unable to auto open budget', exception: e});            
+              configuration.lastOpenedBudget(null);
+              this.logger.error('Unable to auto open budget ' + lastOpenedBudgetId, e);
               this.nav.setRoot(HomePage);
             }
           } else {

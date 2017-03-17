@@ -76,17 +76,17 @@ export class Replication {
     }
 
     monitorDb(db: Db) {
-        db.addEventListener((eventName, data) => {
+        db.addEventListener((dbEvent) => {
             if (this.processingTransaction) return;
-            if (eventName === 'transaction-applied' || eventName === 'transaction-undone') {
-                this.processTransaction(db, data.transaction);
+            if (dbEvent.eventName === 'transaction-applied' || dbEvent.eventName === 'transaction-undone') {
+                this.processTransaction(db, dbEvent.data.transaction);
             }
-            if (eventName === 'activated') {
+            if (dbEvent.eventName === 'db-activated') {
                 // Add a head just incase initalised without any transactions (which happens on linking)
                 this.updateHead(db, { 'id': 0, 'deviceReplId': this.enabled(db) });
                 this.scheduleSync(10);
             }
-            if (eventName === 'deleted') {
+            if (dbEvent.eventName === 'db-deleted') {
                 this.disable(db);
             }
         });

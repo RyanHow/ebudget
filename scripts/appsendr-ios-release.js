@@ -1,7 +1,7 @@
 var fs = require('fs');
 var exec = require('child_process').exec;
 
-exec('appsendr create "platforms\\ios\\build\\release\\eBudget.ipa" com.ebudgetapp.live resources/icon.png', function (err, stdout, stderr) {
+exec('appsendr create "tmp\\eBudget.ipa" com.ebudgetapp.live resources/icon.png', function (err, stdout, stderr) {
     console.log(stdout);
     console.log(stderr);
 

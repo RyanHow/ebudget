@@ -6,8 +6,14 @@
     <button ion-item detail-none menuClose (click)="renameBudget()">Rename Budget...</button>
     <button ion-item detail-none menuClose (click)="deleteBudget()">Delete Budget...</button>
 </ion-item-group>
+<ion-item-group *ngIf="window.serviceWorkerUpdateAvailable">
+    <ion-item-divider light>
+        Notices
+    </ion-item-divider>
+    <button ion-item (click)="window.close()">An update will be installed on exit</button>
+</ion-item-group>
 <ion-item-group>
-    <ion-item-divider *ngIf="lastOpenedBudget()" light>
+    <ion-item-divider *ngIf="lastOpenedBudget() || window.serviceWorkerUpdateAvailable" light>
         More
     </ion-item-divider>
     <button ion-item [class.selectedBudget]="b == lastOpenedBudget()" menuClose *ngFor="let b of budgets" (click)="openBudget(b)">{{budgetName(b)}}</button>

@@ -18,11 +18,11 @@ var buildDate = formatDate(new Date());
 console.log("Injecting version: " + version + ", build date:" + buildDate);
 
 var result = replace.sync({
-  files: 'www/build/main.js', 
+  files: ['www/build/main.js', 'www/service-worker.js'], 
   from: ['%BUILD_INFO_VERSION%', '%BUILD_INFO_BUILD_DATE_YYYYMMDD%'],
   to: [version, buildDate]
 });
 
-if (!result || !result.length) throw new Error("Build info not updated in main.js");
+if (!result || !result.length) throw new Error("Build info not updated");
 
 console.log("Injected in files: " + result);

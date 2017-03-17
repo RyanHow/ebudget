@@ -65,7 +65,7 @@ export class Dbms {
         let db = this.getDb(id);
         this.dbs.splice(this.dbs.indexOf(db), 1);
         this.dbMap.delete(id);
-        db.fireEvent('deleted', {});
+        db.deleteInternal();
         this.persistenceProvider.unlinkDb(id);
     }
 
