@@ -15,6 +15,22 @@ export class AboutPage {
     this.projectMenuEnabled = true;
   }
   
+  isWkWebView(): boolean {
+    if (navigator.platform.substr(0,2) === 'iP'){
+      //iOS (iPhone, iPod or iPad)
+      var lte9 = /constructor/i.test((<any>window).HTMLElement);
+      var nav: any = window.navigator, ua = nav.userAgent, idb = !!window.indexedDB;
+      if (ua.indexOf('Safari') !== -1 && ua.indexOf('Version') !== -1 && !nav.standalone){      
+        //Safari (WKWebView/Nitro since 6+)
+      } else if ((!idb && lte9) || !window.statusbar.visible) {
+        //UIWebView
+      } else if (((<any>window).webkit && (<any>window).webkit.messageHandlers) || !lte9 || idb){
+        return true;
+      }
+    }
+
+    return false;
+  }
   
     
 }

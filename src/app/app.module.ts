@@ -15,6 +15,7 @@ import {AddEditCategorySimpleWeeklyModal} from '../modals/add-edit-category-simp
 import {AddEditTransactionModal} from '../modals/add-edit-transaction/add-edit-transaction';
 import {AddEditTransferModal} from '../modals/add-edit-transfer/add-edit-transfer';
 import {MainMenuContent} from '../components/main-menu-content/main-menu-content';
+import {MainMenuIcon} from '../components/main-menu-icon/main-menu-icon';
 import {Dbms} from '../db/dbms';
 import {PersistenceProviderManager} from '../db/persistence-provider-manager';
 import {EditorProvider} from '../services/editor-provider';
@@ -55,7 +56,8 @@ import {CuteProgressBar} from '../components/cute-progress-bar';
     MainMenuContent,
     CategoryPopover,
     CFormatPipe,
-    CuteProgressBar
+    CuteProgressBar,
+    MainMenuIcon
   ],
   imports: [
     IonicModule.forRoot(BudgetApp)

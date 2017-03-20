@@ -10,11 +10,9 @@ import {InitBudgetTransaction} from '../../data/transactions/init-budget-transac
   templateUrl: 'home.html'
 })
 export class HomePage {
-  projectMenuEnabled: boolean;
   
   constructor(private nav: NavController, private dbms: Dbms, private modalController: ModalController) {
     this.nav = nav;
-    this.projectMenuEnabled = true;
     this.dbms = dbms;
   }
   
