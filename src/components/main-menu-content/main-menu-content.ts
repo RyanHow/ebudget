@@ -1,4 +1,4 @@
-import {ModalController, Menu, Nav, App, AlertController} from 'ionic-angular';
+import {ModalController, Menu, Nav, App, AlertController, ToastController} from 'ionic-angular';
 import {Component, Input} from '@angular/core';
 import {Dbms} from '../../db/dbms';
 import {Db} from '../../db/db';
@@ -32,7 +32,7 @@ export class MainMenuContent {
 
   private syncing: boolean;
 
-  constructor(private dbms: Dbms, private app: App, private configuration: Configuration, private replication: Replication, private modalController: ModalController, private alertController: AlertController) {
+  constructor(private dbms: Dbms, private app: App, private configuration: Configuration, private replication: Replication, private modalController: ModalController, private alertController: AlertController, private toastCtrl: ToastController) {
     this.dbms = dbms;
     this.budgets = dbms.dbs;
     this.app = app;
@@ -120,9 +120,11 @@ export class MainMenuContent {
   sync(event) {
     this.syncing = true;
     setTimeout(() =>
-      this.replication.sync().then(() => { this.syncing = false; }, () => { this.syncing = false; }),
-      1000
-    );
+      this.replication.sync().then(
+        () => { this.syncing = false; this.toastCtrl.create({message: 'Budget is up to date',duration: 3000}).present(); },
+        () => { this.syncing = false;}
+      ),
+    1000);
   }
 
   // -- //
