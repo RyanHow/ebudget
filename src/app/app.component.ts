@@ -10,6 +10,7 @@ import {Configuration} from '../services/configuration-service';
 import {Replication} from '../services/replication-service';
 import {TransactionSerializer} from '../db/transaction-serializer';
 import {Logger} from '../services/logger';
+import {AppReady} from './app-ready';
 
 import {InitBudgetTransaction} from '../data/transactions/init-budget-transaction';
 import {InitCategoryTransaction} from '../data/transactions/init-category-transaction';
@@ -22,14 +23,14 @@ import {AddEditTransactionModal} from '../modals/add-edit-transaction/add-edit-t
 @Component({
   templateUrl: 'app.html'
 })
-export class BudgetApp {
+export class App {
 
   private logger: Logger = Logger.get('App');
   rootPage: any; // = HomePage;
   ready: boolean;
   @ViewChild(Nav) nav: Nav;
 
-  constructor(platform: Platform, private configuration: Configuration, dbms: Dbms, persistenceProviderManager: PersistenceProviderManager, replication: Replication, private transactionSerializer: TransactionSerializer, private editorProvider: EditorProvider) {
+  constructor(platform: Platform, private configuration: Configuration, dbms: Dbms, persistenceProviderManager: PersistenceProviderManager, replication: Replication, private transactionSerializer: TransactionSerializer, private editorProvider: EditorProvider, private appReady: AppReady) {
     this.logger.info('Constructing App');
     
     platform.ready().then(() => {
@@ -56,24 +57,26 @@ export class BudgetApp {
         Splashscreen.hide(); // TODO: Move this earlier if want to have a splash screen while the db init runs... can nav.setRoot to a "loading..." page, then set the real page below... Can maybe even have progress updates with the "then()" statements?
 
         this.ready = true;
-          if (configuration.lastOpenedBudget()) {
-            let lastOpenedBudgetId = configuration.lastOpenedBudget();
-            try {
-              let budget = dbms.getDb(lastOpenedBudgetId);
-              if (!budget) {
-                this.logger.info('Budget ' + lastOpenedBudgetId + ' not found for auto opening');
-                this.nav.setRoot(HomePage);
-              } else {
-                this.nav.setRoot(BudgetPage, {'budget': budget});
-              }
-            } catch (e) {
-              configuration.lastOpenedBudget(null);
-              this.logger.error('Unable to auto open budget ' + lastOpenedBudgetId, e);
+        if (configuration.lastOpenedBudget()) {
+          let lastOpenedBudgetId = configuration.lastOpenedBudget();
+          try {
+            let budget = dbms.getDb(lastOpenedBudgetId);
+            if (!budget) {
+              this.logger.info('Budget ' + lastOpenedBudgetId + ' not found for auto opening');
               this.nav.setRoot(HomePage);
+            } else {
+              this.nav.setRoot(BudgetPage, {'budget': budget});
             }
-          } else {
-              this.nav.setRoot(HomePage);
+          } catch (e) {
+            configuration.lastOpenedBudget(null);
+            this.logger.error('Unable to auto open budget ' + lastOpenedBudgetId, e);
+            this.nav.setRoot(HomePage);
           }
+        } else {
+            this.nav.setRoot(HomePage);
+        }
+
+        appReady.readyResolve();
 
         }).catch(err => {
           this.logger.error('Error in initialisation', err);

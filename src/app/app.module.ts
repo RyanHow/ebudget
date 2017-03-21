@@ -1,6 +1,7 @@
 import {NgModule, ErrorHandler} from '@angular/core';
 import {IonicApp, IonicModule} from 'ionic-angular';
-import {BudgetApp} from './app.component';
+import {App} from './app.component';
+import {AppReady} from './app-ready';
 import {AppExceptionHandler} from './app-exception-handler';
 import {HomePage} from '../pages/home/home';
 import {BudgetPage} from '../pages/budget/budget';
@@ -21,6 +22,8 @@ import {PersistenceProviderManager} from '../db/persistence-provider-manager';
 import {EditorProvider} from '../services/editor-provider';
 import {Configuration} from '../services/configuration-service';
 import {Replication} from '../services/replication-service';
+import {UpdatedCheck} from '../services/updated-check';
+import {Notifications} from '../services/notifications';
 import {TransactionSerializer} from '../db/transaction-serializer';
 import {EngineFactory} from '../engine/engine-factory';
 import {CurrencyField} from '../components/currency-field';
@@ -34,7 +37,7 @@ import {CuteProgressBar} from '../components/cute-progress-bar';
 
 @NgModule({
   declarations: [
-    BudgetApp,
+    App,
     HomePage,
     BudgetPage,
     CategoryPage,
@@ -60,11 +63,11 @@ import {CuteProgressBar} from '../components/cute-progress-bar';
     MainMenuIcon
   ],
   imports: [
-    IonicModule.forRoot(BudgetApp)
+    IonicModule.forRoot(App)
   ],
   bootstrap: [IonicApp],
   entryComponents: [
-    BudgetApp,
+    App,
     HomePage,
     BudgetPage,
     CategoryPage,
@@ -80,6 +83,9 @@ import {CuteProgressBar} from '../components/cute-progress-bar';
     CategoryPopover
   ],
   providers: [{provide: ErrorHandler, useClass: AppExceptionHandler},
+  AppReady,
+  UpdatedCheck,
+  Notifications,
   EditorProvider,
   Configuration,
   PersistenceProviderManager,
@@ -88,4 +94,6 @@ import {CuteProgressBar} from '../components/cute-progress-bar';
   EngineFactory,
   Replication]
 })
-export class AppModule {}
+export class AppModule {
+  constructor(updatedCheck: UpdatedCheck) {}
+}
