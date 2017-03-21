@@ -15,6 +15,10 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
+.main-menu ion-toolbar  {
+    display: none;
+}
 .ios .main-menu ion-toolbar.statusbar-padding {
+    display: block;
     min-height:20px !important;
 }

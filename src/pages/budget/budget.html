@@ -1,6 +1,8 @@
-<ion-header>
+<ion-header class="budget-header" [class.header-loading]="!activated">
   <ion-navbar>
-    <main-menu-icon></main-menu-icon>
+    <button ion-button menuToggle>
+      <main-menu-icon></main-menu-icon>
+    </button>
     <ion-title>{{budget.name()}}</ion-title>
     <ion-buttons end>
       <button ion-button icon-only (click)="addCategory()">
