@@ -1,4 +1,3 @@
-import {Logger} from '../services/logger';
 import {Injectable} from '@angular/core';
 
 @Injectable()

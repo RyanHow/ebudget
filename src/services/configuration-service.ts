@@ -20,6 +20,10 @@ export class Configuration {
     private cId: string = 'conf';
     public temporary: any = {};
     
+    option(option: string, value?: string): string {
+        return this.persistence.keyStore(this.cId, option, value);
+    }
+
     get currencyNumericInput(): boolean {
         return this.persistence.keyStore(this.cId, 'currencyNumericInput') === 'true';
     }

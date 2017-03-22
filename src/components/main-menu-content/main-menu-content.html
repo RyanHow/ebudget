@@ -6,19 +6,21 @@
     <button ion-item detail-none menuClose (click)="renameBudget()">Rename Budget...</button>
     <button ion-item detail-none menuClose (click)="deleteBudget()">Delete Budget...</button>
 </ion-item-group>
-<ion-item-group *ngIf="window.serviceWorkerUpdateAvailable">
+<ion-item-group *ngIf="notifications.notifications.length">
     <ion-item-divider light>
-        Notices
+        Notifications <ion-badge *ngIf="notifications.newNotifications.length > 3">{{notifications.newNotifications.length}}</ion-badge>
+        <button item-right outline [disabled]="!notifications.newNotifications.length" (click)="notifications.clear(3)" (press)="notifications.clear()">Clear</button><button item-right outline menuClose (click)="goNotifications()">Show All</button>
     </ion-item-divider>
-    <button ion-item (click)="window.close()">An update will be installed on exit</button>
+    <ion-item *ngIf="!notifications.newNotifications.length"><ion-note>No New Notifications</ion-note></ion-item>
+    <notification-list *ngIf="notifications.newNotifications.length" new="true" limit="3"></notification-list>
 </ion-item-group>
 <ion-item-group>
     <ion-item-divider *ngIf="lastOpenedBudget() || window.serviceWorkerUpdateAvailable" light>
-        More
+        Open
     </ion-item-divider>
     <button ion-item [class.selectedBudget]="b == lastOpenedBudget()" menuClose *ngFor="let b of budgets" (click)="openBudget(b)">{{budgetName(b)}}</button>
     <button ion-item menuClose detail-none (click)="addBudget()">Create New Budget...</button>
-    <button ion-item menuClose detail-none (click)="linkBudget()">Link to a Shared Budget...</button>
+    <button ion-item menuClose detail-none (click)="linkBudget()">Open a Shared Budget...</button>
 </ion-item-group>
 <ion-item-group>
     <ion-item-divider light>

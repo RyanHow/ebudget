@@ -3,19 +3,16 @@ import {Notifications} from './notifications';
 import {Configuration} from './configuration-service';
 import {AppReady} from '../app/app-ready';
 import {Logger} from './logger';
-import {BuildInfo} from '../app/build-info';
 
 @Injectable()
-export class UpdatedCheck {
+export class UpdateCheck {
     
     private logger: Logger = Logger.get('Notifications');
 
     constructor(appReady: AppReady, notifications: Notifications, configuration: Configuration) {
         appReady.ready.then(() => {
-            let latestVersion = configuration.option('latest-version');
-            if (BuildInfo.version !== latestVersion || BuildInfo.version === "%BUILD_INFO_VERSION%") {
-                configuration.option('latest-version', BuildInfo.version);
-                let message = "Updated to version " + BuildInfo.version;
+            if ((<any>window).serviceWorkerUpdateAvailable) {
+                let message = "An update has been downloaded and will be installed next time the app is opened.";
                 this.logger.info(message);
                 notifications.notify(message, true);
             }

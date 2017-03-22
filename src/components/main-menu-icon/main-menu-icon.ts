@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {Notifications} from '../../services/notifications'
 
 @Component({
   selector: 'main-menu-icon',
@@ -7,5 +8,7 @@ import {Component} from '@angular/core';
 
 export class MainMenuIcon {
  
+  constructor(public notifications: Notifications) {
+  }
 
 }

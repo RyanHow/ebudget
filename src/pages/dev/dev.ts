@@ -3,6 +3,7 @@ import {Component} from '@angular/core';
 import {Dbms} from '../../db/dbms';
 import {Logger} from '../../services/logger';
 import {Configuration} from '../../services/configuration-service';
+import {Notifications} from '../../services/notifications';
 import {LoggerUINotifierAppender} from '../../services/logger-ui-notifier-appender';
 import {InAppBrowser} from 'ionic-native';
 
@@ -21,7 +22,7 @@ export class DevPage {
   }
   testamount3 = 'ASD';
   
-  constructor(private nav: NavController, private dbms: Dbms, public configuration: Configuration) {
+  constructor(private nav: NavController, private dbms: Dbms, public configuration: Configuration, private notifications: Notifications) {
 
   }
     
@@ -65,4 +66,7 @@ export class DevPage {
     });
   }
 
+  generateNotification() {
+    this.notifications.notify("Notification at " + Date.now(), true);
+  }
 }

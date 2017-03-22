@@ -1,9 +1,10 @@
 import {ModalController, Menu, Nav, App, AlertController, ToastController} from 'ionic-angular';
-import {Component, Input} from '@angular/core';
+import {Component, Input, ApplicationRef} from '@angular/core';
 import {Dbms} from '../../db/dbms';
 import {Db} from '../../db/db';
 import {Configuration} from '../../services/configuration-service';
 import {Replication} from '../../services/replication-service';
+import {Notifications} from '../../services/notifications';
 import {BudgetPage} from '../../pages/budget/budget';
 import {HomePage} from '../../pages/home/home';
 import {InitBudgetTransaction} from '../../data/transactions/init-budget-transaction';
@@ -11,10 +12,8 @@ import {AddBudgetModal} from '../../modals/add-budget/add-budget';
 import {DevPage} from '../../pages/dev/dev';
 import {SettingsPage} from '../../pages/settings/settings';
 import {AboutPage} from '../../pages/about/about';
-
-// -- //
+import {NotificationsPage} from '../../pages/notifications/notifications';
 import {ShareBudgetModal} from '../../modals/share-budget/share-budget';
-// -- //
 
 @Component({
   selector: 'main-menu-content',
@@ -29,17 +28,32 @@ export class MainMenuContent {
   nav: Nav;
   budgets: Db[];
   window: Window = window;
+  markReadTimeout: number;
 
   private syncing: boolean;
 
-  constructor(private dbms: Dbms, private app: App, private configuration: Configuration, private replication: Replication, private modalController: ModalController, private alertController: AlertController, private toastCtrl: ToastController) {
+  constructor(private dbms: Dbms, private app: App, private configuration: Configuration, private replication: Replication, private modalController: ModalController, private alertController: AlertController, private toastCtrl: ToastController, private notifications: Notifications, private applicationRef: ApplicationRef) {
     this.dbms = dbms;
     this.budgets = dbms.dbs;
     this.app = app;
   }
 
+  ngOnInit() {
+    this.menu.ionOpen.subscribe(() => {
+      this.markReadTimeout = setTimeout(() => {
+        this.notifications.markRead(3);
+        this.markReadTimeout = 0;
+        this.applicationRef.tick();
+      }, 3000);
+    });
+
+    this.menu.ionClose.subscribe(() => {
+      if (this.markReadTimeout) clearTimeout(this.markReadTimeout);
+    });
+  }
+
   isBudgetPageOpen(): boolean {
-    return false;
+    return this.nav.getActive().component === BudgetPage;
   }
   
   budgetName(budget: Db): string {
@@ -174,6 +188,14 @@ export class MainMenuContent {
     this.dbms.deleteDb(this.lastOpenedBudget().id);
     this.configuration.lastOpenedBudget(null);
     this.nav.setRoot(HomePage);
+  }
+
+  clearNotifications() {
+    this.notifications.clear(3);
+  }
+
+  goNotifications() {
+    this.nav.setRoot(NotificationsPage);
   }
 
 }

@@ -1,0 +1,2 @@
+<ion-item *ngFor="let n of notifications | slice:0:limit" [class.unread]="!n.read" detail-none>{{n.message}}</ion-item>
+
