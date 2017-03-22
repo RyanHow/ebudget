@@ -16,7 +16,6 @@ export class NotificationsPage {
     this.markReadTimeout = setTimeout(() => {
       this.notifications.markRead();
       this.markReadTimeout = 0;
-      //this.applicationRef.tick();
     }, 3000);
   }
 

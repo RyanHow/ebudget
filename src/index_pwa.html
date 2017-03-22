@@ -9,8 +9,8 @@
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
         .then((registration) => {
-          if (typeof registration.update == 'function') {
-                registration.update();
+              if (typeof registration.update == 'function') {
+                window.serviceWorkerUpdateCheckFunction = () => registration.update();
               }
 
               // updatefound is fired if service-worker.js changes.
@@ -28,8 +28,8 @@
                         // It's the perfect time to display a "New content is available; please refresh."
                         // message in the page's interface.
                         console.log('New or updated content is available.');
-                        window.serviceWorkerUpdateAvailable = true;
-
+                        window.serviceWorkerUpdateAvailable = true;                        
+                        window.dispatchEvent(new CustomEvent('serviceworkerupdateavailable', {installing: installingWorker}));
                       } else {
                         // At this point, everything has been precached, but the service worker is not
                         // controlling the page. The service worker will not take control until the next

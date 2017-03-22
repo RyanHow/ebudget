@@ -1,6 +1,7 @@
 import {NavController} from 'ionic-angular';
 import {Component} from '@angular/core';
 import {Configuration} from '../../services/configuration-service'
+import {UpdateCheck} from '../../services/update-check'
 import {BuildInfo} from '../../app/build-info'
 
 @Component({
@@ -9,12 +10,19 @@ import {BuildInfo} from '../../app/build-info'
 export class AboutPage {
   projectMenuEnabled: boolean;
   buildInfo = BuildInfo;
+  updateCheckDisabled: boolean;
   
-  constructor(private nav: NavController, private configuration: Configuration) {
+  constructor(private nav: NavController, private configuration: Configuration, public updateCheck: UpdateCheck) {
     this.nav = nav;
     this.projectMenuEnabled = true;
   }
   
+  serviceWorkerUpdateCheck() {
+    this.updateCheckDisabled = true;
+    this.updateCheck.triggerServiceWorkerUpdateCheck();
+    setTimeout(() => {this.updateCheckDisabled = false}, 5000);
+  }
+
   isWkWebView(): boolean {
     if (navigator.platform.substr(0,2) === 'iP'){
       //iOS (iPhone, iPod or iPad)

@@ -11,6 +11,11 @@
   <ion-list>
     <ion-item>Application<div item-right>eBudget</div></ion-item>
     <ion-item>Version<div item-right>{{buildInfo.version}}</div></ion-item>
+    <ion-item *ngIf="updateCheck.isServiceWorkerAvailable()">
+      Updates
+      <button *ngIf="!updateCheck.serviceWorkerUpdateAvailable" ion-button item-right outline [disabled]="updateCheckDisabled" (click)="serviceWorkerUpdateCheck()">Check for updates</button>
+      <div *ngIf="updateCheck.serviceWorkerUpdateAvailable" item-right>Restart app to update</div>
+    </ion-item>
     <ion-item>Build Date<div item-right>{{buildInfo.buildDateYYYYMMDD}}</div></ion-item>
     <ion-item>Device Id<div item-right>{{configuration.deviceId}}</div></ion-item>
     <ion-item>Device Name<div item-right>{{configuration.deviceName}}</div></ion-item>

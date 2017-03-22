@@ -12,7 +12,7 @@ export class Notifications {
     
     private logger: Logger = Logger.get('Notifications');
 
-    acknowledged: boolean;
+    acknowledged: boolean = true;
     notifications: Array<Notification> = [];
     newNotifications: Array<Notification> = [];
 
