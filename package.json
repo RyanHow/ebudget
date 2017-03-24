@@ -1,6 +1,6 @@
 {
   "name": "ebudget",
-  "version": "0.0.38",
+  "version": "0.0.66",
   "author": "BitWorks",
   "homepage": "https://ebudgetapp.com",
   "private": true,
@@ -85,6 +85,7 @@
   ],
   "description": "eBudget",
   "config": {
-    "ionic_rollup": "./node_modules/@ionic/app-scripts/config/rollup.config.js"
+    "ionic_rollup": "./node_modules/@ionic/app-scripts/config/rollup.config.js",
+    "ionic_copy": "./copy.config.js"
   }
 }

@@ -18,7 +18,7 @@ var buildDate = formatDate(new Date());
 console.log("Injecting version: " + version + ", build date:" + buildDate);
 
 var result = replace.sync({
-  files: ['www/build/main.js', 'www/service-worker.js'], 
+  files: ['www/build/main.js', 'www/service-worker.js', 'www/info.json'], 
   from: ['%BUILD_INFO_VERSION%', '%BUILD_INFO_BUILD_DATE_YYYYMMDD%'],
   to: [version, buildDate]
 });

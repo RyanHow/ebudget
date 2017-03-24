@@ -1,4 +1,4 @@
-import {NavController} from 'ionic-angular';
+import {NavController, AlertController} from 'ionic-angular';
 import {Component} from '@angular/core';
 import {Configuration} from '../../services/configuration-service'
 import {UpdateCheck} from '../../services/update-check'
@@ -12,7 +12,7 @@ export class AboutPage {
   buildInfo = BuildInfo;
   updateCheckDisabled: boolean;
   
-  constructor(private nav: NavController, private configuration: Configuration, public updateCheck: UpdateCheck) {
+  constructor(private nav: NavController, private configuration: Configuration, public updateCheck: UpdateCheck, private alertController: AlertController) {
     this.nav = nav;
     this.projectMenuEnabled = true;
   }
@@ -38,6 +38,14 @@ export class AboutPage {
     }
 
     return false;
+  }
+
+  unregisterServiceWorker() {
+    this.alertController.create({
+      buttons: [{ text: 'Ok', handler: () => {this.updateCheck.unregisterServiceWorker();}}, {text: 'Cancel', role: 'cancel'}],
+      message: 'Unregistering the service worker will disable offline support. A new service worker will be installed after the app has been restarted.',
+      title: 'Are you sure?'
+    }).present();
   }
   
     

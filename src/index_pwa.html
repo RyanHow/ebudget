@@ -7,10 +7,39 @@
   <meta name="format-detection" content="telephone=no">
   <script>
     if ('serviceWorker' in navigator) {
+
+      navigator.serviceWorker.addEventListener('message', function(event) {
+        console.log('Message from service worker: ' + JSON.stringify(event.data));
+      });
+
       navigator.serviceWorker.register('service-worker.js')
         .then((registration) => {
               if (typeof registration.update == 'function') {
-                window.serviceWorkerUpdateCheckFunction = () => registration.update();
+                window.serviceWorkerUpdateCheckFunction = () => {
+                  var p = registration.update();
+                  if (p && p.catch) {
+                    p.catch((reason) => {
+                      console.log("Error in service worker update: " + reason);
+                    });
+                  }
+                }
+              }
+              if (typeof registration.unregister == 'function') {
+                window.serviceWorkerUnregisterFunction = () => registration.unregister();
+              }
+
+              if (navigator.serviceWorker.controller) {
+                var channel = new MessageChannel();
+
+                channel.port1.onmessage = (event) => {
+                  console.log("Received version from service worker: " + event.data.version);
+                  window.activeServiceWorkerVersion = event.data.version;
+                  window.dispatchEvent(new CustomEvent('activeserviceworkerversionreported', {version: event.data.version, serviceWorker: navigator.serviceWorker}));
+                };
+
+                console.log("Pinging service worker for version. State: " + navigator.serviceWorker.controller.state);
+
+                navigator.serviceWorker.controller.postMessage({versionCheck: true}, [channel.port2]);
               }
 
               // updatefound is fired if service-worker.js changes.
@@ -28,15 +57,33 @@
                         // It's the perfect time to display a "New content is available; please refresh."
                         // message in the page's interface.
                         console.log('New or updated content is available.');
+                        var channel2 = new MessageChannel();
+
+                        channel2.port1.onmessage = (event) => {
+                          console.log("Received version from installing service worker: " + event.data.version);
+                          window.updatedServiceWorkerVersion = event.data.version;
+                          window.dispatchEvent(new CustomEvent('updatedserviceworkerversionreported', {version: event.data.version, serviceWorker: navigator.serviceWorker}));
+                        };
+
+                        console.log("Pinging installing worker for version");
+
+                        installingWorker.postMessage({versionCheck: true}, [channel2.port2]);
                         window.serviceWorkerUpdateAvailable = true;                        
                         window.dispatchEvent(new CustomEvent('serviceworkerupdateavailable', {installing: installingWorker}));
+
                       } else {
                         // At this point, everything has been precached, but the service worker is not
                         // controlling the page. The service worker will not take control until the next
                         // reload or navigation to a page under the registered scope.
                         // It's the perfect time to display a "Content is cached for offline use." message.
                         console.log('Content is cached, and will be available for offline use the ' +
-                                    'next time the page is loaded.')
+                                    'next time the page is loaded.');
+
+                        // This is a new service worker where it is previously uncontrolled by a service worker
+                        // So don't do anything here, the service worker will silently take over next time...
+                        window.dispatchEvent(new CustomEvent('serviceworkerinstalled', {serviceWorker: installingWorker}));
+
+
                       }
                     break;
 

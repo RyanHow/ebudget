@@ -1,10 +1,12 @@
 import {Injectable} from '@angular/core';
-import {ToastController} from 'ionic-angular';
+import {ToastController, Toast} from 'ionic-angular';
 import {Logger} from './logger';
 
 export class Notification {
     message: string;
     read?: boolean;
+    popup?: boolean;
+    popupDone?: boolean;
 }
 
 @Injectable()
@@ -15,6 +17,7 @@ export class Notifications {
     acknowledged: boolean = true;
     notifications: Array<Notification> = [];
     newNotifications: Array<Notification> = [];
+    currentToast: Toast;
 
     constructor(private toastController: ToastController) {
 
@@ -39,13 +42,32 @@ export class Notifications {
         this.acknowledged = false;
 
         this.logger.debug("Notification: " + message);
-        let notification = {message: message};
+        let notification = {message: message, popup: popup};
         this.notifications.unshift(notification);
         this.newNotifications.unshift(notification);
 
-        if (popup) {
-            this.toastController.create({message: message, duration: 3000, showCloseButton: true, closeButtonText: 'X'}).present();
-        }
+        this.runPopupQueue();
+    }
+
+    runPopupQueue() {
+        if (this.currentToast) return;
+
+        this.notifications.some((notification) => {
+            if (notification.popup && !notification.popupDone) {
+                this.currentToast = this.toastController.create({message: notification.message, duration: 5000, showCloseButton: true, closeButtonText: 'X'});
+
+                this.currentToast.onDidDismiss(() => {
+                    this.currentToast = null;
+                    this.runPopupQueue();
+                });
+
+                this.currentToast.present();
+                notification.popupDone = true;
+                return true;
+            }
+
+            return false;
+       });
 
     }
 }

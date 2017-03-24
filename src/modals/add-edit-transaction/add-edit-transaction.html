@@ -18,8 +18,8 @@
             <ion-item-group>
                 <ion-item>
                     <ion-segment name="expense" [(ngModel)]="data.expense">
-                        <ion-segment-button [value]="true">Expense</ion-segment-button>
-                        <ion-segment-button [value]="false">Income</ion-segment-button>
+                        <ion-segment-button [value]="true" (mousedown)="$event.preventDefault()">Expense</ion-segment-button>
+                        <ion-segment-button [value]="false" (mousedown)="$event.preventDefault()">Income</ion-segment-button>
                     </ion-segment>
                 </ion-item>
             </ion-item-group>

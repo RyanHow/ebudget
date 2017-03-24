@@ -7,15 +7,23 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content>
   <ion-list>
     <ion-item>Application<div item-right>eBudget</div></ion-item>
     <ion-item>Version<div item-right>{{buildInfo.version}}</div></ion-item>
-    <ion-item *ngIf="updateCheck.isServiceWorkerAvailable()">
+
+    <!-- Service worker -->
+    <ion-item *ngIf="updateCheck.isServiceWorkerAvailable()">Service Worker
+      <div item-right>{{updateCheck.serviceWorkerVersion ? "Active " + updateCheck.serviceWorkerVersion : 'Restart app to activate'}}</div>
+      <button ion-button item-right outline (click)="unregisterServiceWorker()">Unregister</button>
+    </ion-item>
+    <ion-item *ngIf="updateCheck.isServiceWorkerAvailable() && updateCheck.serviceWorkerVersion">
       Updates
       <button *ngIf="!updateCheck.serviceWorkerUpdateAvailable" ion-button item-right outline [disabled]="updateCheckDisabled" (click)="serviceWorkerUpdateCheck()">Check for updates</button>
-      <div *ngIf="updateCheck.serviceWorkerUpdateAvailable" item-right>Restart app to update</div>
+      <div *ngIf="updateCheck.serviceWorkerUpdateAvailable" item-right>Restart app to update to {{updateCheck.updatedServiceWorkerVersion}}</div>
     </ion-item>
+    <!-- /Service worker -->
+
     <ion-item>Build Date<div item-right>{{buildInfo.buildDateYYYYMMDD}}</div></ion-item>
     <ion-item>Device Id<div item-right>{{configuration.deviceId}}</div></ion-item>
     <ion-item>Device Name<div item-right>{{configuration.deviceName}}</div></ion-item>
