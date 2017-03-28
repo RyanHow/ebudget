@@ -24,6 +24,14 @@
     </ion-item>
     <!-- /Service worker -->
 
+    <ion-item *ngIf="!updateCheck.isServiceWorkerAvailable() && !configuration.native">
+      Updates
+      <button *ngIf="!updateCheck.webUpdateAvailable" ion-button item-right outline [disabled]="updateCheckDisabled" (click)="webCheckUpdate()">Check for updates</button>
+      <div *ngIf="updateCheck.webUpdateAvailable" item-right>Refresh to update to {{updateCheck.webVersion}}</div>
+    </ion-item>
+
+
+
     <ion-item>Build Date<div item-right>{{buildInfo.buildDateYYYYMMDD}}</div></ion-item>
     <ion-item>Device Id<div item-right>{{configuration.deviceId}}</div></ion-item>
     <ion-item>Device Name<div item-right>{{configuration.deviceName}}</div></ion-item>

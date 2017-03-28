@@ -3,6 +3,8 @@ import {Db} from '../../db/db';
 import {Category} from '../../data/records/category';
 import {Transaction} from '../../data/records/transaction';
 import {Dbms} from '../../db/dbms';
+import {Engine} from '../../engine/engine';
+import {EngineFactory} from '../../engine/engine-factory';
 import {InitCategoryTransferTransaction} from '../../data/transactions/init-category-transfer-transaction';
 import {Component} from '@angular/core';
 import {Utils} from '../../services/utils';
@@ -20,12 +22,13 @@ export class AddEditTransferModal {
   transfer: InitCategoryTransferTransaction;
   categories: Category[];
   transactionRecord: Transaction;
+  engine: Engine;
 
-  constructor(public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController) {
-    this.budget = dbms.getDb(navParams.data.budgetId);
+  constructor(public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private engineFactory: EngineFactory, private nav: NavController, private alertController: AlertController) {
+    this.engine = engineFactory.getEngineById(navParams.data.budgetId);
+    this.budget = this.engine.db;
     
-    this.categories = this.budget.transactionProcessor.table(Category).data;
-
+    this.categories = this.engine.getCategories('alphabetical');
 
     if (navParams.data.transactionId) {
       this.editing = true;

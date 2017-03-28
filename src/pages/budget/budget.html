@@ -16,7 +16,7 @@
   <replication-error></replication-error>
   <cute-progress-bar *ngIf="!activated" [value]="activatedProgress" [of]="activatedOf"></cute-progress-bar>
   <ion-list>
-    <button ion-item detail-none *ngFor="let c of categories" (click)="openCategory(c)">
+    <button ion-item detail-none *ngFor="let c of engine.getCategories('alphabetical')" (click)="openCategory(c)">
       <div>{{c.name}}</div>
       <div item-right>
         <currency-display highlightNegative [value]="c.balance"></currency-display>

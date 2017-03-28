@@ -12,7 +12,7 @@ export class AboutPage {
   buildInfo = BuildInfo;
   updateCheckDisabled: boolean;
   
-  constructor(private nav: NavController, private configuration: Configuration, public updateCheck: UpdateCheck, private alertController: AlertController) {
+  constructor(private nav: NavController, public configuration: Configuration, public updateCheck: UpdateCheck, private alertController: AlertController) {
     this.nav = nav;
     this.projectMenuEnabled = true;
   }
@@ -21,6 +21,15 @@ export class AboutPage {
     this.updateCheckDisabled = true;
     this.updateCheck.triggerServiceWorkerUpdateCheck();
     setTimeout(() => {this.updateCheckDisabled = false}, 5000);
+  }
+
+  webCheckUpdate() {
+    this.updateCheckDisabled = true;
+    this.updateCheck.runWebUpdateCheck().subscribe((response) => {
+      this.updateCheckDisabled = false;
+    }, (error) => {
+      this.updateCheckDisabled = false;
+    });
   }
 
   isWkWebView(): boolean {

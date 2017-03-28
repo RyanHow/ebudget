@@ -7,6 +7,7 @@ import {CategoryPage} from '../../pages/category/category';
 import {Budget} from '../../data/records/budget';
 import {AddEditCategoryModal} from '../../modals/add-edit-category/add-edit-category';
 import {EngineFactory} from '../../engine/engine-factory';
+import {Engine} from '../../engine/engine';
 import {Configuration} from '../../services/configuration-service';
 import {InitCategorySimpleWeeklyTransaction} from '../../data/transactions/init-category-simple-weekly-transaction';
 import {Logger} from '../../services/logger';
@@ -21,18 +22,19 @@ export class BudgetPage {
 
   budget: Db;
   budgetRecord: Budget;
-  categories: Category[];
 
   activated: boolean;
   activatedProgress: number;
   activatedOf: number;
+
+  engine: Engine;
   
   constructor(private changeDetectorRef: ChangeDetectorRef, private nav: NavController, private dbms: Dbms, private params: NavParams, private engineFactory: EngineFactory, private modalController: ModalController, private configuration: Configuration) {
     this.nav = nav;
     this.dbms = dbms;
     
     this.budget = this.params.data.budget;
-    engineFactory.getEngine(this.budget);
+    this.engine = engineFactory.getEngine(this.budget);
 
     this.activated = false;
 
@@ -71,7 +73,6 @@ export class BudgetPage {
     this.budget.activate(this.activateProgressCallback.bind(this)).then(() => {    
       this.logger.debug("Activate Budget Resolved");
 
-      this.categories = this.budget.transactionProcessor.table(Category).find().sort((a, b) => (a.name+'').localeCompare(b.name+''));
       this.budgetRecord = this.budget.transactionProcessor.single(Budget);
 
       this.activated = true;

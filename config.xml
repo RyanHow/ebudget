@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?><widget id="com.ebudgetapp.live" version="0.0.66" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<?xml version='1.0' encoding='utf-8'?><widget id="com.ebudgetapp.live" version="0.0.71" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>eBudget</name>
     <description>eBudget Live Budgeting</description>
     <author email="ryan@bitworks.com.au" href="http://www.bitworks.com.au/">BitWorks</author>
@@ -6,6 +6,7 @@
     <access origin="*"/>
     <allow-navigation href="http://ionic.local/*"/>
     <allow-navigation href="http://192.168.2.182:8100"/>
+    <allow-navigation href="http://localhost:8080/*"/>
     <allow-intent href="http://*/*"/>
     <allow-intent href="https://*/*"/>
     <allow-intent href="tel:*"/>
@@ -54,7 +55,7 @@
         <splash height="2048" src="resources\ios\splash\Default-Portrait@2x~ipad.png" width="1536"/>
         <splash height="1024" src="resources\ios\splash\Default-Portrait~ipad.png" width="768"/>
         <splash height="960" src="resources\ios\splash\Default@2x~iphone.png" width="640"/>
-        <splash height="480" src="resources\ios\splash\Default~iphone.png" width="320"/>
+        <splash height="480" src="resources\ios\splash\Default~iphone.png" width="320"/>        
     </platform>
     <platform name="wp8">
         <icon height="99" src="resources\wp8\icon\ApplicationIcon.png" width="99"/>
@@ -73,6 +74,10 @@
     <preference name="SplashScreenDelay" value="10000"/>
     <preference name="KeyboardDisplayRequiresUserAction" value="false"/>
     <preference name="Orientation" value="portrait"/>
+    <feature name="CDVWKWebViewEngine">
+        <param name="ios-package" value="CDVWKWebViewEngine"/>
+    </feature>
+    <preference name="CordovaWebViewEngine" value="CDVWKWebViewEngine"/>
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar"/>
     </feature>
@@ -86,4 +91,5 @@
     <plugin name="cordova-sqlite-storage" spec="~2.0.1"/>
     <plugin name="cordova-plugin-inappbrowser" spec="~1.7.0"/>
     <plugin name="cordova-plugin-clipboard" spec="~1.0.0"/>
+    <plugin name="cordova-plugin-wkwebview-engine" spec="https://github.com/driftyco/cordova-plugin-wkwebview-engine"/>
 </widget>

@@ -1,4 +1,6 @@
 import {Injectable, ApplicationRef} from '@angular/core';
+import {Http, Response} from '@angular/http';
+import {Observable} from 'rxjs/Observable';
 import {Notifications} from './notifications';
 import {Configuration} from './configuration-service';
 import {AppReady} from '../app/app-ready';
@@ -15,8 +17,10 @@ export class UpdateCheck {
     public serviceWorkerVersion: string;
     public updatedServiceWorkerVersion: string;
     public serviceWorkerUnregistered: boolean = false;
+    public webUpdateAvailable: boolean;
+    public webVersion: string;
 
-    constructor(appReady: AppReady, private notifications: Notifications, configuration: Configuration, private applicationRef: ApplicationRef) {
+    constructor(appReady: AppReady, private notifications: Notifications, private configuration: Configuration, private applicationRef: ApplicationRef, private http: Http) {
         appReady.ready.then(() => {
             setTimeout(() => {
                 if (!this.checkAndNotifyServiceWorkerUpdate()) {
@@ -29,6 +33,9 @@ export class UpdateCheck {
                    this.triggerServiceWorkerUpdateCheck();
                    setInterval(() => this.triggerServiceWorkerUpdateCheck(), 1000 * 60 * 60 /*1 Hour*/);
                 }
+
+                this.initWebUpdateAutoCheck();
+
             }, 5000);
 
             
@@ -110,5 +117,42 @@ export class UpdateCheck {
             });
         }
         return Promise.resolve(false);
+    }
+
+    initWebUpdateAutoCheck() {
+        setTimeout(() => {
+            if (this.webUpdateAvailable) return;
+            this.runWebUpdateCheck();
+            this.initWebUpdateAutoCheck();
+        }, 1000 * 60 * 60 /*1 Hour*/);
+
+        this.runWebUpdateCheck();
+
+    }
+
+    runWebUpdateCheck(): Observable<Response> {
+        let observable = this.http.get('https://ebudget.live/info.json');
+
+        observable.map(res => res.json())
+        .subscribe((response) => {
+            try {
+                if (BuildInfo.version !== response.version) {
+                    this.webVersion = response.version;
+                    this.webUpdateAvailable = true;
+                    this.logger.info("Web update is available. Version: " + this.webVersion);
+                    if (!this.isServiceWorkerAvailable() && !this.configuration.native) {
+                        let message = "An update is available (" + this.webVersion + "). Refresh to update.";                    
+                        this.logger.info(message);
+                        this.notifications.notify(message, true);
+                    }
+                }
+            } catch (err) {
+                this.logger.info("Error in response data from web update check", response, err);
+            }
+        }, (error) => {
+            this.logger.info("Error during web update check", error);
+        });
+
+        return observable;
     }
 }

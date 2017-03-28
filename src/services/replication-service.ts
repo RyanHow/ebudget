@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
-import 'rxjs/add/operator/map';
 import {Dbms} from '../db/dbms';
 import {Db} from '../db/db';
 import {Transaction} from '../db/transaction';
