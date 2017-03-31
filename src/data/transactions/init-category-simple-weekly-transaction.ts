@@ -1,4 +1,4 @@
-import {DbTransaction} from '../../db/transaction';
+import {DbTransaction, TransactionStringEnv} from '../../db/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
 import {Category} from '../records/category';
 import {CategorySimpleWeeklyProcessor} from '../processors/category-simple-weekly-processor';
@@ -46,8 +46,8 @@ export class InitCategorySimpleWeeklyTransaction extends DbTransaction {
     }
 
     update(tp: TransactionProcessor) {
-        this.undo(tp);
-        this.apply(tp);        
+        this.undo(tp); // TODO: This will not handle a change in category (And maybe it shouldn't need to, but we need to verify it wasn't changed). it should undo the previous version of this transaction...
+        this.apply(tp);
     }
     
     undo(tp: TransactionProcessor) {
@@ -75,6 +75,16 @@ export class InitCategorySimpleWeeklyTransaction extends DbTransaction {
         if (field === 'weeklyAmount')
             return new Big(value);
         return value;
+    }
+
+    toHumanisedString(env: TransactionStringEnv): string {
+        if (env.action === 'apply') {
+            return "set {{category name}} to " + env.currencyFormatter(this.weeklyAmount) + " per week";
+        } else if (env.action === 'update') {
+            return "updated {{category name}} to " + env.currencyFormatter(this.weeklyAmount) + " per week";
+        } else {
+            return "removed weekly amount of " + env.currencyFormatter(this.weeklyAmount) + " from category {{category name}}";
+        } 
     }
 
 }

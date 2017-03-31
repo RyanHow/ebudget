@@ -1,8 +1,6 @@
-import {DbTransaction} from '../../db/transaction';
+import {DbTransaction, TransactionStringEnv} from '../../db/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
 import {Budget} from '../records/budget';
-import {Db} from '../../db/db';
-
 
 export class InitBudgetTransaction extends DbTransaction {
 
@@ -33,13 +31,13 @@ export class InitBudgetTransaction extends DbTransaction {
         tp.unsupported();
     }
 
-    static getFrom(db: Db): InitBudgetTransaction {
-        return db.getTransaction<InitBudgetTransaction>(1001);
-    }
-
 
     deserialize(field: string, value: any): any {
         return value;
+    }
+
+    toHumanisedString(env: TransactionStringEnv): string {
+        return /*Created / Updated / Deleted */ "budget " + this.budgetName;
     }
 
 }

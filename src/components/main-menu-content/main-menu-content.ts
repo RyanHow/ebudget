@@ -2,6 +2,7 @@ import {ModalController, Menu, Nav, App, AlertController, ToastController} from 
 import {Component, Input, ApplicationRef} from '@angular/core';
 import {Dbms} from '../../db/dbms';
 import {Db} from '../../db/db';
+import {Budget} from '../../data/records/budget';
 import {Configuration} from '../../services/configuration-service';
 import {Replication} from '../../services/replication-service';
 import {Notifications} from '../../services/notifications';
@@ -150,7 +151,7 @@ export class MainMenuContent {
 
     modal.onDidDismiss((data) => {
       if (data && data.budgetName !== '' && data.budgetName !== this.lastOpenedBudget().name()) {
-        let t = InitBudgetTransaction.getFrom(this.lastOpenedBudget());
+        let t = this.lastOpenedBudget().transactionProcessor.findTransactionsForRecord(this.lastOpenedBudget().transactionProcessor.single(Budget), InitBudgetTransaction)[0];
         t.budgetName = data.budgetName;
         this.lastOpenedBudget().applyTransaction(t);
       }

@@ -103,7 +103,7 @@ export class CategoryPage {
   
   editTransaction(transaction: Transaction) {
     
-    let modal = this.editorProvider.getModal({'budget': this.budget, 'category': this.category, 'transaction': transaction});
+    let modal = this.editorProvider.getModal(this.budget.transactionProcessor.findAllTransactionsForRecord(transaction)[0]);
     modal.data.budgetId = this.budget.id;
     modal.data.categoryId = this.category.id;
     modal.data.transactionId = transaction.id;

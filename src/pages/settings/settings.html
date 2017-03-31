@@ -9,6 +9,9 @@
 
 <ion-content>
 
+  <ion-list-header>
+    Common
+  </ion-list-header>
   <ion-item>
     <ion-label>Logging</ion-label>
     <ion-select [(ngModel)]="configuration.loglevel">
@@ -17,10 +20,12 @@
     </ion-select>
   </ion-item>
 
+  <ion-list-header>
+    Experimental
+  </ion-list-header>
   <ion-item>
-    <ion-label>Simplified Currency Input</ion-label>
-    <ion-toggle [(ngModel)]="configuration.currencyNumericInput"></ion-toggle>
+    <ion-label>Show Transaction Notifications</ion-label>
+    <ion-toggle [(ngModel)]="experimentalTransactionNotifications"></ion-toggle>
   </ion-item>
-
   
 </ion-content>

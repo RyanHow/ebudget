@@ -1,4 +1,4 @@
-import {DbTransaction} from '../../db/transaction';
+import {DbTransaction, TransactionStringEnv} from '../../db/transaction';
 import {Transaction as TransactionRecord} from '../records/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
 import Big from 'big.js';
@@ -76,6 +76,17 @@ export class InitCategoryTransferTransaction extends DbTransaction {
         if (field === 'amount')
             return new Big(value);
         return value;
+    }
+
+    toHumanisedString(env: TransactionStringEnv): string {
+        let total = env.currencyFormatter(this.amount);
+        if (env.action === 'apply') {
+            return "transferred " + total + " from a to b";
+        } else if (env.action === 'update') {
+            return "ammended transfer from a to b " + " to " + total; // TODO: What aspect was updated ?
+        } else {
+            return this.description + " of " + total;
+        } 
     }
 
 }

@@ -110,6 +110,6 @@ class TransactionModalProvider extends ModalProvider {
     }
         
     provide(params: any): any {
-        if (params.transaction && params.transaction.config && params.transaction.config.transactionType === this.transactionType) return this.modalClass;
+        if (params.typeId === this.transactionType) return this.modalClass;
     }
 }

@@ -1,4 +1,4 @@
-import {DbTransaction} from '../../db/transaction';
+import {DbTransaction, TransactionStringEnv} from '../../db/transaction';
 import {Transaction as TransactionRecord} from '../records/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
 import Big from 'big.js';
@@ -59,6 +59,18 @@ export class CreateSplitTransaction extends DbTransaction {
             return new Big(value);
         return value;
     }
+
+    toHumanisedString(env: TransactionStringEnv): string {
+        let total = env.currencyFormatter(this.amounts.map((l) => l.amount).reduce((a, b) => a.plus(b)));
+        if (env.action === 'apply') {
+            return this.description + " of " + total;
+        } else if (env.action === 'update') {
+            return this.description + " to " + total;
+        } else {
+            return this.description + " of " + total;
+        } 
+    }
+
 
 }
 

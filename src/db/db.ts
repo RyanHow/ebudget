@@ -8,7 +8,7 @@ import {ChunkedTask} from '../services/chunked-task';
 
 export interface DbEvent {
     eventName: 'transaction-applied' | 'transaction-undone' | 'db-activated' | 'db-deleted' | 'transaction-batch-start' | 'transaction-batch-end';
-    data?: {transaction?: DbTransaction, transactions?: Array<DbTransaction>};
+    data?: {transaction?: DbTransaction, update?: boolean};
     db?: Db;
 }
 
@@ -141,6 +141,10 @@ export class Db {
         return ~~((~~((this.transactionIdHead ? this.transactionIdHead : 0) / 1000) + 1) * 1000) + this.transactionIdLocalGen();
     }
 
+    extractTransactionLocalGenId(transactionId: number): number {
+        return transactionId % 1000;
+    }
+
     private updateTransactionIdHead(transaction: DbTransaction) {
         if (!this.transactionIdHead || transaction.id > this.transactionIdHead) this.transactionIdHead = transaction.id;
     }
@@ -153,6 +157,8 @@ export class Db {
     applyTransaction(transaction: DbTransaction) {
 
         try {
+
+            let updated = false;
 
             if (transaction.id) this.updateTransactionIdHead(transaction);
             
@@ -171,6 +177,7 @@ export class Db {
                 }
             } else {
                 // Give a new transaction an Id
+
                 if (!transaction.id) {
                     transaction.id = this.nextTransactionId();
                     this.updateTransactionIdHead(transaction);
@@ -183,15 +190,17 @@ export class Db {
                         transaction.applied = true;
                         
                     } else {
+                        updated = true;
                         transaction.update(this.transactionProcessor);
                     }
                 }
                 if (!this.activating) {
+                    updated = (<any>transaction).$loki == null;
                     this.saveTransaction(transaction);
                 }
             }
 
-            this.fireEvent({eventName : 'transaction-applied', data: {transaction: transaction}});
+            this.fireEvent({eventName : 'transaction-applied', data: {transaction: transaction, update: updated}});
         } catch (err) {
             this.logger.info("Error applying transaction. Throwing Error.", transaction, err);
             throw err;

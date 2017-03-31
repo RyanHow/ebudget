@@ -5,6 +5,10 @@ import {PersistenceProviderManager} from '../db/persistence-provider-manager';
 import {DbPersistenceProvider} from '../db/db-persistence-provider';
 import {Logger} from './logger';
 
+type ConfigurationOption = 'experimental.transaction.notifications'
+                         | 'latest-version'
+                         | '';
+
 
 @Injectable()
 export class Configuration {
@@ -20,16 +24,12 @@ export class Configuration {
     private cId: string = 'conf';
     public temporary: any = {};
     
-    option(option: string, value?: string): string {
+    option(option: ConfigurationOption, value?: string): string {
         return this.persistence.keyStore(this.cId, option, value);
     }
 
-    get currencyNumericInput(): boolean {
-        return this.persistence.keyStore(this.cId, 'currencyNumericInput') === 'true';
-    }
-
-    set currencyNumericInput(value: boolean) {
-        this.persistence.keyStore(this.cId, 'currencyNumericInput', value ? 'true' : 'false');
+    optionBoolean(option: ConfigurationOption, value?: boolean): boolean {
+        return this.persistence.keyStore(this.cId, option, value === undefined ? undefined : value ? 'true' : 'false') === 'true';
     }
 
     get loglevel(): string {

@@ -17,9 +17,16 @@ export abstract class DbTransaction {
     abstract update(tp: TransactionProcessor);
     abstract undo(tp: TransactionProcessor);
     abstract getTypeId(): string;
+
+    abstract toHumanisedString(env: TransactionStringEnv): string;
     
     /**
      * Objects are serialized and deserialised using JSON.stringify/parse. Parsed values are passed through this function to restore any type informmation.
      */
     abstract deserialize(field: string, value: any): any;
+}
+
+export class TransactionStringEnv {
+    action: 'apply' | 'update' | 'undo';
+    currencyFormatter: (value: any) => string;
 }

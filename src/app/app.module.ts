@@ -26,6 +26,7 @@ import {Configuration} from '../services/configuration-service';
 import {Replication} from '../services/replication-service';
 import {UpdatedCheck} from '../services/updated-check';
 import {UpdateCheck} from '../services/update-check';
+import {CurrencyFormatter} from '../services/currency-formatter';
 import {Notifications} from '../services/notifications';
 import {TransactionSerializer} from '../db/transaction-serializer';
 import {EngineFactory} from '../engine/engine-factory';
@@ -93,6 +94,7 @@ import {CuteProgressBar} from '../components/cute-progress-bar';
   UpdatedCheck,
   UpdateCheck,
   Notifications,
+  CurrencyFormatter,
   EditorProvider,
   Configuration,
   PersistenceProviderManager,
