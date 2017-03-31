@@ -22,7 +22,7 @@
     </button>
     <button class="category-transaction-item" ion-item detail-none (click)="editTransaction(t)" *ngFor="let t of transactionsPaged">
       <span item-left>{{t.date | dFormat}}</span> {{t.description}}
-        <ion-note small item-right *ngIf="t.config.transactionType == 'InitCategoryTransferTransaction'">
+        <ion-note small item-right *ngIf="t.x.type == 'Transfer'">
           <ion-icon small name="shuffle"></ion-icon>
           {{transferOtherCategoryName(t)}}
         </ion-note>

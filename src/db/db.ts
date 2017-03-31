@@ -1,6 +1,6 @@
 import {DbPersistenceProvider} from './db-persistence-provider';
 import {Dbms} from './dbms';
-import {Transaction} from './transaction';
+import {DbTransaction} from './transaction';
 import {TransactionProcessor} from './transaction-processor';
 import {TransactionSerializer} from './transaction-serializer';
 import {Logger} from '../services/logger';
@@ -8,7 +8,7 @@ import {ChunkedTask} from '../services/chunked-task';
 
 export interface DbEvent {
     eventName: 'transaction-applied' | 'transaction-undone' | 'db-activated' | 'db-deleted' | 'transaction-batch-start' | 'transaction-batch-end';
-    data?: {transaction?: Transaction, transactions?: Array<Transaction>};
+    data?: {transaction?: DbTransaction, transactions?: Array<DbTransaction>};
     db?: Db;
 }
 
@@ -20,8 +20,8 @@ export class Db {
 
     private logger: Logger = Logger.get('Db');
 
-    private transactions: LokiCollection<Transaction>;
-    public sortedTransactions: LokiDynamicView<Transaction>;
+    private transactions: LokiCollection<DbTransaction>;
+    public sortedTransactions: LokiDynamicView<DbTransaction>;
     private active: boolean;
     private batchProcessing: boolean;
     private initialised: boolean;
@@ -39,7 +39,7 @@ export class Db {
         this.initialised = false;
         this.transactionProcessor = new TransactionProcessor(this, this.loki);
         
-        this.transactions = this.loki.addCollection<Transaction>('transactions_' + this.id);
+        this.transactions = this.loki.addCollection<DbTransaction>('transactions_' + this.id);
         this.transactions.ensureUniqueIndex('id');
         this.eventListeners = [];
     }
@@ -141,7 +141,7 @@ export class Db {
         return ~~((~~((this.transactionIdHead ? this.transactionIdHead : 0) / 1000) + 1) * 1000) + this.transactionIdLocalGen();
     }
 
-    private updateTransactionIdHead(transaction: Transaction) {
+    private updateTransactionIdHead(transaction: DbTransaction) {
         if (!this.transactionIdHead || transaction.id > this.transactionIdHead) this.transactionIdHead = transaction.id;
     }
     
@@ -150,7 +150,7 @@ export class Db {
      * 
      * The transaction must be a new one, or attached to a database, not a clone
      */
-    applyTransaction(transaction: Transaction) {
+    applyTransaction(transaction: DbTransaction) {
 
         try {
 
@@ -198,7 +198,7 @@ export class Db {
         }
     }
     
-    getTransaction<T extends Transaction>(transactionId: number): T {
+    getTransaction<T extends DbTransaction>(transactionId: number): T {
         return <T>this.transactions.by('id', <any> transactionId);
     }
     
@@ -209,7 +209,7 @@ export class Db {
      * 
      * The transaction must be a new one, or attached to a database, not a clone
      */
-    saveTransaction(transaction: Transaction) {
+    saveTransaction(transaction: DbTransaction) {
         // Determine which one... it doesn't matter
         if (this.getTransaction(transaction.id) == null) {
             this.transactions.insert(transaction);
@@ -223,7 +223,7 @@ export class Db {
     /**
      * Undo a transaction and remove it from the database
      */
-    deleteTransaction(transaction: Transaction) {
+    deleteTransaction(transaction: DbTransaction) {
         transaction.deleted = true;
         if (this.getTransaction(transaction.id) == null) {
             this.transactions.insert(transaction);
@@ -235,7 +235,7 @@ export class Db {
         this.undoTransaction(transaction);
     }
     
-    undoTransaction(transaction: Transaction) {
+    undoTransaction(transaction: DbTransaction) {
         if (!transaction.applied) return;
         transaction.undo(this.transactionProcessor);
         transaction.applied = false;

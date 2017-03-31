@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Transaction} from './transaction';
+import {DbTransaction} from './transaction';
 import {Logger} from '../services/logger';
 
 @Injectable()
@@ -9,7 +9,7 @@ export class TransactionSerializer {
 
     private transactionTypeIdMap: Map<string, any> = new Map<string, any>();
 
-    registerType<T extends Transaction>(type: {new(): T}) {
+    registerType<T extends DbTransaction>(type: {new(): T}) {
         this.transactionTypeIdMap.set(new type().getTypeId(), type);
         this.logger.info('Registered Transaction Type ' + new type().getTypeId());
     }
@@ -28,21 +28,25 @@ export class TransactionSerializer {
         return t;
     }
     
-    cloneTransaction<T extends Transaction>(transaction: T): T {
-        let dataCopy = <any> JSON.parse(JSON.stringify(transaction)); // Deep copy this so we aren't accidentally copying any references
-        delete dataCopy.$loki;
-        delete dataCopy.meta;
+    cloneTransaction<T extends DbTransaction>(transaction: T): T {
+        let recordsTemp = transaction.records;
+        transaction.records = null;        
+        let dataCopy = <DbTransaction> JSON.parse(JSON.stringify(transaction)); // Deep copy this so we aren't accidentally copying any references
+        transaction.records = recordsTemp;
+        
+        delete (<any>dataCopy).$loki;
+        delete (<any>dataCopy).meta;
         delete dataCopy.applied;
-        delete dataCopy.config;
+        delete dataCopy.records;
 
         return this.newTransaction<T>(transaction.typeId, dataCopy);
     }
     
-    toJson(transaction: Transaction): string {
+    toJson(transaction: DbTransaction): string {
         return JSON.stringify(transaction);
     }
     
-    fromJson<T extends Transaction>(jsonString: string): T {
+    fromJson<T extends DbTransaction>(jsonString: string): T {
         var obj = JSON.parse(jsonString);
         return this.newTransaction<T>(obj.typeId, obj);
     }

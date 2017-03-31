@@ -1,10 +1,10 @@
-import {Transaction} from '../../db/transaction';
+import {DbTransaction} from '../../db/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
 import {Budget} from '../records/budget';
 import {Db} from '../../db/db';
 
 
-export class InitBudgetTransaction extends Transaction {
+export class InitBudgetTransaction extends DbTransaction {
 
     budgetName: string;    
 
@@ -20,6 +20,9 @@ export class InitBudgetTransaction extends Transaction {
         budget.name = this.budgetName;
         tp.table(Budget).update(budget);
         tp.db.name(this.budgetName);
+
+        tp.mapTransactionAndRecord(this, budget);
+
     }
 
     update(tp: TransactionProcessor) {

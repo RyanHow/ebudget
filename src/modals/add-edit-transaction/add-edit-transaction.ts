@@ -19,7 +19,7 @@ export class AddEditTransactionModal {
   budget: Db;
   editing: boolean;
   category: Category;
-  transaction: Transaction;
+  transaction: InitSimpleTransaction;
   
   constructor(private configuration: Configuration, public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController) {
     this.viewCtrl = viewCtrl;
@@ -30,7 +30,8 @@ export class AddEditTransactionModal {
 
     if (navParams.data.transactionId) {
       this.editing = true;
-      this.transaction = this.budget.transactionProcessor.table(Transaction).by('id', navParams.data.transactionId);
+      let transactionRecord = this.budget.transactionProcessor.table(Transaction).by('id', navParams.data.transactionId);
+      this.transaction = this.budget.transactionProcessor.findTransactionsForRecord(transactionRecord, InitSimpleTransaction)[0];
 
       this.data.date = Utils.toIonicFromYYYYMMDD(this.transaction.date);
       if (this.transaction.amount.cmp(Big(0)) < 0) {
@@ -54,7 +55,7 @@ export class AddEditTransactionModal {
     if (! this.editing) {
       t = new InitSimpleTransaction();
     } else {
-      t = InitSimpleTransaction.getFrom(this.budget, this.transaction);
+      t = this.transaction;
     }    
     
     t.amount = new Big((this.data.amount).replace(',', ''));
@@ -97,8 +98,7 @@ export class AddEditTransactionModal {
   }
   
   deleteTransaction() {
-    let t = InitSimpleTransaction.getFrom(this.budget, this.transaction);
-    this.budget.deleteTransaction(t);
+    this.budget.deleteTransaction(this.transaction);
     
     this.viewCtrl.dismiss();
   }

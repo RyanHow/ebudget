@@ -56,8 +56,8 @@ export class BudgetPage {
   }
   
   categoryWeeklyAmount(category: Category): any {
-    // TODO Very inefficient way to get a value in angular
-    let t = InitCategorySimpleWeeklyTransaction.getFrom(this.budget, category);
+    // TODO get cache it in the category record and get it straight from there
+    let t = this.budget.transactionProcessor.findTransactionsForRecord(category, InitCategorySimpleWeeklyTransaction)[0];
     if (t) return t.weeklyAmount;
   }
 

@@ -1,10 +1,9 @@
-import {Transaction} from '../../db/transaction';
-import {Db} from '../../db/db';
+import {DbTransaction} from '../../db/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
 import {Category} from '../records/category';
 
 
-export class InitCategoryTransaction extends Transaction {
+export class InitCategoryTransaction extends DbTransaction {
 
     categoryName: string;    
 
@@ -21,7 +20,9 @@ export class InitCategoryTransaction extends Transaction {
         let c = new Category();
         c.id = this.id;
         c.name = this.categoryName;
-        table.insert(c);        
+
+        table.insert(c);
+        tp.mapTransactionAndRecord(this, c);
     }
 
     update(tp: TransactionProcessor) {
@@ -38,10 +39,6 @@ export class InitCategoryTransaction extends Transaction {
         let table = tp.table(Category);
         let c = table.by('id', <any> this.id);
         table.remove(c);
-    }
-
-    static getFrom(db: Db, category: Category): InitCategoryTransaction {
-        return db.getTransaction<InitCategoryTransaction>(category.id);
     }
     
     deserialize(field: string, value: any): any {

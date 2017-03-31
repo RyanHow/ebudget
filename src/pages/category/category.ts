@@ -11,7 +11,6 @@ import {InitCategorySimpleWeeklyTransaction} from '../../data/transactions/init-
 import {EditorProvider} from '../../services/editor-provider';
 import {AddEditTransactionModal} from '../../modals/add-edit-transaction/add-edit-transaction';
 import {AddEditTransferModal} from '../../modals/add-edit-transfer/add-edit-transfer';
-import {InitCategoryTransferTransaction} from '../../data/transactions/init-category-transfer-transaction';
 import {Logger} from '../../services/logger';
 
 @Component({
@@ -54,11 +53,8 @@ export class CategoryPage {
   }
 
   transferOtherCategoryName(t: Transaction): string {
-    // TODO inefficient? store information in an easy to get way in the transaction config section. or call it x? - performance over memory...
-    let transfer = InitCategoryTransferTransaction.getFrom(this.budget, t);
-    let categoryId = transfer.fromCategoryId === this.category.id ? transfer.toCategoryId : transfer.fromCategoryId;
-    let category = this.budget.transactionProcessor.table(Category).by('id', categoryId.toString());
-    return category ? category.name : 'Category Missing';
+    let category = this.budget.transactionProcessor.table(Category).by('id', t.x.transfer.categoryId);
+    return category? category.name : "Category Missing";
   }
   
   showMore(event) {
@@ -85,8 +81,8 @@ export class CategoryPage {
   }
 
   categoryWeeklyAmount(): any {
-    // TODO Very inefficient way to get a value in angular
-    let t = InitCategorySimpleWeeklyTransaction.getFrom(this.budget, this.category);
+    // TODO: Put this into the category record and get it straight from there
+    let t = this.budget.transactionProcessor.findTransactionsForRecord(this.category, InitCategorySimpleWeeklyTransaction)[0];
     if (t) return t.weeklyAmount;
   }
 

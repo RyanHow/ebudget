@@ -1,11 +1,13 @@
 import {TransactionProcessor} from './transaction-processor';
+import {Record} from './record';
 
-export abstract class Transaction {
+export abstract class DbTransaction {
     public id: number;
     public applied: boolean;
     public deleted: boolean;
     public typeId: string;
     public x: any = {};
+    public records: Array<Record<any>>;
     
     constructor() {
         this.typeId = this.getTypeId();

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Transaction} from './transaction';
+import {DbTransaction} from './transaction';
 import {TransactionSerializer} from './transaction-serializer';
 import {DbPersistenceProvider} from './db-persistence-provider';
 
@@ -40,7 +40,7 @@ export class LocalStoragePersistenceProvider implements DbPersistenceProvider {
         }
     }
 
-    transactionsSync(dbId): Array<Transaction> {
+    transactionsSync(dbId): Array<DbTransaction> {
         var transactions = [];
         for ( var i = 0, len = localStorage.length; i < len; ++i ) {
             if (localStorage.key( i ).match(this.storagePrefix + '_' + dbId + '_')) {
@@ -53,12 +53,12 @@ export class LocalStoragePersistenceProvider implements DbPersistenceProvider {
     }
 
 
-    transactions(dbId): Promise<Array<Transaction>> {
+    transactions(dbId): Promise<Array<DbTransaction>> {
         return Promise.resolve(this.transactionsSync(dbId));
     }
     
     
-    saveTransaction(dbId: String, transaction: Transaction) {
+    saveTransaction(dbId: String, transaction: DbTransaction) {
         localStorage.setItem(this.storagePrefix + '_' + dbId + '_' + transaction.id, this.transactionSerializer.toJson(transaction));
     }
 

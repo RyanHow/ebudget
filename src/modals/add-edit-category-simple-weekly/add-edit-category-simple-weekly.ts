@@ -25,8 +25,8 @@ export class AddEditCategorySimpleWeeklyModal {
     this.nav = nav;
     
     this.budget = dbms.getDb(navParams.data.budgetId);
-    this.category = this.budget.transactionProcessor.table(Category).by('id', navParams.data.categoryId);    
-    this.transaction = InitCategorySimpleWeeklyTransaction.getFrom(this.budget, this.category);
+    this.category = this.budget.transactionProcessor.table(Category).by('id', navParams.data.categoryId);
+    this.transaction = this.budget.transactionProcessor.findTransactionsForRecord(this.category, InitCategorySimpleWeeklyTransaction)[0];
 
     this.balanceDate = Utils.nowIonic();
 

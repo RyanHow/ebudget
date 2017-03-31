@@ -21,7 +21,6 @@ export class AddEditTransferModal {
   editing: boolean;
   transfer: InitCategoryTransferTransaction;
   categories: Category[];
-  transactionRecord: Transaction;
   engine: Engine;
 
   constructor(public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private engineFactory: EngineFactory, private nav: NavController, private alertController: AlertController) {
@@ -32,8 +31,8 @@ export class AddEditTransferModal {
 
     if (navParams.data.transactionId) {
       this.editing = true;
-      this.transactionRecord = this.budget.transactionProcessor.table(Transaction).by('id', navParams.data.transactionId);
-      this.transfer = InitCategoryTransferTransaction.getFrom(this.budget, this.transactionRecord);
+      let transactionRecord = this.budget.transactionProcessor.table(Transaction).by('id', navParams.data.transactionId);
+      this.transfer = <InitCategoryTransferTransaction> this.budget.transactionProcessor.findAllTransactionsForRecord(transactionRecord)[0];
       
       this.data.date = Utils.toIonicFromYYYYMMDD(this.transfer.date);
       this.data.amount = this.transfer.amount + '';

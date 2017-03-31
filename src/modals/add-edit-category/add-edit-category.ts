@@ -13,6 +13,7 @@ export class AddEditCategoryModal {
   editing: boolean;
   category: Category;
   categoryName: string;
+  transaction: InitCategoryTransaction;
   
   constructor(public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController) {
     this.viewCtrl = viewCtrl;
@@ -24,6 +25,7 @@ export class AddEditCategoryModal {
       this.editing = true;
       this.category = this.budget.transactionProcessor.table(Category).by('id', navParams.data.categoryId);
       this.categoryName = this.category.name;
+      this.transaction = this.budget.transactionProcessor.findTransactionsForRecord(this.category, InitCategoryTransaction)[0];
     } else {
       this.editing = false;
     }
@@ -37,7 +39,7 @@ export class AddEditCategoryModal {
     if (! this.editing) {
       t = new InitCategoryTransaction();
     } else {
-      t = InitCategoryTransaction.getFrom(this.budget, this.category);
+      t = this.transaction;
     }
     
     t.categoryName = this.categoryName;
@@ -74,8 +76,7 @@ export class AddEditCategoryModal {
   }
   
   deleteCategory() {
-    let t = InitCategoryTransaction.getFrom(this.budget, this.category);
-    this.budget.deleteTransaction(t);
+    this.budget.deleteTransaction(this.transaction);
     
     this.viewCtrl.dismiss().then(() => {
       this.nav.pop();

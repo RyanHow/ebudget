@@ -1,11 +1,10 @@
-import {Transaction} from '../../db/transaction';
+import {DbTransaction} from '../../db/transaction';
 import {Transaction as TransactionRecord} from '../records/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
-import {Db} from '../../db/db';
 import Big from 'big.js';
 
 
-export class InitCategoryTransferTransaction extends Transaction {
+export class InitCategoryTransferTransaction extends DbTransaction {
 
     description: string;
     date: string;
@@ -24,28 +23,32 @@ export class InitCategoryTransferTransaction extends Transaction {
         let table = tp.table(TransactionRecord);
         let t1 = new TransactionRecord();
         let t2 = new TransactionRecord();
-        t1.id = this.id;
-        t2.id = -this.id;
+        t1.id = this.id * 100000;
+        t2.id = -this.id * 100000;
         t1.amount = this.amount;
         t2.amount = this.amount.times('-1');
         t1.date = this.date;
         t2.date = this.date;
         t1.description = this.description ? this.description : 'Transfer';
         t2.description = this.description ? this.description : 'Transfer';
+        t1.x.type = "Transfer"; // TODO: By convention the type shouldn't be in the cache...
+        t2.x.type = "Transfer";
+        t1.x.transfer = t2; // TODO: By convention the linked transfer shouldn't be in the cache...
+        t2.x.transfer = t1;
         t1.categoryId = this.fromCategoryId;
         t2.categoryId = this.toCategoryId;
 
-        t1.config.transactionType = this.getTypeId();
-        t2.config.transactionType = this.getTypeId();
-
         table.insert(t1);        
         table.insert(t2);        
+
+        tp.mapTransactionAndRecord(this, t1);
+        tp.mapTransactionAndRecord(this, t2);
     }
 
     update(tp: TransactionProcessor) {
         let table = tp.table(TransactionRecord);
-        let t1 = table.by('id', <any> this.id);
-        let t2 = table.by('id', <any> -this.id);
+        let t1 = table.by('id', <any> (this.id * 100000));
+        let t2 = table.by('id', <any> -(this.id * 100000));
 
         t1.amount = this.amount;
         t2.amount = this.amount.times('-1');
@@ -62,16 +65,11 @@ export class InitCategoryTransferTransaction extends Transaction {
     
     undo(tp: TransactionProcessor) {
         let table = tp.table(TransactionRecord);
-        let t1 = table.by('id', <any> this.id);
-        let t2 = table.by('id', <any> -this.id);
+        let t1 = table.by('id', <any> (this.id * 100000));
+        let t2 = table.by('id', <any> -(this.id * 100000));
         
         table.remove(t1);
         table.remove(t2);
-    }
-
-    static getFrom(db: Db, transactionRecord: TransactionRecord): InitCategoryTransferTransaction {
-        // TODO: A better "resolver" system ?
-        return db.getTransaction<InitCategoryTransferTransaction>(transactionRecord.id < 0 ? -transactionRecord.id : transactionRecord.id);
     }
 
     deserialize(field: string, value: any): any {

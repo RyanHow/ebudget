@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import {Dbms} from '../db/dbms';
 import {Db} from '../db/db';
-import {Transaction} from '../db/transaction';
+import {DbTransaction} from '../db/transaction';
 import {TransactionSerializer} from '../db/transaction-serializer';
 import stringify from 'json-stable-stringify';
 import {Logger} from './logger';
@@ -109,7 +109,7 @@ export class Replication {
     * Process the transaction for replication (generate replication records as needed) and add them to the queue
     * The queue is watched and "pushed" after a short timeout so that a push is batched
     **/
-    processTransaction(db: Db, transaction: Transaction) {
+    processTransaction(db: Db, transaction: DbTransaction) {
         if (!this.enabled(db)) return;
 
         this.logger.debug('- Start Processing Transaction - ', () =>  JSON.stringify(transaction));
@@ -163,7 +163,7 @@ export class Replication {
 
     };
 
-    queueRepl (dbId: string, repl: Repl, transaction: Transaction) {
+    queueRepl (dbId: string, repl: Repl, transaction: DbTransaction) {
         // Get the queue for the dbId (or create it)
         if (!this.queues[dbId]) {
             this.queues[dbId] = new Map();
@@ -520,7 +520,7 @@ export class Repl {
     deviceReplId: string;
     synced: any;
     checksum: number;
-    transaction: Transaction;
+    transaction: DbTransaction;
 
 }
 

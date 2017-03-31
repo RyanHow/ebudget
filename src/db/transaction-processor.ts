@@ -1,5 +1,6 @@
 import {Db} from './db';
 import {Record} from './record';
+import {DbTransaction} from './transaction';
 
 export class TransactionProcessor {
 
@@ -31,6 +32,31 @@ export class TransactionProcessor {
         }
         return table.data[0];
     }
+
+
+    // TODO: Unmap transaction / record (when undoing a transaction)
+
+    mapTransactionAndRecord(transaction: DbTransaction, record: Record<any>) {
+        if (!transaction.records) transaction.records = new Array<Record<any>>();
+        if (transaction.records.indexOf(record) == -1) transaction.records.push(record);
+
+        if (!record.transactions) record.transactions = new Array<DbTransaction>();
+        if (record.transactions.indexOf(transaction) == -1) record.transactions.push(transaction);
+    }
+
+    findAllTransactionsForRecord(record: Record<any>): Array<DbTransaction> {
+        return record.transactions;
+    }
+
+    findTransactionsForRecord<T extends DbTransaction>(record: Record<any>, type: {new(): T}): Array<T> {
+        let typeId = new type().getTypeId();
+        return <T[]> record.transactions.filter((t) => t.getTypeId() === typeId);
+    }
+
+    findAllRecordsForTransaction<T extends Record<any>>(transaction: DbTransaction): Array<Record<any>> {
+        return transaction.records;
+    }
+
 
     unsupported() {
         throw new Error('Unsupported Transaction Operation');

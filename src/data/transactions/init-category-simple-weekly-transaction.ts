@@ -1,12 +1,11 @@
-import {Transaction} from '../../db/transaction';
-import {Db} from '../../db/db';
+import {DbTransaction} from '../../db/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
 import {Category} from '../records/category';
 import {CategorySimpleWeeklyProcessor} from '../processors/category-simple-weekly-processor';
 import {Logger} from '../../services/logger';
 import Big from 'big.js';
 
-export class InitCategorySimpleWeeklyTransaction extends Transaction {
+export class InitCategorySimpleWeeklyTransaction extends DbTransaction {
 
     private static logger: Logger = Logger.get('InitCategorySimpleWeeklyTransaction');
 
@@ -41,6 +40,8 @@ export class InitCategorySimpleWeeklyTransaction extends Transaction {
 
         table.update(categoryRecord);
         
+        tp.mapTransactionAndRecord(this, categoryRecord);
+
         // TODO: engine.execute ?? - needs to be called from elsewhere so it can be batched... but maybe have to fire an event here ?
     }
 
@@ -66,15 +67,6 @@ export class InitCategorySimpleWeeklyTransaction extends Transaction {
         categoryRecord.engine.processors.splice(categoryRecord.engine.processors.indexOf(categorySimpleWeeklyProcessor), 1);
         
         table.update(categoryRecord);
-    }
-
-    static getFrom(db: Db, category: Category): InitCategorySimpleWeeklyTransaction {
-        let categorySimpleWeeklyProcessor = <CategorySimpleWeeklyProcessor>category.engine.processors.find(processor => {
-            return processor.getTypeId() === 'CategorySimpleWeeklyProcessor';
-        });
-
-        if (!categorySimpleWeeklyProcessor) return;
-        return db.getTransaction<InitCategorySimpleWeeklyTransaction>((categorySimpleWeeklyProcessor).transactionId);
     }
     
     deserialize(field: string, value: any): any {

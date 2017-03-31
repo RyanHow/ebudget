@@ -6,6 +6,7 @@ import {Configuration} from '../../services/configuration-service';
 import {Notifications} from '../../services/notifications';
 import {LoggerUINotifierAppender} from '../../services/logger-ui-notifier-appender';
 import {InAppBrowser} from 'ionic-native';
+import cronstrue from 'cronstrue';
 
 @Component({
   templateUrl: 'dev.html'
@@ -14,6 +15,9 @@ export class DevPage {
   
   testamount1 = 'hi there';
   _testamount2;
+
+  public cronInput: string;
+
   get testamount2() {
     return this._testamount2;
   }
@@ -23,7 +27,7 @@ export class DevPage {
   testamount3 = 'ASD';
   
   constructor(private nav: NavController, private dbms: Dbms, public configuration: Configuration, private notifications: Notifications) {
-
+    
   }
     
   toUpper3(nv: string) {
@@ -68,5 +72,13 @@ export class DevPage {
 
   generateNotification() {
     this.notifications.notify("Notification at " + Date.now(), true);
+  }
+
+  humanReadableCron(): string {
+    try {
+      return cronstrue.toString(this.cronInput);
+    } catch (err) {
+      return err;
+    }
   }
 }

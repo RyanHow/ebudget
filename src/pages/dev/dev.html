@@ -64,5 +64,19 @@
     <button ion-button (click)="generateNotification()">Generate Notification</button>
 </ion-item>
   
+<ion-item>
+    <ion-label>Cron Rule</ion-label>
+    <ion-input [(ngModel)]="cronInput"></ion-input>
+</ion-item>
+
+<ion-item>
+    Output
+    <div item-right>{{humanReadableCron()}}</div>
+</ion-item>
+
+<ion-item>
+    Next 5 occurances
+    <div item-right>TODO</div>
+</ion-item>
 
 </ion-content>

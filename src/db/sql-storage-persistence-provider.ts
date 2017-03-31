@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {SQLite} from 'ionic-native';
-import {Transaction} from './transaction';
+import {DbTransaction} from './transaction';
 import {TransactionSerializer} from './transaction-serializer';
 import {DbPersistenceProvider} from './db-persistence-provider';
 import {Logger} from '../services/logger';
@@ -78,7 +78,7 @@ export class SqlStoragePersistenceProvider implements DbPersistenceProvider  {
         }
     }
 
-    transactions(dbId): Promise<Array<Transaction>> {
+    transactions(dbId): Promise<Array<DbTransaction>> {
 
         return this.sqlStorage.executeSql('SELECT dbtransaction FROM db_' + this.sanitise(dbId) + '_transaction ORDER BY id', []).then(result => {
             let transactions = [];
@@ -94,7 +94,7 @@ export class SqlStoragePersistenceProvider implements DbPersistenceProvider  {
     }
     
     
-    saveTransaction(dbId: string, transaction: Transaction) {
+    saveTransaction(dbId: string, transaction: DbTransaction) {
         this.sqlStorage.executeSql('INSERT OR REPLACE INTO db_' + this.sanitise(dbId) + '_transaction (id, dbtransaction) VALUES (?, ?)',
         [transaction.id, this.transactionSerializer.toJson(transaction)])
         .catch(err => {
