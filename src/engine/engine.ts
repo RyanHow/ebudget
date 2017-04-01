@@ -16,7 +16,7 @@ export class Engine {
                 if (dbEvent.eventName === 'transaction-batch-end') this.runAllProcessors();
                 if (dbEvent.eventName === 'transaction-applied') {
                     this.runAllProcessors();
-                    message = dbEvent.data.transaction.toHumanisedString({action: dbEvent.data.update ? 'update' : 'apply', currencyFormatter: notifications.formatCurrency});
+                    message = dbEvent.data.transaction.toHumanisedString({action: dbEvent.data.update ? 'update' : 'apply', currencyFormatter: notifications.formatCurrency, originalTransaction: dbEvent.data.originalTransaction});
                 }
                 if (dbEvent.eventName === 'transaction-undone') {
                     message = dbEvent.data.transaction.toHumanisedString({action: 'undo', currencyFormatter: notifications.formatCurrency});

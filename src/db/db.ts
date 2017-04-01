@@ -8,7 +8,7 @@ import {ChunkedTask} from '../services/chunked-task';
 
 export interface DbEvent {
     eventName: 'transaction-applied' | 'transaction-undone' | 'db-activated' | 'db-deleted' | 'transaction-batch-start' | 'transaction-batch-end';
-    data?: {transaction?: DbTransaction, update?: boolean};
+    data?: {transaction?: DbTransaction, update?: boolean, originalTransaction?: DbTransaction};
     db?: Db;
 }
 
@@ -158,7 +158,13 @@ export class Db {
 
         try {
 
+            // Updated works like the following:-
+            // If active, then it is updated if a transaction is already applied
+            // If inactive, then it is updated if a transaction is already in the database
+            // In both cases, the previous version is fetched from the database, to be passed to the event
+            // In the already active case, the previous version is also passed to the transaction update (although it could also collect info from the "records")
             let updated = false;
+            let updatedOriginalTransaction: DbTransaction;
 
             if (transaction.id) this.updateTransactionIdHead(transaction);
             
@@ -191,16 +197,18 @@ export class Db {
                         
                     } else {
                         updated = true;
-                        transaction.update(this.transactionProcessor);
+                        updatedOriginalTransaction = this.persistenceProvider.getTransaction(this.id, transaction.id); 
+                        transaction.update(this.transactionProcessor, updatedOriginalTransaction);
                     }
                 }
                 if (!this.activating) {
-                    updated = (<any>transaction).$loki == null;
+                    updated = updated || (!this.active && (<any>transaction).$loki != null);
+                    if (updated && !updatedOriginalTransaction) updatedOriginalTransaction = this.persistenceProvider.getTransaction(this.id, transaction.id);
                     this.saveTransaction(transaction);
                 }
             }
 
-            this.fireEvent({eventName : 'transaction-applied', data: {transaction: transaction, update: updated}});
+            this.fireEvent({eventName : 'transaction-applied', data: {transaction: transaction, update: updated, originalTransaction: updatedOriginalTransaction}});
         } catch (err) {
             this.logger.info("Error applying transaction. Throwing Error.", transaction, err);
             throw err;

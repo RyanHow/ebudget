@@ -13,9 +13,11 @@ export class SqlStoragePersistenceProvider implements DbPersistenceProvider  {
     private sqlStorage: SQLite;
     private keyStoreCache: Map<string, string>;
     private dbsCache: Array<string>;
+    private transactionsCache: Map<string, string>;
 
     constructor(private storagePrefix: string, private transactionSerializer: TransactionSerializer) {
         this.keyStoreCache = new Map<string, string>();
+        this.transactionsCache = new Map<string, string>();
     }
 
     init(): Promise<any> {
@@ -86,6 +88,7 @@ export class SqlStoragePersistenceProvider implements DbPersistenceProvider  {
                 let transactionString = result.rows.item(i).dbtransaction;
                 let transaction = this.transactionSerializer.fromJson(transactionString);
                 transactions.push(transaction);
+                this.transactionsCache.set(this.sanitise(dbId) + '_' + transaction.id, transactionString);
             }
             return transactions;
         }).catch(err => {
@@ -95,14 +98,15 @@ export class SqlStoragePersistenceProvider implements DbPersistenceProvider  {
     
     
     saveTransaction(dbId: string, transaction: DbTransaction) {
+        let transactionString = this.transactionSerializer.toJson(transaction);
         this.sqlStorage.executeSql('INSERT OR REPLACE INTO db_' + this.sanitise(dbId) + '_transaction (id, dbtransaction) VALUES (?, ?)',
-        [transaction.id, this.transactionSerializer.toJson(transaction)])
+        [transaction.id, transactionString])
         .catch(err => {
             this.logger.error('Error inserting/replacing transaction in database db_' + dbId + '_transaction for id ' + transaction.id, err);
             // TODO: Application halt ?
 
         });
-
+        this.transactionsCache.set(this.sanitise(dbId) + '_' + transaction.id, transactionString);
     }
 
     deleteTransaction(dbId: string, transactionId: number) {
@@ -112,6 +116,13 @@ export class SqlStoragePersistenceProvider implements DbPersistenceProvider  {
             // TODO: Application halt ?
 
         });
+        this.transactionsCache.delete(this.sanitise(dbId) + '_' + transactionId);
+    }
+
+    getTransaction(dbId: string, transactionId: number): DbTransaction {
+        let transactionString = this.transactionsCache.get(this.sanitise(dbId) + '_' + transactionId);
+        let transaction = this.transactionSerializer.fromJson(transactionString);
+        return transaction;
     }
 
     

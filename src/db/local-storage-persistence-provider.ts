@@ -53,6 +53,7 @@ export class LocalStoragePersistenceProvider implements DbPersistenceProvider {
     }
 
 
+
     transactions(dbId): Promise<Array<DbTransaction>> {
         return Promise.resolve(this.transactionsSync(dbId));
     }
@@ -66,7 +67,12 @@ export class LocalStoragePersistenceProvider implements DbPersistenceProvider {
         localStorage.removeItem(this.storagePrefix + '_' + dbId + '_' + transactionId);
     }
 
-    
+    getTransaction(dbId: String, transactionId: number): DbTransaction {
+        let transactionString = localStorage.getItem(this.storagePrefix + '_' + dbId + '_' + transactionId);
+        let transaction = this.transactionSerializer.fromJson(transactionString);
+        return transaction;
+    }
+
     keyStore(dbId: string, key: string, value?: string): string {
         var localKey = this.storagePrefix + '_keystore_' + dbId + '_' + key;
         if (typeof value !== 'undefined' )

@@ -14,7 +14,7 @@ export abstract class DbTransaction {
     }
     
     abstract apply(tp: TransactionProcessor);
-    abstract update(tp: TransactionProcessor);
+    abstract update(tp: TransactionProcessor, original: DbTransaction);
     abstract undo(tp: TransactionProcessor);
     abstract getTypeId(): string;
 
@@ -29,4 +29,5 @@ export abstract class DbTransaction {
 export class TransactionStringEnv {
     action: 'apply' | 'update' | 'undo';
     currencyFormatter: (value: any) => string;
+    originalTransaction?: DbTransaction;
 }
