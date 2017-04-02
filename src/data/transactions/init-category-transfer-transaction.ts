@@ -54,8 +54,8 @@ export class InitCategoryTransferTransaction extends DbTransaction {
         t2.amount = this.amount.times('-1');
         t1.date = this.date;
         t2.date = this.date;
-        t1.description = this.description;
-        t2.description = this.description;
+        t1.description = this.description ? this.description : 'Transfer';
+        t2.description = this.description ? this.description : 'Transfer';
         t1.categoryId = this.fromCategoryId;
         t2.categoryId = this.toCategoryId;
 

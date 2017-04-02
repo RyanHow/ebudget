@@ -364,6 +364,7 @@ export class Replication {
                                         this.processingTransaction = false;
                                     }
                                     replMap.delete(key);
+                                    this.updateHead(db, replRecord);
                                 }
                             });
                         }
@@ -398,8 +399,7 @@ export class Replication {
                         let db = this.dbms.getDb(dbId);
                         
                         if (db.isActivating()) {
-                            skippedCount++;
-                            return;
+                            return false;
                         }
                         // dbId, replId, deviceReplId, replData
                         // replData -> transaction, timestamp, checksum
@@ -418,7 +418,13 @@ export class Replication {
                                 return e.id === replRecord.replId && e.deviceReplId === replRecord.deviceReplId; })) {
                             // We've already got it... do something ? Like a checksum?
                             // TODO: Can probably just drop it here, it is already in sync
-                            this.logger.debug('Repl record already exists for transaction');
+
+                            // TODO: What if it isn't the head repl record ? - that is ok, they should be sorted anyway....
+                            // TODO: Check all the checksums just to make sure we are good here.. foreach... this.checksumObject(transaction);
+                            
+                            this.logger.info('Repl record already exists for transaction. Skipping.', replRecord);
+                            skippedCount++;
+                            return true;
                         } else {
                             this.logger.debug('Adding repl record to transaction');
 
