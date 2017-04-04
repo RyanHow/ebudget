@@ -2,8 +2,7 @@ import {NavParams, ViewController, NavController, ActionSheetController, ToastCo
 import {Clipboard as NativeClipboard} from 'ionic-native';
 import {FormBuilder, Validators, FormGroup} from '@angular/forms';
 import {Subscription} from 'rxjs/Subscription';
-import {Http} from '@angular/http';
-import 'rxjs/add/operator/map';
+import {Http, Response} from '@angular/http';
 import {Dbms} from '../../db/dbms';
 import {Db} from '../../db/db';
 import {Configuration} from '../../services/configuration-service';
@@ -11,6 +10,7 @@ import {Replication} from '../../services/replication-service';
 import {Component} from '@angular/core';
 import {Logger} from '../../services/logger';
 import Clipboard from 'clipboard';
+import {Observable} from 'rxjs/Observable';
 
 @Component({
   templateUrl: 'share-budget.html'
@@ -146,7 +146,7 @@ export class ShareBudgetModal {
 
     this.sharing = true;
     this.sharingError = false;
-    this.sharingSubscription = this.http.post('https://api.freebudgetapp.com/share', JSON.stringify({'dbId': this.budget.id, 'dbName': this.budget.name(), 'deviceId': this.configuration.deviceInstallationId, 'deviceName': this.configuration.deviceName}))
+    this.sharingSubscription = ShareBudgetModal.postShare(this.http, this.budget.id, this.budget.name(), this.configuration.deviceInstallationId, this.configuration.deviceName)
       .map(response => response.json())
       .subscribe(response => {
             this.logger.info('success: ' + JSON.stringify(response));
@@ -165,6 +165,10 @@ export class ShareBudgetModal {
             }
       });
 
+  }
+
+  static postShare(http: Http, budgetId: string, budgetName: string, deviceInstallationId: string, deviceName: string): Observable<Response> {
+    return http.post('https://api.freebudgetapp.com/share', JSON.stringify({'dbId': budgetId, 'dbName': budgetName, 'deviceId': deviceInstallationId, 'deviceName': deviceName}))
   }
   
   shareOptions() {

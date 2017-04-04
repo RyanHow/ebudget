@@ -2,7 +2,7 @@ import {ModalController, Menu, Nav, App, AlertController, ToastController} from 
 import {Component, Input, ApplicationRef} from '@angular/core';
 import {Dbms} from '../../db/dbms';
 import {Db} from '../../db/db';
-import {Budget} from '../../data/records/budget';
+import {BudgetSettingsPage} from '../../pages/budget-settings/budget-settings';
 import {Configuration} from '../../services/configuration-service';
 import {Replication} from '../../services/replication-service';
 import {Notifications} from '../../services/notifications';
@@ -84,6 +84,10 @@ export class MainMenuContent {
     this.nav.setRoot(SettingsPage);
   }
 
+  goBudgetSettings() {
+    this.nav.setRoot(BudgetSettingsPage, {budgetId: this.lastOpenedBudget().id});
+  }
+
   goAbout() {
     this.nav.setRoot(AboutPage);
   }
@@ -91,20 +95,22 @@ export class MainMenuContent {
   addBudget() {
     let modal = this.modalController.create(AddBudgetModal);
 
+    // TODO: Refactor with HomePage. Move to AddBudgetModal...
     modal.onDidDismiss((data) => {
       if (data && data.budgetName !== '') {
         this.dbms.createDb().then(db => {
-          db.activate();
-          let t = new InitBudgetTransaction();
-          t.budgetName = data.budgetName;
-          db.applyTransaction(t);
-          db.deactivate();
+          db.activate().then(() => {
+            let t = new InitBudgetTransaction();
+            t.budgetName = data.budgetName;
+            db.applyTransaction(t);
+            db.deactivate();
 
-          this.nav.setRoot(BudgetPage, {'budget': db});
+            this.nav.setRoot(BudgetPage, {'budget': db});
+            });
         });
       }
     });
-
+  
     modal.present();
 
   }
@@ -143,53 +149,6 @@ export class MainMenuContent {
   }
 
   // -- //
-
-
-  renameBudget() {
-    let modal = this.modalController.create(AddBudgetModal);
-    modal.data.budgetName = this.lastOpenedBudget().name();
-
-    modal.onDidDismiss((data) => {
-      if (data && data.budgetName !== '' && data.budgetName !== this.lastOpenedBudget().name()) {
-        let t = this.lastOpenedBudget().transactionProcessor.findTransactionsForRecord(this.lastOpenedBudget().transactionProcessor.single(Budget), InitBudgetTransaction)[0];
-        t.budgetName = data.budgetName;
-        this.lastOpenedBudget().applyTransaction(t);
-      }
-    });
-
-    modal.present();
-
-  }
-
-  deleteBudget() {
-    let confirm = this.alertController.create({
-      title: 'Delete?',
-      message: 'Are you sure you want to delete this budget (' + this.lastOpenedBudget().name() + ')?',
-      buttons: [
-        {
-          text: 'Cancel'
-        } , {
-          text: 'Delete',
-          role: 'destructive',
-          handler: () => {
-            confirm.dismiss().then(() => {
-              this.doDeleteBudget();
-            });
-            return false;
-          }
-        }
-      ]
-    });
-
-    confirm.present();
-  }
-
-  doDeleteBudget() {
-    this.lastOpenedBudget().deactivate();
-    this.dbms.deleteDb(this.lastOpenedBudget().id);
-    this.configuration.lastOpenedBudget(null);
-    this.nav.setRoot(HomePage);
-  }
 
   clearNotifications() {
     this.notifications.clear(3);

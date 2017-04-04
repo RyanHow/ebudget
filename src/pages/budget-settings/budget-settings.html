@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <main-menu-icon></main-menu-icon>
+    </button>
+    <ion-title>Budget Settings</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <div padding>
+    <ion-item>
+      <ion-label>Budget Name</ion-label>
+      <ion-input [disabled]="budgetNameUpdating" [(ngModel)]="data.budgetName" (blur)="updateBudgetName()"></ion-input>
+    </ion-item>
+  </div>
+
+  <button ion-button color="danger" clear small (click)="deleteBudgetConfirm()">Delete Budget</button>
+
+</ion-content>
+

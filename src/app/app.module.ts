@@ -4,6 +4,7 @@ import {App} from './app.component';
 import {AppReady} from './app-ready';
 import {AppExceptionHandler} from './app-exception-handler';
 import {HomePage} from '../pages/home/home';
+import {BudgetSettingsPage} from '../pages/budget-settings/budget-settings';
 import {BudgetPage} from '../pages/budget/budget';
 import {AboutPage} from '../pages/about/about';
 import {CategoryPage, CategoryPopover} from '../pages/category/category';
@@ -45,6 +46,7 @@ import {CuteProgressBar} from '../components/cute-progress-bar';
   declarations: [
     App,
     HomePage,
+    BudgetSettingsPage,
     BudgetPage,
     CategoryPage,
     SettingsPage,
@@ -79,6 +81,7 @@ import {CuteProgressBar} from '../components/cute-progress-bar';
   entryComponents: [
     App,
     HomePage,
+    BudgetSettingsPage,
     BudgetPage,
     CategoryPage,
     SettingsPage,

@@ -7,7 +7,8 @@ export abstract class Record<T> {
     public transactions: Array<DbTransaction>;
 
     /**
-     * Place to store cached values, purely for performance and ease of lookup, this data could be found elsewhere
+     * Place to store cached values for external processors, purely for performance and ease of lookup.
+     * This data could be found elsewhere (directly or by calculation) and shouldn't be used within the records or transactions themselves.
      */
     public x: any = {}; 
 

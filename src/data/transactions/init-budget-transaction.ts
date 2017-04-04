@@ -1,6 +1,7 @@
 import {DbTransaction, TransactionStringEnv} from '../../db/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
 import {Budget} from '../records/budget';
+import {Logger} from '../../services/logger';
 
 export class InitBudgetTransaction extends DbTransaction {
 
@@ -14,12 +15,15 @@ export class InitBudgetTransaction extends DbTransaction {
 
         // TODO: Validation
 
+
         let budget = tp.single(Budget);
         budget.name = this.budgetName;
         tp.table(Budget).update(budget);
         tp.db.name(this.budgetName);
 
         tp.mapTransactionAndRecord(this, budget);
+
+        Logger.get('InitBudgetTransaction').info("Applied InitBudgetTransaction for " + budget.name);
 
     }
 

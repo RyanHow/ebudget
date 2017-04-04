@@ -3,8 +3,7 @@
     <ion-item detail-none [menuClose]="syncing ? true : null" (click)="!syncing && shareBudget()">Share Budget...
         <button ion-button *ngIf="shared" [disabled]="syncing" item-right outline (click)="sync($event);$event.stopPropagation();">Sync Now</button>
     </ion-item>
-    <button ion-item detail-none menuClose (click)="renameBudget()">Rename Budget...</button>
-    <button ion-item detail-none menuClose (click)="deleteBudget()">Delete Budget...</button>
+    <button ion-item menuClose (click)="goBudgetSettings()">Budget Settings</button>
 </ion-item-group>
 <ion-item-group *ngIf="notifications.notifications.length">
     <ion-item-divider light>

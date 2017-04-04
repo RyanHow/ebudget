@@ -58,9 +58,6 @@ export class CreateSplitTransaction extends DbTransaction {
             table.remove(<TransactionRecord> t);
             tp.unmapTransactionAndRecord(this, t);
         });
-
-
-
     }
 
     
