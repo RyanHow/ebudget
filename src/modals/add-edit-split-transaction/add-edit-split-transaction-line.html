@@ -1,0 +1,14 @@
+<ion-content>
+    <div padding>
+        <form (submit)="submit($event)" novalidate #form="ngForm">
+            <ion-card>
+                Category: {{budget.getCategory(line.categoryId)?.name}}
+            </ion-card>
+            <ion-item>
+                <ion-label>Amount</ion-label>
+                <ion-input currency-field required name="amount" [(ngModel)]="line.amount" [attr.autofocus]="editing ? null : true"></ion-input>
+            </ion-item>
+        </form>
+    </div>
+    <button ion-button type="button" *ngIf="editing" color="danger" clear small (click)="deleteLineConfirm()">Delete</button>
+</ion-content>

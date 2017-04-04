@@ -22,17 +22,21 @@ export class CreateSplitTransaction extends DbTransaction {
         // TODO: Validation
 
         let table = tp.table(TransactionRecord);
+        
+        // In the records, keep a list to all the other records, cached...
+        // TODO: Change this to a transaction group record?, can keep the total, etc on there ?
+        let transactions = new Array<TransactionRecord>();
 
         for (let i = 0; i < this.amounts.length; i++) {
             let t = new TransactionRecord();
             t.id = this.id * 100000 + i;
-            t.amount = this.amounts[0].amount;
+            t.amount = this.amounts[i].amount;
             t.date = this.date;
             t.description = this.description;
-            t.categoryId = this.amounts[0].categoryId;
+            t.categoryId = this.amounts[i].categoryId;
+            t.x.transactions = transactions;
 
-            //TODO: Store other transactions rather than relying on the "transaction";
-            
+            transactions.push(t);
             table.insert(t);        
             tp.mapTransactionAndRecord(this, t);
         }
@@ -40,23 +44,32 @@ export class CreateSplitTransaction extends DbTransaction {
     }
 
     update(tp: TransactionProcessor) {
-        tp.unsupported();
+        // Just remove everything and add it all again
+        // TODO: This won't handle triggering certain category recalcs (but at the moment that doesn't matter...)
 
-        // TODO: Remove and add records and mappings as appropriate
+        this.undo(tp);
+        this.apply(tp);
     }
     
     undo(tp: TransactionProcessor) {
         let table = tp.table(TransactionRecord);
 
-        tp.findAllRecordsForTransaction(this).forEach((t) => {
+        tp.findAllRecordsForTransaction(this).slice().forEach((t) => {            
             table.remove(<TransactionRecord> t);
+            tp.unmapTransactionAndRecord(this, t);
         });
+
+
+
     }
 
     
     deserialize(field: string, value: any): any {
-        if (field === 'amount')
-            return new Big(value);
+        if (field === 'amounts') {
+            value.forEach(line => {
+                line.amount = new Big(line.amount);
+            });
+        }
         return value;
     }
 

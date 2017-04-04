@@ -15,6 +15,8 @@ import {AddBudgetModal} from '../modals/add-budget/add-budget';
 import {AddEditCategoryModal} from '../modals/add-edit-category/add-edit-category';
 import {AddEditCategorySimpleWeeklyModal} from '../modals/add-edit-category-simple-weekly/add-edit-category-simple-weekly';
 import {AddEditTransactionModal} from '../modals/add-edit-transaction/add-edit-transaction';
+import {AddEditSplitTransactionModal} from '../modals/add-edit-split-transaction/add-edit-split-transaction';
+import {AddEditSplitTransactionLineModal} from '../modals/add-edit-split-transaction/add-edit-split-transaction-line';
 import {AddEditTransferModal} from '../modals/add-edit-transfer/add-edit-transfer';
 import {MainMenuContent} from '../components/main-menu-content/main-menu-content';
 import {NotificationList} from '../components/notification-list/notification-list';
@@ -53,6 +55,8 @@ import {CuteProgressBar} from '../components/cute-progress-bar';
     AddBudgetModal,
     AddEditCategoryModal,
     AddEditTransactionModal,
+    AddEditSplitTransactionModal,
+    AddEditSplitTransactionLineModal,
     AddEditTransferModal,
     AddEditCategorySimpleWeeklyModal,
     CurrencyField,
@@ -85,6 +89,8 @@ import {CuteProgressBar} from '../components/cute-progress-bar';
     AddBudgetModal,
     AddEditCategoryModal,
     AddEditTransactionModal,
+    AddEditSplitTransactionModal,
+    AddEditSplitTransactionLineModal,
     AddEditTransferModal,
     AddEditCategorySimpleWeeklyModal,
     CategoryPopover

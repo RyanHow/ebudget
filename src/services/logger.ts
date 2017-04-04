@@ -53,7 +53,7 @@ export class Logger {
         if (typeof value === 'number') return value.toString();
         if (typeof value === 'function') return Logger.stringValue(value());
 
-        if (typeof value === "error") {
+        if (value instanceof Error) {
             // TODO: If Error then need to print a stack trace, message, etc
             return "[Error]: " + value;
         }
@@ -61,6 +61,8 @@ export class Logger {
         // TODO: Maybe return these as some kind of wrapped type so we can group logging on them, or log the object to console, but the string version to a file
         // .. And the .toString() method will just return the string value of it, so it is kinda like just returning a string...
         // TODO: Will implement as needed...
+
+        // TODO: ViewWrappedError
 
         if (value === Object(value)) {
             if (value instanceof Array) {

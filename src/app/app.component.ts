@@ -15,10 +15,12 @@ import {AppReady} from './app-ready';
 import {InitBudgetTransaction} from '../data/transactions/init-budget-transaction';
 import {InitCategoryTransaction} from '../data/transactions/init-category-transaction';
 import {InitSimpleTransaction} from '../data/transactions/init-simple-transaction';
+import {CreateSplitTransaction} from '../data/transactions/create-split-transaction';
 import {InitCategoryTransferTransaction} from '../data/transactions/init-category-transfer-transaction';
 import {InitCategorySimpleWeeklyTransaction} from '../data/transactions/init-category-simple-weekly-transaction';
 import {AddEditTransferModal} from '../modals/add-edit-transfer/add-edit-transfer';
 import {AddEditTransactionModal} from '../modals/add-edit-transaction/add-edit-transaction';
+import {AddEditSplitTransactionModal} from '../modals/add-edit-split-transaction/add-edit-split-transaction';
 
 @Component({
   templateUrl: 'app.html'
@@ -91,12 +93,14 @@ export class App {
   registerEditorProviders() {
     this.editorProvider.registerModalProvider(new TransactionModalProvider(new InitCategoryTransferTransaction().getTypeId(), AddEditTransferModal));
     this.editorProvider.registerModalProvider(new TransactionModalProvider(new InitSimpleTransaction().getTypeId(), AddEditTransactionModal));
+    this.editorProvider.registerModalProvider(new TransactionModalProvider(new CreateSplitTransaction().getTypeId(), AddEditSplitTransactionModal));
   }
 
   registerTransactions() {
     this.transactionSerializer.registerType(InitCategoryTransaction);
     this.transactionSerializer.registerType(InitCategoryTransferTransaction);
     this.transactionSerializer.registerType(InitSimpleTransaction);
+    this.transactionSerializer.registerType(CreateSplitTransaction);
     this.transactionSerializer.registerType(InitBudgetTransaction);
     this.transactionSerializer.registerType(InitCategorySimpleWeeklyTransaction);
   }

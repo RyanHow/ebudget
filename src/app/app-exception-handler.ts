@@ -5,9 +5,9 @@ export class AppExceptionHandler implements ErrorHandler {
 
     handleError(error: any) : void {
         // TODO: Handle the error in the logger better
-        if (error._nativeError) {
+        if (error.originalError) {
             Logger.get('error').info(error);
-            Logger.get('error').error(error._nativeError);
+            Logger.get('error').error(error.originalError);
         } else {
             Logger.get('error').error(error);
         }

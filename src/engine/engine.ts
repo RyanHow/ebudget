@@ -49,4 +49,8 @@ export class Engine {
         return this.db.transactionProcessor.table(Category).chain().data();
     }
 
+    getCategory(categoryId: any): Category {
+        return this.db.transactionProcessor.table(Category).by('id', categoryId);
+    }
+
 }

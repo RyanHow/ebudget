@@ -181,21 +181,21 @@ export class ShareBudgetModal {
           cssClass: 'share-copy',
           handler: () => {
             if (this.configuration.native) {
-              NativeClipboard.copy(this.budget.id).catch(reason => {
-                this.toastCtrl.create({
-                      message: 'Uh oh!\nThe code couldn\'t be copied. You\'ll need to highlight the code and press Ctrl-C to copy.',
-                      duration: 10000,
-                      showCloseButton: true,
-                      position: 'bottom'
-                    }).present();
-              }).then(() => {
+              NativeClipboard.copy(this.budget.id).then(() => {
                 this.toastCtrl.create({
                       message: 'Copied!\nOpen another application and paste the share code',
                       duration: 10000,
                       showCloseButton: true,
                       position: 'bottom'
                     }).present();
-                });
+                }, reason => {
+                this.toastCtrl.create({
+                      message: 'Uh oh!\nThe code couldn\'t be copied (' + reason + '). You\'ll need to highlight the code and press Ctrl-C to copy.',
+                      duration: 10000,
+                      showCloseButton: true,
+                      position: 'bottom'
+                    }).present();
+              });
 
             }
           }

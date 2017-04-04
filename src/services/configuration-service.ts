@@ -7,8 +7,12 @@ import {Logger} from './logger';
 
 type ConfigurationOption = 'experimental.transaction.notifications'
                          | 'latest-version'
-                         | '';
+                         | 'experimental.modals.show-split-transaction';
 
+
+export interface BooleanValueAccessor {
+    value: boolean;
+}
 
 @Injectable()
 export class Configuration {
@@ -20,16 +24,33 @@ export class Configuration {
     public deviceName: string;
     public deviceInstallationId: string;
     public native: boolean;
-    private persistence: DbPersistenceProvider;
-    private cId: string = 'conf';
+    public persistence: DbPersistenceProvider;
+    public cId: string = 'conf';
     public temporary: any = {};
-    
+
+    private booleanValueAccessor = class implements BooleanValueAccessor {
+        constructor(private option: string, private configuration: Configuration) {
+        }
+
+        get value(): boolean {
+            return this.configuration.persistence.keyStore(this.configuration.cId, this.option) === 'true';
+        }
+
+        set value(value: boolean) {
+            this.configuration.persistence.keyStore(this.configuration.cId, this.option, value === undefined ? undefined : value ? 'true' : 'false');
+        }
+    }
+
     option(option: ConfigurationOption, value?: string): string {
         return this.persistence.keyStore(this.cId, option, value);
     }
 
     optionBoolean(option: ConfigurationOption, value?: boolean): boolean {
         return this.persistence.keyStore(this.cId, option, value === undefined ? undefined : value ? 'true' : 'false') === 'true';
+    }
+
+    optionBooleanAccessor(option: ConfigurationOption): BooleanValueAccessor {
+        return new this.booleanValueAccessor(option, this);
     }
 
     get loglevel(): string {

@@ -25,7 +25,13 @@
   </ion-list-header>
   <ion-item>
     <ion-label>Show Transaction Notifications</ion-label>
-    <ion-toggle [(ngModel)]="experimentalTransactionNotifications"></ion-toggle>
+    <ion-toggle [(ngModel)]="configuration.optionBooleanAccessor('experimental.transaction.notifications').value"></ion-toggle>
   </ion-item>
+  <ion-item>
+    <ion-label>Enable Split Transaction</ion-label>
+    <ion-toggle [(ngModel)]="configuration.optionBooleanAccessor('experimental.modals.show-split-transaction').value"></ion-toggle>
+  </ion-item>
+
+
   
 </ion-content>

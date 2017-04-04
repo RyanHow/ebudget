@@ -10,8 +10,10 @@ import {AddEditCategorySimpleWeeklyModal} from '../../modals/add-edit-category-s
 import {InitCategorySimpleWeeklyTransaction} from '../../data/transactions/init-category-simple-weekly-transaction';
 import {EditorProvider} from '../../services/editor-provider';
 import {AddEditTransactionModal} from '../../modals/add-edit-transaction/add-edit-transaction';
+import {AddEditSplitTransactionModal} from '../../modals/add-edit-split-transaction/add-edit-split-transaction';
 import {AddEditTransferModal} from '../../modals/add-edit-transfer/add-edit-transfer';
 import {Logger} from '../../services/logger';
+import {Configuration} from '../../services/configuration-service';
 
 @Component({
   templateUrl: 'category.html'
@@ -93,6 +95,15 @@ export class CategoryPage {
     modal.present();
 
   }
+
+  addSplitTransaction() {
+    let modal = this.modalController.create(AddEditSplitTransactionModal);
+    modal.data.budgetId = this.budget.id;
+    modal.data.categoryId = this.category.id;
+    modal.present();
+
+  }
+
   
   addTransfer() {
     let modal = this.modalController.create(AddEditTransferModal);
@@ -154,6 +165,7 @@ export class CategoryPage {
       <button ion-item detail-none (click)="close(categoryPage.editSimpleWeekly)">Weekly Amount</button>
       <button ion-item detail-none (click)="close(categoryPage.editCategory)">Edit / Delete Category</button>
       <button ion-item detail-none (click)="close(categoryPage.addTransaction)">New Transaction</button>
+      <button *ngIf="configuration.optionBooleanAccessor('experimental.modals.show-split-transaction').value" ion-item detail-none (click)="close(categoryPage.addSplitTransaction)">New Split Transaction</button>
       <button ion-item detail-none (click)="close(categoryPage.addTransfer)">Transfer Funds</button>
     </ion-list>
   `
@@ -162,12 +174,12 @@ export class CategoryPopover {
 
   private categoryPage: CategoryPage;
 
-  constructor(private viewCtrl: ViewController) {
+  constructor(private viewCtrl: ViewController, private configuration: Configuration) {
     this.categoryPage = <CategoryPage>viewCtrl.data.categoryPage;
   }
 
   close(thenFn: Function) {
-    this.viewCtrl.dismiss({navOptions: {animate: false, transitionDelay: 0}}).then(() => { thenFn.call(this.categoryPage); });
+    this.viewCtrl.dismiss(undefined, undefined, {animate: false, duration: 0}).then(() => { thenFn.call(this.categoryPage); });
   }
 
 }

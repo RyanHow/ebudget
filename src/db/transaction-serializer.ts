@@ -19,13 +19,13 @@ export class TransactionSerializer {
         if (!transactionType) {
             this.logger.error({'msg': 'No transaction type available for ' + typeId, 'obj': jsonObject});
         }
-        var t = new transactionType();
+        var t = <DbTransaction> new transactionType();
         if (jsonObject) {
             for (var key in jsonObject) {
                 t[key] = t.deserialize(key, JSON.parse(JSON.stringify(jsonObject[key])));
             }
         }
-        return t;
+        return <any> t;
     }
     
     cloneTransaction<T extends DbTransaction>(transaction: T): T {
@@ -33,7 +33,7 @@ export class TransactionSerializer {
         transaction.records = null;        
         let dataCopy = <DbTransaction> JSON.parse(JSON.stringify(transaction)); // Deep copy this so we aren't accidentally copying any references
         transaction.records = recordsTemp;
-        
+
         delete (<any>dataCopy).$loki;
         delete (<any>dataCopy).meta;
         delete dataCopy.applied;
