@@ -18,6 +18,8 @@ import {InitSimpleTransaction} from '../data/transactions/init-simple-transactio
 import {CreateSplitTransaction} from '../data/transactions/create-split-transaction';
 import {InitCategoryTransferTransaction} from '../data/transactions/init-category-transfer-transaction';
 import {InitCategorySimpleWeeklyTransaction} from '../data/transactions/init-category-simple-weekly-transaction';
+import {CreateAccountTransaction} from '../data/transactions/create-account-transaction';
+
 import {AddEditTransferModal} from '../modals/add-edit-transfer/add-edit-transfer';
 import {AddEditTransactionModal} from '../modals/add-edit-transaction/add-edit-transaction';
 import {AddEditSplitTransactionModal} from '../modals/add-edit-split-transaction/add-edit-split-transaction';
@@ -103,6 +105,7 @@ export class App {
     this.transactionSerializer.registerType(CreateSplitTransaction);
     this.transactionSerializer.registerType(InitBudgetTransaction);
     this.transactionSerializer.registerType(InitCategorySimpleWeeklyTransaction);
+    this.transactionSerializer.registerType(CreateAccountTransaction);
   }
 
 }

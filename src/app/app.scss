@@ -22,3 +22,9 @@
     display: block;
     min-height:20px !important;
 }
+
+@media (max-width: 567px) {
+    ion-app.ebudget [padding], ion-app.ebudget [padding] .scroll-content {
+        padding: 0;
+    }
+}

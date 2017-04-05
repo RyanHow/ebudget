@@ -7,15 +7,23 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content>
-  <div padding>
-    <ion-item>
+<ion-content class="budget-settings-page">
+  <ion-list padding>
+    <ion-item class="hide-validation">
       <ion-label>Budget Name</ion-label>
       <ion-input [disabled]="budgetNameUpdating" [(ngModel)]="data.budgetName" (blur)="updateBudgetName()"></ion-input>
     </ion-item>
-  </div>
+  </ion-list>
+  <ion-list padding>
+    <ion-list-header class="no-top-border">
+      Accounts
+    </ion-list-header>
+    <button ion-item (click)="openAccount(account)" *ngFor="let account of engine.getAccounts()">{{account.name}}</button>
+    <button ion-item detail-none (click)="addAccount()">Add New Account...</button>
 
+  </ion-list>
   <button ion-button color="danger" clear small (click)="deleteBudgetConfirm()">Delete Budget</button>
+
 
 </ion-content>
 

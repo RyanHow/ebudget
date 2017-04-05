@@ -1,5 +1,7 @@
 import {Db} from '../db/db';
+import {Record} from '../db/record';
 import {Category} from '../data/records/category';
+import {Account} from '../data/records/account';
 import {Notifications} from '../services/notifications';
 import {Configuration} from '../services/configuration-service';
 
@@ -51,6 +53,14 @@ export class Engine {
 
     getCategory(categoryId: any): Category {
         return this.db.transactionProcessor.table(Category).by('id', categoryId);
+    }
+
+    getAccounts(): Account[] {
+        return this.db.transactionProcessor.table(Account).chain().simplesort('name').data();
+    }
+
+    getRecordById<T extends Record<any>>(type: {new(): T}, id: any): T {
+        return this.db.transactionProcessor.table(type).by('id', id);
     }
 
 }

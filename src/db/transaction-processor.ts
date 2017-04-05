@@ -61,6 +61,10 @@ export class TransactionProcessor {
         return transaction.records;
     }
 
+    findRecordsForTransaction<T extends Record<any>>(transaction: DbTransaction, type: {new(): T}): Array<T> {
+        return <T[]> transaction.records.filter((r) => r instanceof type);
+    }
+
 
     unsupported() {
         throw new Error('Unsupported Transaction Operation');

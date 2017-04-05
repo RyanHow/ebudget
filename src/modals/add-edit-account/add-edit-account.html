@@ -1,0 +1,25 @@
+<ion-header>
+    <ion-toolbar>
+    <ion-buttons start>
+        <button ion-button (click)="cancel()">Cancel</button>
+    </ion-buttons>
+
+    <ion-title>{{editing ? "Edit" : "Add"}} Account</ion-title>
+
+    <ion-buttons end>
+        <button ion-button (click)="submit($event)" [disabled]="!form.valid">{{editing ? "Save" : "Create"}}</button>
+    </ion-buttons>
+
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <div padding>
+        <form #form="ngForm" (submit)="submit($event)">
+            <ion-item>
+                <ion-label>Account Name</ion-label>
+                <ion-input type="text" name="name" [(ngModel)]="data.name" [attr.autofocus]="editing ? null : true" required></ion-input>
+            </ion-item>
+        </form>
+    </div>
+    <button ion-button *ngIf="editing" color="danger" clear small (click)="deleteAccountConfirm()">Delete</button>
+</ion-content>

@@ -5,6 +5,7 @@ import {AppReady} from './app-ready';
 import {AppExceptionHandler} from './app-exception-handler';
 import {HomePage} from '../pages/home/home';
 import {BudgetSettingsPage} from '../pages/budget-settings/budget-settings';
+import {AccountPage} from '../pages/account/account';
 import {BudgetPage} from '../pages/budget/budget';
 import {AboutPage} from '../pages/about/about';
 import {CategoryPage, CategoryPopover} from '../pages/category/category';
@@ -19,6 +20,7 @@ import {AddEditTransactionModal} from '../modals/add-edit-transaction/add-edit-t
 import {AddEditSplitTransactionModal} from '../modals/add-edit-split-transaction/add-edit-split-transaction';
 import {AddEditSplitTransactionLineModal} from '../modals/add-edit-split-transaction/add-edit-split-transaction-line';
 import {AddEditTransferModal} from '../modals/add-edit-transfer/add-edit-transfer';
+import {AddEditAccountModal} from '../modals/add-edit-account/add-edit-account';
 import {MainMenuContent} from '../components/main-menu-content/main-menu-content';
 import {NotificationList} from '../components/notification-list/notification-list';
 import {MainMenuIcon} from '../components/main-menu-icon/main-menu-icon';
@@ -47,6 +49,7 @@ import {CuteProgressBar} from '../components/cute-progress-bar';
     App,
     HomePage,
     BudgetSettingsPage,
+    AccountPage,
     BudgetPage,
     CategoryPage,
     SettingsPage,
@@ -60,6 +63,7 @@ import {CuteProgressBar} from '../components/cute-progress-bar';
     AddEditSplitTransactionModal,
     AddEditSplitTransactionLineModal,
     AddEditTransferModal,
+    AddEditAccountModal,
     AddEditCategorySimpleWeeklyModal,
     CurrencyField,
     NoFocusDirective,
@@ -83,6 +87,7 @@ import {CuteProgressBar} from '../components/cute-progress-bar';
     HomePage,
     BudgetSettingsPage,
     BudgetPage,
+    AccountPage,
     CategoryPage,
     SettingsPage,
     DevPage,
@@ -95,6 +100,7 @@ import {CuteProgressBar} from '../components/cute-progress-bar';
     AddEditSplitTransactionModal,
     AddEditSplitTransactionLineModal,
     AddEditTransferModal,
+    AddEditAccountModal,
     AddEditCategorySimpleWeeklyModal,
     CategoryPopover
   ],
