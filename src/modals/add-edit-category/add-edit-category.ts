@@ -1,4 +1,4 @@
-import {NavController, ViewController, NavParams, AlertController} from 'ionic-angular';
+import {NavController, ViewController, NavParams, AlertController, App} from 'ionic-angular';
 import {Db} from '../../db/db';
 import {Category} from '../../data/records/category';
 import {Dbms} from '../../db/dbms';
@@ -15,7 +15,7 @@ export class AddEditCategoryModal {
   categoryName: string;
   transaction: InitCategoryTransaction;
   
-  constructor(public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController) {
+  constructor(public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController, private appController: App) {
     this.viewCtrl = viewCtrl;
     this.nav = nav;
     
@@ -78,8 +78,7 @@ export class AddEditCategoryModal {
   deleteCategory() {
     this.budget.deleteTransaction(this.transaction);
     
-    this.viewCtrl.dismiss().then(() => {
-      this.nav.pop();
-    });
+    this.appController.getRootNav().pop({animate: false, duration: 0});
+    this.viewCtrl.dismiss();
   }
 } 

@@ -1,4 +1,4 @@
-import {NavController, ViewController, NavParams, AlertController} from 'ionic-angular';
+import {NavController, ViewController, NavParams, AlertController, App} from 'ionic-angular';
 import {Db} from '../../db/db';
 import {Account} from '../../data/records/account';
 import {Dbms} from '../../db/dbms';
@@ -17,12 +17,12 @@ export class AddEditAccountModal {
   data: {name: string};
   transaction: CreateAccountTransaction;
   
-  constructor(public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController, private engineFactory: EngineFactory) {    
+  constructor(public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController, private engineFactory: EngineFactory, private appController: App) {    
     this.db = dbms.getDb(navParams.data.budgetId);
     this.engine = engineFactory.getEngineById(this.db.id);
     this.data = <any>{};
 
-    if (navParams.data.categoryId) {
+    if (navParams.data.accountId) {
       this.editing = true;
       let account = this.engine.getRecordById(Account, navParams.data.accountId);
       this.data.name = account.name;
@@ -48,7 +48,8 @@ export class AddEditAccountModal {
     this.viewCtrl.dismiss();    
   }
   
-  deleteCategoryConfirm() {
+  deleteAccountConfirm() {
+    // TODO: Prolly better to archive it than delete it if anything linked to it
     let confirm = this.alertController.create({
       title: 'Delete?',
       message: 'Are you sure you want to delete this account and everything in it?',
@@ -62,7 +63,6 @@ export class AddEditAccountModal {
             confirm.dismiss().then(() => {
               this.deleteAccount();
             });
-            return false;
           }
         }
       ]
@@ -74,8 +74,8 @@ export class AddEditAccountModal {
   deleteAccount() {
     this.db.deleteTransaction(this.transaction);
     
-    this.viewCtrl.dismiss().then(() => {
-      this.nav.pop();
-    });
+    this.appController.getRootNav().pop({animate: false, duration: 0});
+    this.viewCtrl.dismiss();
+
   }
 } 
