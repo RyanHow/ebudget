@@ -14,12 +14,12 @@ export class AddEditSplitTransactionLineModal {
   parent: AddEditSplitTransactionModal;
   line: any;
   lineIndex: number;
-  budget: Engine;
+  engine: Engine;
   
   constructor(private configuration: Configuration, public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController) {
 
     this.parent = navParams.data.parent;
-    this.budget = this.parent.budget;
+    this.engine = this.parent.engine;
     this.lineIndex = navParams.data.lineIndex;
     this.line = navParams.data.parent.data.lines[this.lineIndex];
 
@@ -41,7 +41,7 @@ export class AddEditSplitTransactionLineModal {
 
   showCategorySelect(): Alert {
     let alert = this.alertController.create();
-    this.budget.getCategories('alphabetical').forEach(category => {
+    this.engine.getCategories('alphabetical').forEach(category => {
       if (!this.parent.data.lines.some(line => line !== this.line && line.categoryId === category.id))
         alert.addInput({type: 'radio', label: category.name, value: category.id.toString(), checked: category.id === this.line.categoryId});
     });

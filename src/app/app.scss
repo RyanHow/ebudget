@@ -23,8 +23,8 @@
     min-height:20px !important;
 }
 
-@media (max-width: 567px) {
-    ion-app.ebudget [padding], ion-app.ebudget [padding] .scroll-content {
-        padding: 0;
+@media (min-width: 567px) {
+    ion-app.ebudget [responsive-padding], ion-app.ebudget [responsive-padding] .scroll-content {
+        padding: 16px;
     }
 }

@@ -23,6 +23,7 @@ export class CreateAccountTransaction extends DbTransaction {
         a.id = this.id;
         a.name = this.name;
         a.openingBalance = this.openingBalance;
+        a.accountType = this.accountType;
 
         table.insert(a);
         tp.mapTransactionAndRecord(this, a);
@@ -36,6 +37,8 @@ export class CreateAccountTransaction extends DbTransaction {
         let a = table.by('id', <any> this.id);
         a.name = this.name;
         a.openingBalance = this.openingBalance;
+        a.accountType = this.accountType;
+
         table.update(a);
     }
     

@@ -1,9 +1,15 @@
 <ion-content>
-    <div padding>
+    <div responsive-padding>
         <form (submit)="submit($event)" novalidate #form="ngForm">
             <ion-card>
-                Category: {{budget.getCategory(line.categoryId)?.name}}
+                Category: {{engine.getCategory(line.categoryId)?.name}}
             </ion-card>
+            <ion-item *ngIf="configuration.optionBooleanAccessor('experimental.accounts.enabled').value && engine.getAccounts().length > 0">
+                <ion-label>Account</ion-label>
+                <ion-select required name="account" [(ngModel)]="line.accountId">
+                    <ion-option *ngFor="let account of engine.getAccounts()" value="{{account.id}}">{{account.name}}</ion-option>    
+                </ion-select>
+            </ion-item>
             <ion-item>
                 <ion-label>Amount</ion-label>
                 <ion-input currency-field required name="amount" [(ngModel)]="line.amount" [attr.autofocus]="editing ? null : true"></ion-input>

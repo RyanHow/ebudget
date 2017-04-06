@@ -1,6 +1,6 @@
 {
   "name": "ebudget",
-  "version": "0.0.78",
+  "version": "0.0.80",
   "author": "BitWorks",
   "homepage": "https://ebudgetapp.com",
   "private": true,
@@ -49,8 +49,8 @@
     "ionic-angular": "2.3.0",
     "@ionic-native/core": "3.1.0",
     "@ionic-native/splash-screen": "3.1.0",
-    "@ionic-native/status-bar": "3.1.0", 
-    "@ionic-native/clipboard": "3.1.0", 
+    "@ionic-native/status-bar": "3.1.0",
+    "@ionic-native/clipboard": "3.1.0",
     "ionicons": "3.0.0",
     "json-stable-stringify": "^1.0.1",
     "later": "^1.2.0",

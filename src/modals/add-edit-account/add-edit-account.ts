@@ -6,6 +6,7 @@ import {EngineFactory} from '../../engine/engine-factory';
 import {Engine} from '../../engine/engine';
 import {CreateAccountTransaction} from '../../data/transactions/create-account-transaction';
 import {Component} from '@angular/core';
+import Big from 'big.js';
 
 @Component({
   templateUrl: 'add-edit-account.html'
@@ -14,7 +15,7 @@ export class AddEditAccountModal {
   db: Db;
   engine: Engine;
   editing: boolean;
-  data: {name: string};
+  data: {name: string; openingBalance: string; accountType: 'Cash' | 'Bank';};
   transaction: CreateAccountTransaction;
   
   constructor(public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController, private engineFactory: EngineFactory, private appController: App) {    
@@ -26,10 +27,14 @@ export class AddEditAccountModal {
       this.editing = true;
       let account = this.engine.getRecordById(Account, navParams.data.accountId);
       this.data.name = account.name;
+      this.data.openingBalance = account.openingBalance == null ? "0" : account.openingBalance.toString();
+      this.data.accountType = account.accountType;
       this.transaction = this.db.transactionProcessor.findTransactionsForRecord(account, CreateAccountTransaction)[0];
     } else {
       this.editing = false;
       this.transaction = new CreateAccountTransaction();
+      this.data.openingBalance = "0";
+      this.data.accountType = 'Bank';
     }
     
   }
@@ -38,6 +43,8 @@ export class AddEditAccountModal {
     event.preventDefault();
 
     this.transaction.name = this.data.name;
+    this.transaction.openingBalance = new Big(this.data.openingBalance);
+    this.transaction.accountType = this.data.accountType;
     this.db.applyTransaction(this.transaction);
     let accountRecord = this.db.transactionProcessor.findRecordsForTransaction(this.transaction, Account)[0];
 

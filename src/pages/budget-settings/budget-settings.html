@@ -8,13 +8,13 @@
 </ion-header>
 
 <ion-content class="budget-settings-page">
-  <ion-list padding>
+  <ion-list responsive-padding>
     <ion-item class="hide-validation">
       <ion-label>Budget Name</ion-label>
       <ion-input [disabled]="budgetNameUpdating" [(ngModel)]="data.budgetName" (blur)="updateBudgetName()"></ion-input>
     </ion-item>
   </ion-list>
-  <ion-list padding>
+  <ion-list *ngIf="configuration.optionBoolean('experimental.accounts.enabled')" responsive-padding>
     <ion-list-header class="no-top-border">
       Accounts
     </ion-list-header>

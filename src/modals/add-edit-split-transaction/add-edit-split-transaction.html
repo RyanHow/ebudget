@@ -13,7 +13,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <div padding>
+    <div responsive-padding>
         <form (submit)="submit($event)" novalidate #form="ngForm">
             <ion-item-group>
                 <ion-item>
@@ -23,6 +23,12 @@
                     </ion-segment>
                 </ion-item>
             </ion-item-group>
+            <ion-item *ngIf="configuration.optionBooleanAccessor('experimental.accounts.enabled').value && engine.getAccounts().length > 0">
+                <ion-label>Account</ion-label>
+                <ion-select required name="account" [(ngModel)]="data.accountId">
+                    <ion-option *ngFor="let account of engine.getAccounts()" value="{{account.id}}">{{account.name}}</ion-option>    
+                </ion-select>
+            </ion-item>
             <ion-item>
                 <ion-label>Amount</ion-label>
                 <ion-input currency-field required name="amount" [(ngModel)]="data.amount" [attr.autofocus]="editing ? null : true"></ion-input>
@@ -39,7 +45,7 @@
                 Allocation
             </ion-list-header>
             <ng-container *ngFor="let line of data.lines"><button ion-item type="button" *ngIf="line.categoryId" (click)="editLine(line)">
-                <ion-label>{{budget.getCategory(line.categoryId)?.name}}</ion-label>
+                <ion-label>{{engine.getCategory(line.categoryId)?.name}}</ion-label>
                 <div item-right>{{line.amount}}</div>
             </button></ng-container>
             <button ion-item type="button" (click)="newLine()">

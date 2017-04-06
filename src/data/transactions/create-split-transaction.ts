@@ -11,6 +11,7 @@ export class CreateSplitTransaction extends DbTransaction {
     amounts: Array<{
         amount: BigJsLibrary.BigJS;
         categoryId: number;
+        accountId?: number;
     }>;
 
     getTypeId(): string {
@@ -24,7 +25,8 @@ export class CreateSplitTransaction extends DbTransaction {
         let table = tp.table(TransactionRecord);
         
         // In the records, keep a list to all the other records, cached...
-        // TODO: Change this to a transaction group record?, can keep the total, etc on there ?
+        // TODO: Change this to a transaction group record?, can keep the total, etc on there, rather than just an array and totals in the cache if needed ?
+        // TODO: Also, technically, this shouldn't be in the cache. it can be well defined here and is always available...
         let transactions = new Array<TransactionRecord>();
 
         for (let i = 0; i < this.amounts.length; i++) {
@@ -34,6 +36,7 @@ export class CreateSplitTransaction extends DbTransaction {
             t.date = this.date;
             t.description = this.description;
             t.categoryId = this.amounts[i].categoryId;
+            t.accountId = this.amounts[i].accountId;
             t.x.transactions = transactions;
 
             transactions.push(t);

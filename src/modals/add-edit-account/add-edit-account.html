@@ -13,12 +13,30 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <div padding>
+    <div responsive-padding>
         <form #form="ngForm" (submit)="submit($event)">
-            <ion-item>
-                <ion-label>Account Name</ion-label>
-                <ion-input type="text" name="name" [(ngModel)]="data.name" [attr.autofocus]="editing ? null : true" required></ion-input>
-            </ion-item>
+            <ion-list>
+                <ion-item>
+                    <ion-label>Account Name</ion-label>
+                    <ion-input type="text" name="name" [(ngModel)]="data.name" [attr.autofocus]="editing ? null : true" required></ion-input>
+                </ion-item>
+            </ion-list>
+            <ion-list radio-group name="accountType" [(ngModel)]="data.accountType">
+                <ion-item>
+                    <ion-label>Bank Account</ion-label>
+                    <ion-radio value="Bank"></ion-radio>
+                </ion-item>
+                <ion-item>
+                    <ion-label>Cash</ion-label>
+                    <ion-radio value="Cash"></ion-radio>
+                </ion-item>
+            </ion-list>
+            <ion-list>
+                <ion-item>
+                    <ion-label>Opening Balance</ion-label>
+                    <ion-input currency-field name="openingBalance" [(ngModel)]="data.openingBalance"required></ion-input>
+                </ion-item>
+            </ion-list>
         </form>
     </div>
     <button ion-button *ngIf="editing" color="danger" clear small (click)="deleteAccountConfirm()">Delete</button>

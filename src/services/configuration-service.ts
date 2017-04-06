@@ -7,8 +7,9 @@ import {Logger} from './logger';
 
 type ConfigurationOption = 'experimental.transaction.notifications'
                          | 'latest-version'
-                         | 'experimental.modals.show-split-transaction';
-
+                         | 'experimental.modals.show-split-transaction'
+                         | 'experimental.accounts.enabled'
+                         ;
 
 export interface BooleanValueAccessor {
     value: boolean;
