@@ -43,6 +43,11 @@ export class Engine {
               processor.execute(this.db.transactionProcessor);
            });
         });
+        this.db.transactionProcessor.table(Account).data.forEach(account => {
+           account.processors.forEach(processor => {
+              processor.execute(this.db.transactionProcessor);
+           });
+        });
     }
 
     getCategories(order: "alphabetical" | "natural" = "natural"): Array<Category> {

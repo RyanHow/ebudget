@@ -20,6 +20,10 @@
         Weekly Amount
         <currency-display highlightNegative [value]="categoryWeeklyAmount()" item-right></currency-display>
     </button>
+    <ion-item *ngFor="let accountId of accountBalances">
+        {{account(accountId).name}}
+        <currency-display highlightNegative [value]="category.x.accountBalances.get(accountId)" item-right></currency-display>
+    </ion-item>
     <button class="category-transaction-item" ion-item detail-none (click)="editTransaction(t)" *ngFor="let t of transactionsPaged">
       <span item-left>{{t.date | dFormat}}</span> {{t.description}}
         <ion-note small item-right *ngIf="t.x.type == 'Transfer'">

@@ -117,7 +117,7 @@ export class AddEditSplitTransactionModal {
       t.amounts.push({
         categoryId: line.categoryId,
         amount: new Big((line.amount || '0').replace(',', '')).times(this.data.expense ? 1 : -1),
-        accountId: line.accountId
+        accountId: Number(line.accountId)
       });
     });
 

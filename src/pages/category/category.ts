@@ -2,7 +2,10 @@ import {NavController, NavParams, ViewController, ModalController, PopoverContro
 import {Component, ViewChild} from '@angular/core';
 import {Dbms} from '../../db/dbms';
 import {Db} from '../../db/db';
+import {EngineFactory} from '../../engine/engine-factory';
+import {Engine} from '../../engine/engine';
 import {Category} from '../../data/records/category';
+import {Account} from '../../data/records/account';
 import {Transaction} from '../../data/records/transaction';
 import {Budget} from '../../data/records/budget';
 import {AddEditCategoryModal} from '../../modals/add-edit-category/add-edit-category';
@@ -28,15 +31,17 @@ export class CategoryPage {
   transactionTable: LokiCollection<Transaction>;
   transactionDisplayLimit: number;
   transactionDisplayPageSize: number;
+  engine: Engine;
 
   @ViewChild(InfiniteScroll)
   infiniteScroll: InfiniteScroll;
 
-  constructor(private nav: NavController, private dbms: Dbms, private params: NavParams, private editorProvider: EditorProvider, private modalController: ModalController, private popoverController: PopoverController) {
+  constructor(private nav: NavController, private dbms: Dbms, private params: NavParams, private editorProvider: EditorProvider, private modalController: ModalController, private popoverController: PopoverController, private engineFactory: EngineFactory) {
     this.nav = nav;
     this.dbms = dbms;
     
     this.budget = params.data.budget;
+    this.engine = engineFactory.getEngine(this.budget);
     let categoryTable = this.budget.transactionProcessor.table(Category);
     this.category = categoryTable.by('id', params.data.categoryId);
     this.budgetRecord = this.budget.transactionProcessor.single(Budget);
@@ -47,6 +52,14 @@ export class CategoryPage {
     if (this.transactionDisplayPageSize < 6) this.transactionDisplayPageSize = 10;
 
     this.transactionDisplayLimit = this.transactionDisplayPageSize;
+  }
+
+  account(accountId: number): Account {
+    return this.engine.getRecordById(Account, accountId);
+  }
+
+  get accountBalances() {
+    return Array.from(this.category.x.accountBalances.keys());
   }
 
   get transactionsPaged() {

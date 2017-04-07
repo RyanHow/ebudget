@@ -1,6 +1,8 @@
 import {DbTransaction, TransactionStringEnv} from '../../db/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
 import {Account} from '../records/account';
+import {AccountBalanceProcessor} from '../processors/account-balance';
+import Big from 'big.js';
 
 
 export class CreateAccountTransaction extends DbTransaction {
@@ -24,7 +26,7 @@ export class CreateAccountTransaction extends DbTransaction {
         a.name = this.name;
         a.openingBalance = this.openingBalance;
         a.accountType = this.accountType;
-
+        a.processors.push(new AccountBalanceProcessor(a));
         table.insert(a);
         tp.mapTransactionAndRecord(this, a);
     }
@@ -49,6 +51,8 @@ export class CreateAccountTransaction extends DbTransaction {
     }
     
     deserialize(field: string, value: any): any {
+        if (field === 'openingBalance' && value != null)
+            return new Big(value);
         return value;
     }
 

@@ -1,4 +1,5 @@
 import {Record} from '../../db/record';
+import {Processor} from '../../engine/processor';
 
 export class Account extends Record<Account> {
     
@@ -7,7 +8,7 @@ export class Account extends Record<Account> {
     public balance: BigJsLibrary.BigJS;
     public accountType: 'Bank' | 'Cash';
     public openingBalance: BigJsLibrary.BigJS;
-    
+    processors: Processor[] = [];
     
     tableName(): string {
         return 'Account';
