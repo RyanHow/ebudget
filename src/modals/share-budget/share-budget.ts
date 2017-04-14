@@ -1,7 +1,8 @@
 import {NavParams, ViewController, NavController, ActionSheetController, ToastController} from 'ionic-angular';
-import {Clipboard as NativeClipboard} from 'ionic-native';
+import {Clipboard as NativeClipboard} from '@ionic-native/clipboard';
 import {FormBuilder, Validators, FormGroup} from '@angular/forms';
 import {Subscription} from 'rxjs/Subscription';
+import 'rxjs/add/operator/map';
 import {Http, Response} from '@angular/http';
 import {Dbms} from '../../db/dbms';
 import {Db} from '../../db/db';
@@ -33,7 +34,7 @@ export class ShareBudgetModal {
   sharingErrorMessage: string;
   closed: boolean;
   
-  constructor(public viewCtrl: ViewController, private formBuilder: FormBuilder, private http: Http, navParams: NavParams, private dbms: Dbms, private configuration: Configuration, private replication: Replication, private nav: NavController, private actionSheetCtrl: ActionSheetController, private toastCtrl: ToastController) {
+  constructor(public viewCtrl: ViewController, private formBuilder: FormBuilder, private http: Http, navParams: NavParams, private dbms: Dbms, private configuration: Configuration, private replication: Replication, private nav: NavController, private actionSheetCtrl: ActionSheetController, private toastCtrl: ToastController, private nativeClipboard: NativeClipboard) {
     this.viewCtrl = viewCtrl;
     this.form = formBuilder.group({
       budgetName: ['', Validators.required]
@@ -185,7 +186,7 @@ export class ShareBudgetModal {
           cssClass: 'share-copy',
           handler: () => {
             if (this.configuration.native) {
-              NativeClipboard.copy(this.budget.id).then(() => {
+              this.nativeClipboard.copy(this.budget.id).then(() => {
                 this.toastCtrl.create({
                       message: 'Copied!\nOpen another application and paste the share code',
                       duration: 10000,

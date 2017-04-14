@@ -1,0 +1,64 @@
+<ion-header>
+    <ion-toolbar>
+    <ion-buttons start>
+        <button ion-button (click)="cancel()">Cancel</button>
+    </ion-buttons>
+
+    <ion-title>{{category.name}}</ion-title>
+
+    <ion-buttons end>
+        <button ion-button (click)="submit($event)" [disabled]="!form.valid">{{editing ? "Save" : "Create"}}</button>
+    </ion-buttons>
+
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <div responsive-padding>
+        <form (submit)="submit($event)" novalidate #form="ngForm">
+            <ion-item-group>
+                <ion-item>
+                    <ion-segment name="out" [(ngModel)]="data.out">
+                        <ion-segment-button [value]="true" (mousedown)="$event.preventDefault()">Out</ion-segment-button>
+                        <ion-segment-button [value]="false" (mousedown)="$event.preventDefault()">In</ion-segment-button>
+                    </ion-segment>
+                </ion-item>
+            </ion-item-group>
+            <ion-item *ngIf="configuration.optionBooleanAccessor('experimental.accounts.enabled').value && engine.getAccounts().length > 0">
+                <ion-label>Account</ion-label>
+                <ion-select required name="account" [(ngModel)]="data.accountId">
+                    <ion-option *ngFor="let account of engine.getAccounts()" value="{{account.id}}">{{account.name}}</ion-option>    
+                </ion-select>
+            </ion-item>
+            <ion-item *ngIf="configuration.optionBooleanAccessor('experimental.accounts.enabled').value && engine.getAccounts().length > 0">
+                <ion-label>To Account</ion-label>
+                <ion-select required name="account2" [(ngModel)]="data.accountId2">
+                    <ion-option *ngFor="let account of engine.getAccounts()" value="{{account.id}}">{{account.name}}</ion-option>    
+                </ion-select>
+            </ion-item>
+            <ion-item>
+                <ion-label>Amount</ion-label>
+                <ion-input currency-field required name="amount" [(ngModel)]="data.amount" [attr.autofocus]="editing ? null : true"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Description</ion-label>
+                <ion-input required type="text" [(ngModel)]="data.description" name="description"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Date</ion-label>
+                <ion-datetime name="date" [(ngModel)]="data.date" displayFormat="MMM D, YYYY" pickerFormat="MMM D YYYY"></ion-datetime>
+            </ion-item>
+            <ion-list-header>
+                Allocation
+            </ion-list-header>
+            <ng-container *ngFor="let line of data.lines"><button ion-item type="button" *ngIf="line.categoryId" (click)="editLine(line)">
+                <ion-label>{{engine.getCategory(line.categoryId)?.name}}</ion-label>
+                <div item-right>{{line.amount}}</div>
+            </button></ng-container>
+            <button ion-item type="button" (click)="newLine()">
+                <ion-label>Add Another Category</ion-label>
+                <div item-right>{{amountRemaining()}}</div>
+            </button>
+        </form>
+    </div>
+    <button ion-button type="button" *ngIf="editing" color="danger" clear small (click)="deleteTransactionConfirm()">Delete</button>
+</ion-content>

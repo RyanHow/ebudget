@@ -118,10 +118,8 @@ export class MainMenuContent {
   // -- //
   
   shareBudget() {
-    let modal = this.modalController.create(ShareBudgetModal);
-    modal.data.budgetId = this.lastOpenedBudget().id;
+    let modal = this.modalController.create(ShareBudgetModal, {budgetId: this.lastOpenedBudget().id});
     modal.present();
-
   }
 
   get shared(): boolean {

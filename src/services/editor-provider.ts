@@ -17,10 +17,10 @@ export class EditorProvider {
         this.modalProviders.unshift(provider);
     }
        
-    getModal(params: any): Modal {
+    getModal(params: any, data?: any): Modal {
         for (var i = 0; i < this.modalProviders.length; i++) {
             let modalClass = this.modalProviders[i].provide(params);
-            if (modalClass) return this.modalController.create(modalClass);
+            if (modalClass) return this.modalController.create(modalClass, data);
         }
 
         this.logger.error({msg: 'No modal provider found', params: params});

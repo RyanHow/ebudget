@@ -1,6 +1,7 @@
 import {Platform, Nav} from 'ionic-angular';
 import {ViewChild, Component} from '@angular/core';
-import {StatusBar, Splashscreen} from 'ionic-native';
+import {SplashScreen} from '@ionic-native/splash-screen';
+import {StatusBar} from '@ionic-native/status-bar';
 import {HomePage} from '../pages/home/home';
 import {BudgetPage} from '../pages/budget/budget';
 import {Dbms} from '../db/dbms';
@@ -16,6 +17,7 @@ import {InitBudgetTransaction} from '../data/transactions/init-budget-transactio
 import {InitCategoryTransaction} from '../data/transactions/init-category-transaction';
 import {InitSimpleTransaction} from '../data/transactions/init-simple-transaction';
 import {CreateSplitTransaction} from '../data/transactions/create-split-transaction';
+import {CreateSplitTransfer} from '../data/transactions/create-split-transfer';
 import {InitCategoryTransferTransaction} from '../data/transactions/init-category-transfer-transaction';
 import {InitCategorySimpleWeeklyTransaction} from '../data/transactions/init-category-simple-weekly-transaction';
 import {CreateAccountTransaction} from '../data/transactions/create-account-transaction';
@@ -23,6 +25,7 @@ import {CreateAccountTransaction} from '../data/transactions/create-account-tran
 import {AddEditTransferModal} from '../modals/add-edit-transfer/add-edit-transfer';
 import {AddEditTransactionModal} from '../modals/add-edit-transaction/add-edit-transaction';
 import {AddEditSplitTransactionModal} from '../modals/add-edit-split-transaction/add-edit-split-transaction';
+import {AddEditSplitTransferModal} from '../modals/add-edit-split-transfer/add-edit-split-transfer';
 
 @Component({
   templateUrl: 'app.html'
@@ -34,7 +37,7 @@ export class App {
   ready: boolean;
   @ViewChild(Nav) nav: Nav;
 
-  constructor(platform: Platform, private configuration: Configuration, dbms: Dbms, persistenceProviderManager: PersistenceProviderManager, replication: Replication, private transactionSerializer: TransactionSerializer, private editorProvider: EditorProvider, private appReady: AppReady) {
+  constructor(platform: Platform, private configuration: Configuration, dbms: Dbms, persistenceProviderManager: PersistenceProviderManager, replication: Replication, private transactionSerializer: TransactionSerializer, private editorProvider: EditorProvider, private appReady: AppReady, private statusBar: StatusBar, private splashScreen: SplashScreen) {
     this.logger.info('Constructing App');
     
     platform.ready().then(() => {
@@ -57,8 +60,8 @@ export class App {
         replication.init();
         this.logger.info('Initialising Replication Done');
 
-        StatusBar.styleDefault();
-        Splashscreen.hide(); // TODO: Move this earlier if want to have a splash screen while the db init runs... can nav.setRoot to a "loading..." page, then set the real page below... Can maybe even have progress updates with the "then()" statements?
+        statusBar.styleDefault();
+        splashScreen.hide(); // TODO: Move this earlier if want to have a splash screen while the db init runs... can nav.setRoot to a "loading..." page, then set the real page below... Can maybe even have progress updates with the "then()" statements?
 
         this.ready = true;
         if (configuration.lastOpenedBudget()) {
@@ -96,6 +99,7 @@ export class App {
     this.editorProvider.registerModalProvider(new TransactionModalProvider(new InitCategoryTransferTransaction().getTypeId(), AddEditTransferModal));
     this.editorProvider.registerModalProvider(new TransactionModalProvider(new InitSimpleTransaction().getTypeId(), AddEditTransactionModal));
     this.editorProvider.registerModalProvider(new TransactionModalProvider(new CreateSplitTransaction().getTypeId(), AddEditSplitTransactionModal));
+    this.editorProvider.registerModalProvider(new TransactionModalProvider(new CreateSplitTransfer().getTypeId(), AddEditSplitTransferModal));
   }
 
   registerTransactions() {
@@ -103,6 +107,7 @@ export class App {
     this.transactionSerializer.registerType(InitCategoryTransferTransaction);
     this.transactionSerializer.registerType(InitSimpleTransaction);
     this.transactionSerializer.registerType(CreateSplitTransaction);
+    this.transactionSerializer.registerType(CreateSplitTransfer);
     this.transactionSerializer.registerType(InitBudgetTransaction);
     this.transactionSerializer.registerType(InitCategorySimpleWeeklyTransaction);
     this.transactionSerializer.registerType(CreateAccountTransaction);

@@ -14,6 +14,7 @@ import {InitCategorySimpleWeeklyTransaction} from '../../data/transactions/init-
 import {EditorProvider} from '../../services/editor-provider';
 import {AddEditTransactionModal} from '../../modals/add-edit-transaction/add-edit-transaction';
 import {AddEditSplitTransactionModal} from '../../modals/add-edit-split-transaction/add-edit-split-transaction';
+import {AddEditSplitTransferModal} from '../../modals/add-edit-split-transfer/add-edit-split-transfer';
 import {AddEditTransferModal} from '../../modals/add-edit-transfer/add-edit-transfer';
 import {Logger} from '../../services/logger';
 import {Configuration} from '../../services/configuration-service';
@@ -59,7 +60,7 @@ export class CategoryPage {
   }
 
   get accountBalances() {
-    return Array.from(this.category.x.accountBalances.keys());
+    return this.category.x.accountBalances ? Array.from(this.category.x.accountBalances.keys()) : [];
   }
 
   get transactionsPaged() {
@@ -78,19 +79,13 @@ export class CategoryPage {
   }
  
   editCategory() {
-    let modal = this.modalController.create(AddEditCategoryModal);
-    modal.data.budgetId = this.budget.id;
-    modal.data.categoryId = this.category.id;
-
+    let modal = this.modalController.create(AddEditCategoryModal, {budgetId: this.budget.id, categoryId: this.category.id});
     modal.present();
 
   }
 
   editSimpleWeekly() {
-    let modal = this.modalController.create(AddEditCategorySimpleWeeklyModal);
-    modal.data.budgetId = this.budget.id;
-    modal.data.categoryId = this.category.id;
-
+    let modal = this.modalController.create(AddEditCategorySimpleWeeklyModal, {budgetId: this.budget.id, categoryId: this.category.id});
     modal.present();
 
   }
@@ -102,35 +97,31 @@ export class CategoryPage {
   }
 
   addTransaction() {
-    let modal = this.modalController.create(AddEditTransactionModal);
-    modal.data.budgetId = this.budget.id;
-    modal.data.categoryId = this.category.id;
+    let modal = this.modalController.create(AddEditTransactionModal, {budgetId: this.budget.id, categoryId: this.category.id});
     modal.present();
 
   }
 
   addSplitTransaction() {
-    let modal = this.modalController.create(AddEditSplitTransactionModal);
-    modal.data.budgetId = this.budget.id;
-    modal.data.categoryId = this.category.id;
+    let modal = this.modalController.create(AddEditSplitTransactionModal, {budgetId: this.budget.id, categoryId: this.category.id});
     modal.present();
 
   }
 
+  addSplitTransfer() {
+    let modal = this.modalController.create(AddEditSplitTransferModal, {budgetId: this.budget.id, categoryId: this.category.id});
+    modal.present();
+
+  }
   
   addTransfer() {
-    let modal = this.modalController.create(AddEditTransferModal);
-    modal.data.budgetId = this.budget.id;
-    modal.data.fromCategoryId = this.category.id;
+    let modal = this.modalController.create(AddEditTransferModal, {budgetId: this.budget.id, categoryId: this.category.id});
     modal.present();
   }
   
   editTransaction(transaction: Transaction) {
     
-    let modal = this.editorProvider.getModal(this.budget.transactionProcessor.findAllTransactionsForRecord(transaction)[0]);
-    modal.data.budgetId = this.budget.id;
-    modal.data.categoryId = this.category.id;
-    modal.data.transactionId = transaction.id;
+    let modal = this.editorProvider.getModal(this.budget.transactionProcessor.findAllTransactionsForRecord(transaction)[0], {budgetId: this.budget.id, categoryId: this.category.id, transactionId: transaction.id});
     modal.present();
   }
 
@@ -179,6 +170,7 @@ export class CategoryPage {
       <button ion-item detail-none (click)="close(categoryPage.editCategory)">Edit / Delete Category</button>
       <button ion-item detail-none (click)="close(categoryPage.addTransaction)">New Transaction</button>
       <button *ngIf="configuration.optionBooleanAccessor('experimental.modals.show-split-transaction').value" ion-item detail-none (click)="close(categoryPage.addSplitTransaction)">New Split Transaction</button>
+      <button *ngIf="configuration.optionBooleanAccessor('experimental.modals.show-split-transaction').value" ion-item detail-none (click)="close(categoryPage.addSplitTransfer)">New Split Transfer</button>
       <button ion-item detail-none (click)="close(categoryPage.addTransfer)">Transfer Funds</button>
     </ion-list>
   `

@@ -114,6 +114,7 @@ export class UpdateCheck {
                     this.logger.info(message);
                     this.notifications.notify(message, true);
                 }
+                return result;
             });
         }
         return Promise.resolve(false);

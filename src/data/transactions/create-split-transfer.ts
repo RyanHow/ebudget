@@ -4,45 +4,65 @@ import {TransactionProcessor} from '../../db/transaction-processor';
 import Big from 'big.js';
 
 
-export class CreateSplitTransaction extends DbTransaction {
+export class CreateSplitTransfer extends DbTransaction {
 
     description: string;
     date: string;
+    categoryId: number;
+    accountId?: number;
+    accountId2?: number;
     amounts: Array<{
         amount: BigJsLibrary.BigJS;
         categoryId: number;
-        accountId?: number;
     }>;
 
+
     getTypeId(): string {
-        return 'CreateSplitTransaction';
+        return 'CreateSplitTransfer';
     }
 
     apply(tp: TransactionProcessor) {
 
         // TODO: Validation
+        // TODO: If multiple accounts, then only a single amount & category
 
         let table = tp.table(TransactionRecord);
         
-        // In the records, keep a list to all the other records, cached...
-        // TODO: Change this to a transaction group record?, can keep the total, etc on there, rather than just an array and totals in the cache if needed ?
-        // TODO: Also, technically, this shouldn't be in the cache. it can be well defined here and is always available...
         let transactions = new Array<TransactionRecord>();
+
+        let total = new Big('0');
+
+        let description = this.description == null || this.description.trim().length == 0 ? 'Transfer' : this.description;
 
         for (let i = 0; i < this.amounts.length; i++) {
             let t = new TransactionRecord();
-            t.id = this.id * 100000 + i;
+            t.id = this.id * 100000 + i + 1;
             t.amount = this.amounts[i].amount;
+            total = total.plus(t.amount);
             t.date = this.date;
-            t.description = this.description;
+            t.description = description;
             t.categoryId = this.amounts[i].categoryId;
-            t.accountId = this.amounts[i].accountId;
+            t.accountId = this.accountId;
             t.x.transactions = transactions;
-
+            t.x.type = "Transfer"; // TODO: By convention the type shouldn't be in the cache?
             transactions.push(t);
             table.insert(t);        
             tp.mapTransactionAndRecord(this, t);
         }
+
+        let t = new TransactionRecord();
+        t.id = this.id * 100000;
+        t.amount = total.times(-1);
+        t.date = this.date;
+        t.description = description;
+        t.categoryId = this.categoryId;
+        t.accountId = this.accountId;
+        t.x.transactions = transactions;
+        t.x.type = "Transfer";
+        transactions.push(t);
+        table.insert(t);        
+        tp.mapTransactionAndRecord(this, t);
+
         
     }
 

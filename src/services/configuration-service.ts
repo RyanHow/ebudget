@@ -1,4 +1,4 @@
-import {Device} from 'ionic-native';
+import {Device} from '@ionic-native/device';
 import {Platform} from 'ionic-angular';
 import {Injectable} from '@angular/core';
 import {PersistenceProviderManager} from '../db/persistence-provider-manager';
@@ -63,7 +63,7 @@ export class Configuration {
     }
 
     
-    constructor(private persistenceProviderManager: PersistenceProviderManager, private platform: Platform) {
+    constructor(private persistenceProviderManager: PersistenceProviderManager, private platform: Platform, private device: Device) {
 
     }
     
@@ -89,9 +89,9 @@ export class Configuration {
         if (! this.persistence.keyStore(this.cId, 'installationId')) this.persistence.keyStore(this.cId, 'installationId', 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random() * 16 | 0, v = c === 'x' ? r : r & 0x3 | 0x8; return v.toString(16); }));
         this.installationId = this.persistence.keyStore(this.cId, 'installationId');
         this.logger.info('Installation Id: ' + this.installationId);
-        this.deviceId = Device.uuid ? Device.uuid.toLowerCase() : this.installationId;
+        this.deviceId = this.device.uuid ? this.device.uuid.toLowerCase() : this.installationId;
         this.logger.info("Device id: " +  this.deviceId);
-        this.deviceName = !this.native ? 'Web Browser' : Device.name || Device.model || 'Mobile Device';
+        this.deviceName = !this.native ? 'Web Browser' : this.device.model || 'Mobile Device';
         if (this.deviceName.length <= 3) this.deviceName = this.deviceName + "___";
         this.logger.info("Device name: " +  this.deviceName);
         if (! this.persistence.keyStore(this.cId, 'deviceId')) this.persistence.keyStore(this.cId, 'deviceId', this.deviceId);

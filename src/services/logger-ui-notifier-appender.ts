@@ -1,11 +1,12 @@
 import {BuildInfo} from '../app/build-info';
 import {LoggerAppender, Logger} from './logger';
 import {LoggerStorageAppender} from './logger-storage-appender';
-import {Device} from 'ionic-native';
 
 export interface LoggerUINotifierAppenderHandler {
     handle(message: string);
 }
+
+declare var Device: any;
 
 class DefaultLoggerUINotifierAppenderHandler implements LoggerUINotifierAppenderHandler {
 
@@ -403,7 +404,7 @@ class DefaultLoggerUINotifierAppenderHandler implements LoggerUINotifierAppender
     }
 
     restartApp() {
-        if (Device && Device.cordova) {
+        if (Device && <any> Device.cordova) {
             // If native, put up a message and say the app will now close, please open it again and retry.
             if ((<any>navigator).app) {
                 (<any>navigator).app.exitApp();

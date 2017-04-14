@@ -5,7 +5,7 @@ import {Logger} from '../../services/logger';
 import {Configuration} from '../../services/configuration-service';
 import {Notifications} from '../../services/notifications';
 import {LoggerUINotifierAppender} from '../../services/logger-ui-notifier-appender';
-import {InAppBrowser} from 'ionic-native';
+import {InAppBrowser} from '@ionic-native/in-app-browser';
 import cronstrue from 'cronstrue';
 
 @Component({
@@ -26,7 +26,7 @@ export class DevPage {
   }
   testamount3 = 'ASD';
   
-  constructor(private nav: NavController, private dbms: Dbms, public configuration: Configuration, private notifications: Notifications) {
+  constructor(private nav: NavController, private dbms: Dbms, public configuration: Configuration, private notifications: Notifications, private inAppBrowser: InAppBrowser) {
     
   }
     
@@ -56,7 +56,7 @@ export class DevPage {
   }
 
   launchInAppBrowserTest1() {
-    let browser = new InAppBrowser('https://www.google.com', '_blank');
+    let browser = this.inAppBrowser.create('https://www.google.com', '_blank');
     let subscription = browser.on('loadstop').subscribe(ev => {
         let js = 'alert(5 + 7);location.href="http://www.example.com";5 + 7;';
         Logger.get("dev").info("executing js: " + js);

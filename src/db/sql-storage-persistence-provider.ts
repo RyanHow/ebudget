@@ -1,44 +1,43 @@
-import {Injectable} from '@angular/core';
-import {SQLite} from 'ionic-native';
+import {SQLite, SQLiteObject} from '@ionic-native/sqlite';
 import {DbTransaction} from './transaction';
 import {TransactionSerializer} from './transaction-serializer';
 import {DbPersistenceProvider} from './db-persistence-provider';
 import {Logger} from '../services/logger';
 
-@Injectable()
 export class SqlStoragePersistenceProvider implements DbPersistenceProvider  {
     
    private logger: Logger = Logger.get('SqlStoragePersistenceProvider');
 
-    private sqlStorage: SQLite;
+    private sqlStorage: SQLiteObject;
     private keyStoreCache: Map<string, string>;
     private dbsCache: Array<string>;
     private transactionsCache: Map<string, string>;
 
-    constructor(private storagePrefix: string, private transactionSerializer: TransactionSerializer) {
+    constructor(private storagePrefix: string, private transactionSerializer: TransactionSerializer, private sqlite: SQLite) {
         this.keyStoreCache = new Map<string, string>();
         this.transactionsCache = new Map<string, string>();
     }
 
     init(): Promise<any> {
-        this.sqlStorage = new SQLite();
-        return this.sqlStorage.openDatabase({name: this.storagePrefix + '_db', location: 'default'}).then(() => {
+        return this.sqlite.create({name: this.storagePrefix + '_db', location: 'default'}).then((db: SQLiteObject) => {
+            this.sqlStorage = db;
             return this.sqlStorage.executeSql('CREATE TABLE IF NOT EXISTS _keystore (dbid TEXT, key TEXT, keyvalue TEXT, PRIMARY KEY (dbid, key))', []);})
         .then(() => {
-            return this.sqlStorage.executeSql('SELECT * FROM _keystore', []);
-        }).then(result => {
-            for (let i = 0; i < result.rows.length; i++) {
-                let item = result.rows.item(i);
-                this.keyStoreCache.set(item.dbid + '_' + item.key, item.keyvalue);
-            }
-        }).then(() => {
-            let dbsValue = this.keyStore("_dbs", "dbs");
-            this.dbsCache = dbsValue ? JSON.parse(dbsValue) : [];            
-            let p = new Array<Promise<void>>();
-            this.dbsCache.forEach(dbId => {
-                p.push(this.createDbTables(dbId));
-            });
-            return Promise.all(p);
+            return this.sqlStorage.executeSql('SELECT * FROM _keystore', [])
+            .then(result => {
+                for (let i = 0; i < result.rows.length; i++) {
+                    let item = result.rows.item(i);
+                    this.keyStoreCache.set(item.dbid + '_' + item.key, item.keyvalue);
+                }
+            }).then(() => {
+                let dbsValue = this.keyStore("_dbs", "dbs");
+                this.dbsCache = dbsValue ? JSON.parse(dbsValue) : [];            
+                let p = new Array<Promise<void>>();
+                this.dbsCache.forEach(dbId => {
+                    p.push(this.createDbTables(dbId));
+                });
+                return Promise.all(p);
+            })
         });
     }
 

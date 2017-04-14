@@ -1,4 +1,6 @@
 import {NgModule, ErrorHandler} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {HttpModule} from '@angular/http';
 import {IonicApp, IonicModule} from 'ionic-angular';
 import {App} from './app.component';
 import {AppReady} from './app-ready';
@@ -19,6 +21,8 @@ import {AddEditCategorySimpleWeeklyModal} from '../modals/add-edit-category-simp
 import {AddEditTransactionModal} from '../modals/add-edit-transaction/add-edit-transaction';
 import {AddEditSplitTransactionModal} from '../modals/add-edit-split-transaction/add-edit-split-transaction';
 import {AddEditSplitTransactionLineModal} from '../modals/add-edit-split-transaction/add-edit-split-transaction-line';
+import {AddEditSplitTransferModal} from '../modals/add-edit-split-transfer/add-edit-split-transfer';
+import {AddEditSplitTransferLineModal} from '../modals/add-edit-split-transfer/add-edit-split-transfer-line';
 import {AddEditTransferModal} from '../modals/add-edit-transfer/add-edit-transfer';
 import {AddEditAccountModal} from '../modals/add-edit-account/add-edit-account';
 import {MainMenuContent} from '../components/main-menu-content/main-menu-content';
@@ -43,6 +47,12 @@ import {CurrencyDisplay} from '../components/currency-display';
 import {DFormatPipe} from '../components/date-format';
 import {CFormatPipe} from '../components/currency-format';
 import {CuteProgressBar} from '../components/cute-progress-bar';
+import {SplashScreen} from '@ionic-native/splash-screen';
+import {StatusBar} from '@ionic-native/status-bar';
+import {SQLite} from '@ionic-native/sqlite';
+import {Device} from '@ionic-native/device';
+import {InAppBrowser} from '@ionic-native/in-app-browser';
+import {Clipboard} from '@ionic-native/clipboard';
 
 @NgModule({
   declarations: [
@@ -62,6 +72,8 @@ import {CuteProgressBar} from '../components/cute-progress-bar';
     AddEditTransactionModal,
     AddEditSplitTransactionModal,
     AddEditSplitTransactionLineModal,
+    AddEditSplitTransferModal,
+    AddEditSplitTransferLineModal,
     AddEditTransferModal,
     AddEditAccountModal,
     AddEditCategorySimpleWeeklyModal,
@@ -79,6 +91,8 @@ import {CuteProgressBar} from '../components/cute-progress-bar';
     NotificationList
   ],
   imports: [
+    BrowserModule,
+    HttpModule,
     IonicModule.forRoot(App)
   ],
   bootstrap: [IonicApp],
@@ -99,12 +113,20 @@ import {CuteProgressBar} from '../components/cute-progress-bar';
     AddEditTransactionModal,
     AddEditSplitTransactionModal,
     AddEditSplitTransactionLineModal,
+    AddEditSplitTransferModal,
+    AddEditSplitTransferLineModal,
     AddEditTransferModal,
     AddEditAccountModal,
     AddEditCategorySimpleWeeklyModal,
     CategoryPopover
   ],
   providers: [{provide: ErrorHandler, useClass: AppExceptionHandler},
+  Device,
+  Clipboard,
+  SQLite,
+  InAppBrowser,
+  SplashScreen,
+  StatusBar,
   AppReady,
   UpdatedCheck,
   UpdateCheck,

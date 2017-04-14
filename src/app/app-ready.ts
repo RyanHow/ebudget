@@ -4,7 +4,7 @@ import {Injectable} from '@angular/core';
 export class AppReady {
 
     readyResolve: any;
-    ready: Promise<void>;
+    ready: Promise<any>;
 
     constructor() {
         // Emulate deferred...

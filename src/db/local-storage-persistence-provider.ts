@@ -1,9 +1,7 @@
-import {Injectable} from '@angular/core';
 import {DbTransaction} from './transaction';
 import {TransactionSerializer} from './transaction-serializer';
 import {DbPersistenceProvider} from './db-persistence-provider';
 
-@Injectable()
 export class LocalStoragePersistenceProvider implements DbPersistenceProvider {
     
     

@@ -44,9 +44,7 @@ export class BudgetPage {
 
   
   addCategory() {
-    let modal = this.modalController.create(AddEditCategoryModal);
-    modal.data.budgetId = this.budget.id;
-
+    let modal = this.modalController.create(AddEditCategoryModal, {budgetId: this.budget.id});
     modal.present();
 
   }
