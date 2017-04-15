@@ -20,6 +20,7 @@ export class AddEditSplitTransferModal {
     date: string;
     description: string;
     amount: string;
+    categoryId: number;
     accountId: number;
     accountId2: number;
     lines: Array<{
@@ -32,11 +33,13 @@ export class AddEditSplitTransferModal {
   editing: boolean;
   category: Category;
   transaction: CreateSplitTransfer;
+  categories: Category[];
   
   constructor(private configuration: Configuration, private modalController: ModalController, public viewCtrl: ViewController, private navParams: NavParams, private engineFactory: EngineFactory, private nav: NavController, private alertController: AlertController) {
     this.engine = engineFactory.getEngineById(navParams.data.budgetId);
     this.engine.getCategory(navParams.data.categoryId);
     this.category = this.engine.db.transactionProcessor.table(Category).by('id', navParams.data.categoryId);
+    this.categories = this.engine.getCategories('alphabetical');
 
     // TODO: Validation that amounts must be equal
     this.data = <any> {};
@@ -50,8 +53,11 @@ export class AddEditSplitTransferModal {
 
       this.data.date = Utils.toIonicFromYYYYMMDD(this.transaction.date);
       this.data.out = this.transaction.amounts[0].amount.cmp(Big(0)) >= 0;
+      this.data.accountId = this.transaction.accountId;
+      this.data.accountId2 = this.transaction.accountId2;
       this.data.amount = this.totalAmount().toString();
       this.data.description = this.transaction.description;
+      this.data.categoryId = this.transaction.categoryId;
       this.transaction.amounts.forEach(l => {
         this.data.lines.push({categoryId: l.categoryId, amount: l.amount.times(this.data.out ? 1 : -1)+""});
       });
@@ -108,6 +114,9 @@ export class AddEditSplitTransferModal {
     
     t.date = Utils.toYYYYMMDDFromIonic(this.data.date);
     t.description = this.data.description;
+    t.accountId = Number(this.data.accountId);
+    t.accountId2 = Number(this.data.accountId2);
+    t.categoryId = Number(this.data.categoryId);
 
     // Always clear out the records in the transaction and not "merge" them
     // Our indexes should be preserved...

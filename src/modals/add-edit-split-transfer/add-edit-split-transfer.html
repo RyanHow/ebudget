@@ -40,6 +40,12 @@
                 <ion-input currency-field required name="amount" [(ngModel)]="data.amount" [attr.autofocus]="editing ? null : true"></ion-input>
             </ion-item>
             <ion-item>
+                <ion-label>From</ion-label>
+                <ion-select required name="category" [(ngModel)]="data.categoryId">
+                    <ion-option *ngFor="let c of categories" value="{{c.id}}">{{c.name}}</ion-option>    
+                </ion-select>
+            </ion-item>
+            <ion-item>
                 <ion-label>Description</ion-label>
                 <ion-input required type="text" [(ngModel)]="data.description" name="description"></ion-input>
             </ion-item>
