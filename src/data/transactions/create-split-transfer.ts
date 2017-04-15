@@ -42,7 +42,7 @@ export class CreateSplitTransfer extends DbTransaction {
             t.date = this.date;
             t.description = description;
             t.categoryId = this.amounts[i].categoryId;
-            t.accountId = this.accountId;
+            t.accountId = this.accountId2 || this.accountId;
             t.x.transactions = transactions;
             t.x.type = "Transfer"; // TODO: By convention the type shouldn't be in the cache?
             transactions.push(t);

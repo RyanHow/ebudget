@@ -404,21 +404,21 @@ class DefaultLoggerUINotifierAppenderHandler implements LoggerUINotifierAppender
     }
 
     restartApp() {
-        if (Device && <any> Device.cordova) {
+//        if (Device && <any> Device.cordova) {
             // If native, put up a message and say the app will now close, please open it again and retry.
-            if ((<any>navigator).app) {
-                (<any>navigator).app.exitApp();
-            } else if ((<any>navigator).device) {
-                (<any>navigator).device.exitApp();
-            } else {
-                window.close();
-            }
+//            if ((<any>navigator).app) {
+//                (<any>navigator).app.exitApp();
+//            } else if ((<any>navigator).device) {
+//                (<any>navigator).device.exitApp();
+//            } else {
+//                window.close();
+//            }
 
             // TODO: Message: The application has not closed, please force quit for app, and reopen it.
-        } else {
+//        } else {
             // TODO: Reload the original URL used to open it.... need to save that somewhere!?
             document.location.reload(true);
-        }
+//        }
     }
 
     closeError() {
@@ -488,10 +488,10 @@ class DefaultLoggerUINotifierAppenderHandler implements LoggerUINotifierAppender
             'userAgent' : navigator.userAgent,
             'platform' : navigator.platform,
             'version' : BuildInfo.version,
-            'devicePlatform' : Device && Device.platform ? Device.platform : 'undefined',
-            'deviceModel' : Device && Device.model ? Device.model : 'undefined',
-            'deviceVersion' : Device && Device.version ? Device.version : 'undefined',
-            'deviceNative' : Device && Device.cordova ? Device.cordova : 'undefined',
+//            'devicePlatform' : Device && Device.platform ? Device.platform : 'undefined',
+//            'deviceModel' : Device && Device.model ? Device.model : 'undefined',
+//            'deviceVersion' : Device && Device.version ? Device.version : 'undefined',
+//            'deviceNative' : Device && Device.cordova ? Device.cordova : 'undefined',
             'contactInfo' : 'true' === localStorage.getItem('error-do-not-contact') ? 'Do Not Contact' : localStorage.getItem('error-contact-info')
         };
 

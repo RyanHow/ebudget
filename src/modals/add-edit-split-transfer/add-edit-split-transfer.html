@@ -31,7 +31,7 @@
             </ion-item>
             <ion-item *ngIf="configuration.optionBooleanAccessor('experimental.accounts.enabled').value && engine.getAccounts().length > 0">
                 <ion-label>To Account</ion-label>
-                <ion-select required name="account2" [(ngModel)]="data.accountId2">
+                <ion-select name="account2" [(ngModel)]="data.accountId2">
                     <ion-option *ngFor="let account of engine.getAccounts()" value="{{account.id}}">{{account.name}}</ion-option>    
                 </ion-select>
             </ion-item>

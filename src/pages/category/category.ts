@@ -69,7 +69,7 @@ export class CategoryPage {
   }
 
   transferOtherCategoryName(t: Transaction): string {
-    let category = this.budget.transactionProcessor.table(Category).by('id', t.x.transfer.categoryId);
+    let category = t.x.transfer ? this.budget.transactionProcessor.table(Category).by('id', t.x.transfer.categoryId) : null;
     return category? category.name : "Category Missing";
   }
   
