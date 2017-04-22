@@ -2,6 +2,8 @@ import moment from 'moment';
 
 export class Utils {
     
+    public static readonly STANDARD_DATE_FORMAT = 'YYYYMMDD';
+
     static nowIonic(): string {
         return moment().format('YYYY-MM-DD');
     }

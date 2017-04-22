@@ -12,6 +12,7 @@ import {Replication} from '../services/replication-service';
 import {TransactionSerializer} from '../db/transaction-serializer';
 import {Logger} from '../services/logger';
 import {AppReady} from './app-ready';
+import {BankProviderManager} from '../bank/bank-provider-manager';
 
 import {InitBudgetTransaction} from '../data/transactions/init-budget-transaction';
 import {InitCategoryTransaction} from '../data/transactions/init-category-transaction';
@@ -27,6 +28,8 @@ import {AddEditTransactionModal} from '../modals/add-edit-transaction/add-edit-t
 import {AddEditSplitTransactionModal} from '../modals/add-edit-split-transaction/add-edit-split-transaction';
 import {AddEditSplitTransferModal} from '../modals/add-edit-split-transfer/add-edit-split-transfer';
 
+import {AnzMobileWeb1Provider} from '../bank/providers/anz-mobile-web-1';
+
 @Component({
   templateUrl: 'app.html'
 })
@@ -37,7 +40,7 @@ export class App {
   ready: boolean;
   @ViewChild(Nav) nav: Nav;
 
-  constructor(platform: Platform, private configuration: Configuration, dbms: Dbms, persistenceProviderManager: PersistenceProviderManager, replication: Replication, private transactionSerializer: TransactionSerializer, private editorProvider: EditorProvider, private appReady: AppReady, private statusBar: StatusBar, private splashScreen: SplashScreen) {
+  constructor(platform: Platform, private configuration: Configuration, dbms: Dbms, persistenceProviderManager: PersistenceProviderManager, replication: Replication, private transactionSerializer: TransactionSerializer, private editorProvider: EditorProvider, private appReady: AppReady, private statusBar: StatusBar, private splashScreen: SplashScreen, private bankProviderManager: BankProviderManager) {
     this.logger.info('Constructing App');
     
     platform.ready().then(() => {
@@ -51,6 +54,7 @@ export class App {
       }).then(() => {
         this.registerTransactions();
         this.registerEditorProviders();
+        this.registerBankProviders();
         this.logger.info('Loading Configuration Done');
         this.logger.info('Initialising Dbms');
         return dbms.init();
@@ -111,6 +115,10 @@ export class App {
     this.transactionSerializer.registerType(InitBudgetTransaction);
     this.transactionSerializer.registerType(InitCategorySimpleWeeklyTransaction);
     this.transactionSerializer.registerType(CreateAccountTransaction);
+  }
+
+  registerBankProviders() {
+    this.bankProviderManager.registerProvider(AnzMobileWeb1Provider);
   }
 
 }

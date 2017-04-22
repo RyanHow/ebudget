@@ -1,12 +1,24 @@
 import {Injectable} from '@angular/core';
-import {HostInterface} from './host-interface';
+import {StandardHostInterface} from './standard-host-interface';
 import {TransactionSync} from './transaction-sync';
+import {BankProviderManager} from './bank-provider-manager';
 
 @Injectable()
 export class BankSync {
 
-    constructor(hostInterface: HostInterface, transactionSync: TransactionSync) {
-        // TODO: HostInterface standard host interface in the providers list in app module
+    constructor(private standardHostInterface: StandardHostInterface, private transactionSync: TransactionSync, private bankProviderManager: BankProviderManager) {
+
+    }
+
+    async sync(providerName: string, accountNumber: string) {
+        
+        let provider = this.bankProviderManager.newProvider(providerName);
+        await provider.connect(this.standardHostInterface);
+        let bankAccounts = await provider.getAccounts();
+        let bankAccount = bankAccounts.find(b => accountNumber == b.accountNumber);
+        let transactions = await provider.getTransactions(bankAccount);
+        this.transactionSync.merge(transactions);
+        await provider.close();
     }
 
     // TODO: controls the process of syncing the bank account. eg. starts up a provider, gets balances and transactions, etc

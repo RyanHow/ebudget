@@ -32,6 +32,10 @@ import {Dbms} from '../db/dbms';
 import {PersistenceProviderManager} from '../db/persistence-provider-manager';
 import {EditorProvider} from '../services/editor-provider';
 import {Configuration} from '../services/configuration-service';
+import {BankProviderManager} from '../bank/bank-provider-manager';
+import {StandardHostInterface} from '../bank/standard-host-interface';
+import {TransactionSync} from '../bank/transaction-sync';
+import {BankSync} from '../bank/bank-sync';
 import {Replication} from '../services/replication-service';
 import {UpdatedCheck} from '../services/updated-check';
 import {UpdateCheck} from '../services/update-check';
@@ -120,7 +124,12 @@ import {Clipboard} from '@ionic-native/clipboard';
     AddEditCategorySimpleWeeklyModal,
     CategoryPopover
   ],
-  providers: [{provide: ErrorHandler, useClass: AppExceptionHandler},
+  providers: [
+  {provide: ErrorHandler, useClass: AppExceptionHandler},
+  StandardHostInterface,
+  BankProviderManager,
+  TransactionSync,
+  BankSync,
   Device,
   Clipboard,
   SQLite,
