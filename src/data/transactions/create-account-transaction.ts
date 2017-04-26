@@ -10,6 +10,7 @@ export class CreateAccountTransaction extends DbTransaction {
     name: string;
     accountType: 'Bank' | 'Cash';
     openingBalance: BigJsLibrary.BigJS;
+    bankDetails: {accountNumber: string; bankProviderName: string};
 
 
     getTypeId(): string {
@@ -26,6 +27,8 @@ export class CreateAccountTransaction extends DbTransaction {
         a.name = this.name;
         a.openingBalance = this.openingBalance;
         a.accountType = this.accountType;
+        a.x.accountNumber = this.bankDetails.accountNumber;
+        a.x.bankProviderName = this.bankDetails.bankProviderName;
         a.processors.push(new AccountBalanceProcessor(a));
         table.insert(a);
         tp.mapTransactionAndRecord(this, a);
@@ -40,6 +43,8 @@ export class CreateAccountTransaction extends DbTransaction {
         a.name = this.name;
         a.openingBalance = this.openingBalance;
         a.accountType = this.accountType;
+        a.x.accountNumber = this.bankDetails.accountNumber;
+        a.x.bankProviderName = this.bankDetails.bankProviderName;
 
         table.update(a);
     }

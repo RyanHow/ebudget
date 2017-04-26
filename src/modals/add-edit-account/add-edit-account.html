@@ -37,6 +37,19 @@
                     <ion-input currency-field name="openingBalance" [(ngModel)]="data.openingBalance"required></ion-input>
                 </ion-item>
             </ion-list>
+            <ion-list *ngIf="data.accountType == 'Bank'">
+                <ion-item>
+                    <ion-label>Bank Provider</ion-label>
+                    <ion-select name="bankProviderName" [(ngModel)]="data.bankProviderName">
+                        <ion-option value="">&lt;No Provider&gt;</ion-option>
+                        <ion-option *ngFor="let bankProviderName of bankProviderManager.getProviderNames()" value="{{bankProviderName}}">{{bankProviderName}}</ion-option>    
+                    </ion-select>
+                </ion-item>
+                <ion-item *ngIf="data.bankProviderName">
+                    <ion-label>Account Number</ion-label>
+                    <ion-input type="text" name="accountNumber" [(ngModel)]="data.accountNumber"></ion-input>
+                </ion-item>
+            </ion-list>
         </form>
     </div>
     <button ion-button *ngIf="editing" color="danger" clear small (click)="deleteAccountConfirm()">Delete</button>

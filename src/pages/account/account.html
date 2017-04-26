@@ -10,4 +10,8 @@
 <ion-content>
   <button ion-item (click)="editAccount()">Edit</button>
   <ion-item>{{account.balance}}</ion-item>
+
+  <ion-item><ion-label>Account Number</ion-label>{{account.x.accountNumber}}</ion-item>
+  <button ion-item (click)="syncBank()">Sync Bank ({{account.x.bankProviderName}})</button>
+
 </ion-content>

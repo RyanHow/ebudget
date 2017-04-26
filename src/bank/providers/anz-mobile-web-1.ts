@@ -42,17 +42,17 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
                     // But I do just want to get it working at the moment to test the rest of the system
                     // How to wait ?... poll it with a timer ? - Wait for "Your accounts" page?
                     let checker = setInterval(() => {
-                        let ele = document.getElementsByTagName('H1')[0];
-                        if (ele && ele.textContent.toLowerCase().match('your accounts')) {
-                            // TODO: And the browser has stopped loading, also check on browser finished loading... (the interval will get ajax calls..., not sure if they are triggered by cordova...)
-                            // So make a function to encapsulate that logic...
-                            this.connected = true;
-                            resolve();
-                            clearInterval(checker);
-                        } else {
-                            // TODO: If error, or if browser closed, or if cancelled (how to detect??), or if timeout ?
-
-                        }
+                        this.browser.executeScript({code: "var ele = document.getElementsByTagName('H1')[0]; ele ? ele.textContent.trim().toLowerCase() : '';"}).then(val => {                        
+                            if (val[0] == 'your accounts') {
+                                // TODO: And the browser has stopped loading, also check on browser finished loading... (the interval will get ajax calls..., not sure if they are triggered by cordova...)
+                                // So make a function to encapsulate that logic...
+                                this.connected = true;
+                                resolve();
+                                clearInterval(checker);
+                            } else {
+                                // TODO: If error, or if browser closed, or if cancelled (how to detect??), or if timeout ?
+                            }
+                        });
                     }, 1000);
 
                 }).catch(err => {
@@ -72,7 +72,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
         // TODO: make sure on accounts listing page, OR nav to that page
         
         return this.browser.executeScript({code: 'document.getElementsByClassName("normalLayoutAccounts")[0].innerHTML'}).then((val) => {
-            let dom = new DOMParser().parseFromString(val, 'text/html');
+            let dom = new DOMParser().parseFromString(val[0], 'text/html');
             let bankAccounts : BankAccount[] = []; 
             Array.from(dom.getElementsByClassName('listViewAccountWrapperYourAccounts')).forEach(ele => {
                 let bankAccount = new BankAccount();
@@ -98,17 +98,19 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
 
     async getTransactions(account: BankAccount): Promise<BankAccountTransaction[]> {
         // TODO: state tracking... At the moment, always click "home", then nav to account (document.getElementById(accountName).click())
-        (<HTMLAnchorElement> document.querySelector('li.menuLiClass:nth-child(1) > a')).click();
+        
+        // TODO: these shoudl be in a 
+        this.browser.executeScript({code: "document.querySelector('li.menuLiClass:nth-child(1) > a').click();"});
         await this.waitForLoadingToStop();
 
-        (<HTMLAnchorElement> document.querySelector('#' + account.accountName.split(' ').join('') + ' > a')).click();
+        this.browser.executeScript({code: "document.querySelector('#" + account.accountName.split(' ').join('') + " > a').click();"});
         await this.waitForLoadingToStop();
 
         let bankAccountTransactions : BankAccountTransaction[] = []; 
 
         return this.browser.executeScript({code: 'JSON.stringify(processedTransactionsSingleSet)'}).then((txnList) => {
 
-            JSON.parse(txnList).forEach(txnObj => {
+            JSON.parse(txnList[0]).forEach(txnObj => {
                 let bankAccountTransaction = new BankAccountTransaction();
                 bankAccountTransaction.description = txnObj.getTxnDesc;
                 bankAccountTransaction.amount = txnObj.getTxnAmt;
@@ -127,8 +129,13 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
     close(): Promise<void> {
         // TODO: Logout (if possible) and close the browser object
         // TODO: Host needs to close any open browser objects here and log it if was left dangling
+        // TODO: Note: logging out successfully should remove the window listener
         this.connected = false;
-        this.browser.close();
+        this.browser.executeScript({code: 'window.onbeforeunload = null;'}).then(() => {
+            this.browser.close();
+        }, () => {
+            this.browser.close();
+        });
         return Promise.resolve();
     }
 

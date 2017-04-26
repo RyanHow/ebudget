@@ -23,4 +23,8 @@ export class BankProviderManager {
         return provider;
     }
 
+    getProviderNames(): string[] {
+        return Array.from(this.providers.keys());
+    }
+
 }

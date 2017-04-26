@@ -3,6 +3,7 @@ import {Db} from '../../db/db';
 import {Account} from '../../data/records/account';
 import {Dbms} from '../../db/dbms';
 import {EngineFactory} from '../../engine/engine-factory';
+import {BankProviderManager} from '../../bank/bank-provider-manager';
 import {Engine} from '../../engine/engine';
 import {CreateAccountTransaction} from '../../data/transactions/create-account-transaction';
 import {Component} from '@angular/core';
@@ -15,10 +16,10 @@ export class AddEditAccountModal {
   db: Db;
   engine: Engine;
   editing: boolean;
-  data: {name: string; openingBalance: string; accountType: 'Cash' | 'Bank';};
+  data: {name: string; openingBalance: string; accountType: 'Cash' | 'Bank'; accountNumber: string; bankProviderName: string;};
   transaction: CreateAccountTransaction;
   
-  constructor(public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController, private engineFactory: EngineFactory, private appController: App) {    
+  constructor(public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController, private engineFactory: EngineFactory, private appController: App, private bankProviderManager: BankProviderManager) {    
     this.db = dbms.getDb(navParams.data.budgetId);
     this.engine = engineFactory.getEngineById(this.db.id);
     this.data = <any>{};
@@ -30,6 +31,8 @@ export class AddEditAccountModal {
       this.data.openingBalance = account.openingBalance == null ? "0" : account.openingBalance.toString();
       this.data.accountType = account.accountType;
       this.transaction = this.db.transactionProcessor.findTransactionsForRecord(account, CreateAccountTransaction)[0];
+      this.data.accountNumber = account.x.accountNumber;
+      this.data.accountNumber = account.x.bankProviderName;
     } else {
       this.editing = false;
       this.transaction = new CreateAccountTransaction();
@@ -45,6 +48,11 @@ export class AddEditAccountModal {
     this.transaction.name = this.data.name;
     this.transaction.openingBalance = new Big(this.data.openingBalance);
     this.transaction.accountType = this.data.accountType;
+    this.transaction.bankDetails = <any> {};
+    this.transaction.bankDetails.accountNumber = this.data.accountNumber;
+    this.transaction.bankDetails.bankProviderName = this.data.bankProviderName;
+
+
     this.db.applyTransaction(this.transaction);
     let accountRecord = this.db.transactionProcessor.findRecordsForTransaction(this.transaction, Account)[0];
 

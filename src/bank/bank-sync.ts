@@ -21,8 +21,6 @@ export class BankSync {
         await provider.close();
     }
 
-    // TODO: controls the process of syncing the bank account. eg. starts up a provider, gets balances and transactions, etc
-
     // This will have the method (sync: account) to do a sync of that account
 
     // Controls concurrency

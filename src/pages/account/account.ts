@@ -5,6 +5,7 @@ import {Engine} from '../../engine/engine';
 import {EngineFactory} from '../../engine/engine-factory';
 import {Account} from '../../data/records/account';
 import {AddEditAccountModal} from '../../modals/add-edit-account/add-edit-account';
+import {BankSync} from '../../bank/bank-sync';
 
 @Component({
   templateUrl: 'account.html'
@@ -14,15 +15,18 @@ export class AccountPage {
   engine: Engine;
   account: Account;
 
-  constructor(private nav: NavController, private dbms: Dbms, private navParams: NavParams, private engineFactory: EngineFactory, private modalController: ModalController) {
+  constructor(private nav: NavController, private dbms: Dbms, private navParams: NavParams, private engineFactory: EngineFactory, private modalController: ModalController, private bankSync: BankSync) {
     this.engine = this.engineFactory.getEngineById(navParams.data.budgetId);
     this.account = this.engine.getRecordById(Account, navParams.data.accountId);
-    
   }
   
   editAccount() {
     let modal = this.modalController.create(AddEditAccountModal, {budgetId: this.engine.db.id, accountId: this.account.id});
     modal.present();
+  }
+
+  syncBank() {
+    this.bankSync.sync(this.account.x.bankProviderName, this.account.x.accountNumber);
   }
 
 
