@@ -1,8 +1,9 @@
 import {InAppBrowserObject} from '@ionic-native/in-app-browser';
 
 export interface HostInterface {
-    requestInteraction();
+    provideBrowser(url: string) : InAppBrowserObject
+    showBrowser();
+    hideBrowser();
     prompt();
     notify();
-    provideBrowser(url: string) : InAppBrowserObject
 }

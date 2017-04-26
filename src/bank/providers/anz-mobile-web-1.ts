@@ -35,16 +35,17 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
                 this.browser.executeScript({code: 'document.title'}).then((val) => {
                     this.logger.info(val);
 
-                    this.hostInterface.requestInteraction(); // TODO Show the browser...
+                    this.hostInterface.showBrowser(); 
 
-                    // TODO: Wait for the user to log in (successfully!)
-                    // TODO: Maybe need to code this up as the various states and paths, then write the engine to execute that...
-                    // But I do just want to get it working at the moment to test the rest of the system
-                    // How to wait ?... poll it with a timer ? - Wait for "Your accounts" page?
+                    let subscription1 = this.browser.on('loadstart').subscribe(ev => {
+                        subscription1.unsubscribe();
+                        this.hostInterface.hideBrowser();
+                    });
+
                     let checker = setInterval(() => {
                         this.browser.executeScript({code: "var ele = document.getElementsByTagName('H1')[0]; ele ? ele.textContent.trim().toLowerCase() : '';"}).then(val => {                        
                             if (val[0] == 'your accounts') {
-                                // TODO: And the browser has stopped loading, also check on browser finished loading... (the interval will get ajax calls..., not sure if they are triggered by cordova...)
+                                // TODO: And the browser has stopped loading check (maybe record a browser "idle" ?), and wait for some idle time?, also check on browser finished loading... (the interval will get ajax calls..., not sure if they are triggered by cordova...)
                                 // So make a function to encapsulate that logic...
                                 this.connected = true;
                                 resolve();
@@ -52,6 +53,9 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
                             } else {
                                 // TODO: If error, or if browser closed, or if cancelled (how to detect??), or if timeout ?
                             }
+                        });
+                        this.browser.executeScript({code: "document.location.href"}).then(val => {
+                            if (val[0].match('relogin')) this.hostInterface.showBrowser();
                         });
                     }, 1000);
 
@@ -126,17 +130,25 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
 
     }
 
-    close(): Promise<void> {
+    async close() {
         // TODO: Logout (if possible) and close the browser object
         // TODO: Host needs to close any open browser objects here and log it if was left dangling
         // TODO: Note: logging out successfully should remove the window listener
+        this.browser.executeScript({code: "document.querySelector('.button-logout').click();"});
+        await this.waitForLoadingToStop();
         this.connected = false;
+        // TODO: If Not logged out, then force quit below...
+        this.browser.close();
+
+        // Force quit...
+        /*
         this.browser.executeScript({code: 'window.onbeforeunload = null;'}).then(() => {
             this.browser.close();
         }, () => {
             this.browser.close();
         });
         return Promise.resolve();
+        */
     }
 
 }
