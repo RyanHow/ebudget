@@ -13,5 +13,6 @@
 
   <ion-item><ion-label>Account Number</ion-label>{{account.x.accountNumber}}</ion-item>
   <button ion-item [disabled]="syncing" (click)="syncBank()">Sync Bank ({{account.x.bankProviderName}})</button>
+  <button ion-item [disabled]="!syncing" (click)="showSyncWindow()">Show Sync Window</button>
 
 </ion-content>

@@ -8,6 +8,7 @@ import {AddEditAccountModal} from '../../modals/add-edit-account/add-edit-accoun
 import {BankSync} from '../../bank/bank-sync';
 import {Notifications} from '../../services/notifications';
 import {Logger} from '../../services/logger';
+import {StandardHostInterface} from '../../bank/standard-host-interface';
 
 @Component({
   templateUrl: 'account.html'
@@ -19,7 +20,7 @@ export class AccountPage {
   syncing: boolean;
   private logger = Logger.get('AccountPage');
 
-  constructor(private nav: NavController, private dbms: Dbms, private navParams: NavParams, private engineFactory: EngineFactory, private modalController: ModalController, private bankSync: BankSync, private notifications: Notifications) {
+  constructor(private nav: NavController, private dbms: Dbms, private navParams: NavParams, private engineFactory: EngineFactory, private modalController: ModalController, private bankSync: BankSync, private notifications: Notifications, private standardHostInterface: StandardHostInterface) {
     this.engine = this.engineFactory.getEngineById(navParams.data.budgetId);
     this.account = this.engine.getRecordById(Account, navParams.data.accountId);
   }
@@ -43,6 +44,10 @@ export class AccountPage {
     } finally {
       this.syncing = false;
     }
+  }
+
+  showSyncWindow() {
+    this.standardHostInterface.manualShowBrowser();
   }
 
 

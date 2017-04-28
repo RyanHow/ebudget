@@ -110,9 +110,62 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
         this.browser.executeScript({code: "document.querySelector('#" + account.accountName.split(' ').join('') + " > a').click();"});
         await this.waitForLoadingToStop();
 
+        // TODO: Sometimes this fires too soon ?
+        this.browser.executeScript({code: "document.querySelector('.transactionAuthSection > a:nth-child(1)').click();"});
+        await this.waitForLoadingToStop();
+
         let bankAccountTransactions : BankAccountTransaction[] = []; 
 
-        return this.browser.executeScript({code: 'JSON.stringify(processedTransactionsSingleSet)'}).then((txnList) => {
+        return this.browser.executeScript({code: 'document.getElementsByClassName("tabsContainerAcctTranAuth")[0].innerHTML'}).then((val) => {
+            let dom = new DOMParser().parseFromString(val[0], 'text/html');
+            Array.from(dom.getElementsByClassName('displayTable')).forEach(ele => {
+
+                let bankAccountTransaction = new BankAccountTransaction();
+
+                bankAccountTransaction.description = ele.querySelector('.tran-desc-div').textContent.trim().split(/\s+/).join(' ');
+                bankAccountTransaction.amount = ele.querySelector('.tran-amount-div').textContent.trim().replace("$", "").replace(",", '').replace(',','').replace('+', '');
+                (<any> bankAccountTransaction).balance = (ele.querySelector('.tran-balance-div').textContent.replace('Balance', '').trim().match(/\S+/g) || [''])[0].replace("$", "").replace(",", '').replace(',','');
+
+                let dateMonthParts = ele.querySelector('.dateNmonthSection').textContent.match(/\S+/g) || [];
+
+                let lastParentElement = ele.parentElement;
+                while (lastParentElement.parentElement.getElementsByClassName('monthYearDisplay').length == 0) lastParentElement = lastParentElement.parentElement;
+                let previousSibling = lastParentElement.previousElementSibling;
+                while (previousSibling && previousSibling.getElementsByClassName('monthYearDisplay').length != 1) previousSibling = previousSibling.previousElementSibling;
+                let monthYearParts = previousSibling ? previousSibling.getElementsByClassName('monthYearDisplay')[0].textContent.match(/\S+/g) || [] : [];
+                
+                if (!(<any> bankAccountTransaction).balance && dateMonthParts.length == 2) {
+
+                    bankAccountTransaction.status = 'authorised';
+                    let testDate = moment().date(Number(dateMonthParts[0])).month(dateMonthParts[1]);
+                    if (testDate.format(Utils.STANDARD_DATE_FORMAT) > moment().format(Utils.STANDARD_DATE_FORMAT)) testDate.subtract(1, 'years');
+                    bankAccountTransaction.transactionDate = testDate.format(Utils.STANDARD_DATE_FORMAT);
+
+                } else if (dateMonthParts.length == 0 && monthYearParts.length == 1 && monthYearParts[0] == 'Recent') {
+
+                    bankAccountTransaction.status = 'recent';
+                    bankAccountTransaction.transactionDate = null;
+
+                } else if (dateMonthParts.length == 2 && monthYearParts.length == 2) {
+
+                    bankAccountTransaction.status = 'processed';
+                    let dateMonth = moment().date(Number(dateMonthParts[0])).month(dateMonthParts[1]);
+                    let monthYear = moment().month(monthYearParts[0]).year(Number(monthYearParts[1]));
+                    if (dateMonth.month() != monthYear.month()) {/* TODO: Error */}
+                    bankAccountTransaction.transactionDate = dateMonth.year(monthYear.year()).format(Utils.STANDARD_DATE_FORMAT);
+
+                } else {
+                    // Invalid / Error
+                }
+
+                bankAccountTransactions.push(bankAccountTransaction);
+
+            });
+
+            return bankAccountTransactions;
+        });
+
+        /*return this.browser.executeScript({code: 'JSON.stringify(processedTransactionsSingleSet)'}).then((txnList) => {
 
             JSON.parse(txnList[0]).forEach(txnObj => {
                 let bankAccountTransaction = new BankAccountTransaction();
@@ -126,7 +179,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
                 bankAccountTransactions.push(bankAccountTransaction);
             });
             return bankAccountTransactions;
-        });
+        });*/
 
     }
 
