@@ -29,6 +29,7 @@ import {AddEditSplitTransactionModal} from '../modals/add-edit-split-transaction
 import {AddEditSplitTransferModal} from '../modals/add-edit-split-transfer/add-edit-split-transfer';
 
 import {AnzMobileWeb1Provider} from '../bank/providers/anz-mobile-web-1';
+import {MockDataProvider} from '../bank/providers/mock-data-provider';
 
 @Component({
   templateUrl: 'app.html'
@@ -119,6 +120,7 @@ export class App {
 
   registerBankProviders() {
     this.bankProviderManager.registerProvider(AnzMobileWeb1Provider);
+    this.bankProviderManager.registerProvider(MockDataProvider);
   }
 
 }
