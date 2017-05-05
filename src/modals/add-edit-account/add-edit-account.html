@@ -49,6 +49,10 @@
                     <ion-label>Account Number</ion-label>
                     <ion-input type="text" name="accountNumber" [(ngModel)]="data.accountNumber"></ion-input>
                 </ion-item>
+                <ion-item *ngIf="data.bankProviderName">
+                    <ion-label>Opening Balance</ion-label>
+                    <ion-input currency-field name="openingBankBalance" [(ngModel)]="data.openingBankBalance"></ion-input>
+                </ion-item>
             </ion-list>
         </form>
     </div>

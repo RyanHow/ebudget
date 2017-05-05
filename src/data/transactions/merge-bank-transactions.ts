@@ -1,5 +1,6 @@
 import {DbTransaction, TransactionStringEnv} from '../../db/transaction';
 import {BankTransaction} from '../records/bank-transaction';
+import {Account} from '../records/account';
 import {TransactionProcessor} from '../../db/transaction-processor';
 import {Logger} from '../../services/logger';
 import Big from 'big.js';
@@ -13,6 +14,8 @@ export class MergeBankTransactions extends DbTransaction {
     flags: {bankTransactionId: number, flag: string; set: boolean}[];
     accountId: number;
     checksum: string;
+    accountBalance: BigJsLibrary.BigJS;
+    timestamp: string; 
 
     getTypeId(): string {
         return 'MergeBankTransactions';
@@ -70,9 +73,17 @@ export class MergeBankTransactions extends DbTransaction {
         }
 
 
+        // TODO: Move this to be a processor
+        let openingBankBalance = tp.table(Account).by('id', <any> this.accountId).x.openingBankBalance || new Big('0');
+        tp.table(Account).by('id', <any> this.accountId).x.calculatedBankBalance = table.chain().find({'accountId': this.accountId}).data().filter(t => !t.flagRemoved).reduce((a, b) => a.plus(b.amount), openingBankBalance);
+        tp.table(Account).by('id', <any> this.accountId).x.bankBalance = this.accountBalance;
+        tp.table(Account).by('id', <any> this.accountId).x.bankBalanceTimestamp = this.timestamp;
+
     }
 
     validateChecksum(tp: TransactionProcessor): boolean {
+        if (!this.checksum) return true;
+        
         let allData = tp.table(BankTransaction).chain().find({'accountId': <any> this.accountId}).data().filter(t => t.id < this.id * 100000);
         let checksum = allData.filter(t => t.status === 'processed').length + "_" + allData.filter(t => t.status === 'authorised').length + "_" + allData.filter(t => t.status === 'recent').length;
         return this.checksum === checksum;
@@ -97,6 +108,8 @@ export class MergeBankTransactions extends DbTransaction {
                 line.amount = new Big(line.amount);
             });
         }
+        if (field === 'accountBalance')
+            value = new Big(value);
         return value;
     }
 

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BankAccountTransaction} from './provider-interface';
+import {BankAccountTransaction, BankAccount} from './provider-interface';
 import {Logger} from '../services/logger';
 import {BankTransaction} from '../data/records/bank-transaction';
 import {Account} from '../data/records/account';
@@ -19,7 +19,7 @@ export class TransactionSync {
 
     private logger = Logger.get('TransactionSync');
 
-    merge(engine: Engine, account: Account, bankAccountTransactions: BankAccountTransaction[]) {
+    merge(engine: Engine, account: Account, bankAccount: BankAccount, bankAccountTransactions: BankAccountTransaction[]) {
 
         //TODO: The page for viewing them
         //TODO: A "clear" button for the bank transactions
@@ -126,29 +126,28 @@ export class TransactionSync {
         let toFlag = unmatchedExistingRecords.filter(t => !t.flagRemoved).map(t=> {return {bankTransactionId: t.id, flag: 'removed', set: true};})
                     .concat(inTransactions.filter(t => t.matched && t.matchedAccountTransaction.flagRemoved).map(t=> {return {bankTransactionId: t.matchedAccountTransaction. id, flag: 'removed', set: undefined};}));
 
-        if (toUpgrade.length || toAdd.length || toFlag.length) {
 
-            let mergeBankTransactions = new MergeBankTransactions();
-            mergeBankTransactions.accountId = account.id;
-            
-            if (toUpgrade)
-                mergeBankTransactions.inserts = toAdd.map(t => {return {date: t.transactionDate || Utils.nowYYYYMMDD(), status: t.status, description: t.description, amount: t.amountBig};});
-            
-            if (toAdd)
-               mergeBankTransactions.upgrades = toUpgrade.map(t => {return {bankTransactionId: t.matchedAccountTransaction.id, date: t.transactionDate, status: t.status, description: t.description, amount: t.amountBig};});
-            
-            if (toFlag)
-                mergeBankTransactions.flags = toFlag;
-                
+        let mergeBankTransactions = new MergeBankTransactions();
+        mergeBankTransactions.accountId = account.id;
+        
+        if (toUpgrade)
+            mergeBankTransactions.inserts = toAdd.map(t => {return {date: t.transactionDate || Utils.nowYYYYMMDD(), status: t.status, description: t.description, amount: t.amountBig};});
+        
+        if (toAdd)
+            mergeBankTransactions.upgrades = toUpgrade.map(t => {return {bankTransactionId: t.matchedAccountTransaction.id, date: t.transactionDate, status: t.status, description: t.description, amount: t.amountBig};});
+        
+        if (toFlag)
+            mergeBankTransactions.flags = toFlag;
 
-            mergeBankTransactions.generateChecksum(engine.db.transactionProcessor);
+        if (account.x.bankBalance + '' !== bankAccount.accountBalance + '') mergeBankTransactions.accountBalance = new Big(bankAccount.accountBalance);
 
-            engine.db.applyTransaction(mergeBankTransactions);
+        if (toUpgrade || toAdd || toFlag || mergeBankTransactions.accountBalance) mergeBankTransactions.generateChecksum(engine.db.transactionProcessor);
 
-        } else {
-            // TODO: Notify that there is nothing new to sync, already up to date, or return a message as such...
+        mergeBankTransactions.timestamp = new Date().toISOString();
 
-        }
+
+        engine.db.applyTransaction(mergeBankTransactions);
+
 
     }
 

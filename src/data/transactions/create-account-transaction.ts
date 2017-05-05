@@ -10,7 +10,7 @@ export class CreateAccountTransaction extends DbTransaction {
     name: string;
     accountType: 'Bank' | 'Cash';
     openingBalance: BigJsLibrary.BigJS;
-    bankDetails: {accountNumber: string; bankProviderName: string};
+    bankDetails: {accountNumber: string; bankProviderName: string; openingBankBalance: BigJsLibrary.BigJS};
 
 
     getTypeId(): string {
@@ -29,6 +29,7 @@ export class CreateAccountTransaction extends DbTransaction {
         a.accountType = this.accountType;
         a.x.accountNumber = this.bankDetails == null ? undefined : this.bankDetails.accountNumber;
         a.x.bankProviderName = this.bankDetails == null ? undefined : this.bankDetails.bankProviderName;
+        a.x.openingBankBalance = this.bankDetails == null ? undefined : this.bankDetails.openingBankBalance;
         a.processors.push(new AccountBalanceProcessor(a));
         table.insert(a);
         tp.mapTransactionAndRecord(this, a);
@@ -45,6 +46,7 @@ export class CreateAccountTransaction extends DbTransaction {
         a.accountType = this.accountType;
         a.x.accountNumber = this.bankDetails == null ? undefined : this.bankDetails.accountNumber;
         a.x.bankProviderName = this.bankDetails == null ? undefined : this.bankDetails.bankProviderName;
+        a.x.openingBankBalance = this.bankDetails == null ? undefined : this.bankDetails.openingBankBalance;
 
         table.update(a);
     }
@@ -58,6 +60,10 @@ export class CreateAccountTransaction extends DbTransaction {
     deserialize(field: string, value: any): any {
         if (field === 'openingBalance' && value != null)
             return new Big(value);
+        if (field === 'bankDetails' && value != null) {
+            if (value.openingBankBalance != null) value.openingBankBalance = new Big(value.openingBankBalance);
+        }
+            
         return value;
     }
 

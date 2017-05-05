@@ -16,7 +16,7 @@ export class AddEditAccountModal {
   db: Db;
   engine: Engine;
   editing: boolean;
-  data: {name: string; openingBalance: string; accountType: 'Cash' | 'Bank'; accountNumber: string; bankProviderName: string;};
+  data: {name: string; openingBalance: string; accountType: 'Cash' | 'Bank'; accountNumber: string; bankProviderName: string; openingBankBalance: string};
   transaction: CreateAccountTransaction;
   
   constructor(public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController, private engineFactory: EngineFactory, private appController: App, private bankProviderManager: BankProviderManager) {    
@@ -33,6 +33,7 @@ export class AddEditAccountModal {
       this.transaction = this.db.transactionProcessor.findTransactionsForRecord(account, CreateAccountTransaction)[0];
       this.data.accountNumber = account.x.accountNumber;
       this.data.bankProviderName = account.x.bankProviderName;
+      this.data.openingBankBalance = account.x.openingBankBalance == null ? "0" : account.x.openingBankBalance;
     } else {
       this.editing = false;
       this.transaction = new CreateAccountTransaction();
@@ -51,6 +52,7 @@ export class AddEditAccountModal {
     this.transaction.bankDetails = <any> {};
     this.transaction.bankDetails.accountNumber = this.data.accountNumber;
     this.transaction.bankDetails.bankProviderName = this.data.bankProviderName;
+    this.transaction.bankDetails.openingBankBalance = new Big(this.data.openingBankBalance);
 
 
     this.db.applyTransaction(this.transaction);

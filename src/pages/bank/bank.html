@@ -10,6 +10,10 @@
 <ion-content>
 
   <ion-item>Account Number {{account.x.accountNumber}}</ion-item>
+  <ion-item>Balance {{account.x.bankBalance}}</ion-item>
+  <ion-item>Calculated Balance {{account.x.calculatedBankBalance}}</ion-item>
+  <ion-item>Last Updated {{account.x.bankBalanceTimestamp}}</ion-item>
+  <ion-item *ngIf="account.x.bankBalance && account.x.calculatedBankBalance">Difference {{account.x.bankBalance.minus(account.x.calculatedBankBalance)}}</ion-item>
   <button ion-item [disabled]="syncing" (click)="syncBank()">Sync Bank ({{account.x.bankProviderName}})</button>
   <button ion-item [disabled]="!syncing" (click)="showSyncWindow()">Show Sync Window</button>
 

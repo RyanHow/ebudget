@@ -23,7 +23,7 @@ export class BankSync {
         let bankAccounts = await provider.getAccounts();
         let bankAccount = bankAccounts.find(b => account.x.accountNumber == b.accountNumber);
         let transactions = await provider.getTransactions(bankAccount);
-        this.transactionSync.merge(engine, account, transactions);
+        this.transactionSync.merge(engine, account, bankAccount, transactions);
         await provider.close();
     }
 
