@@ -8,6 +8,7 @@ import {AppExceptionHandler} from './app-exception-handler';
 import {HomePage} from '../pages/home/home';
 import {BudgetSettingsPage} from '../pages/budget-settings/budget-settings';
 import {AccountPage} from '../pages/account/account';
+import {BankPage} from '../pages/bank/bank';
 import {BudgetPage} from '../pages/budget/budget';
 import {AboutPage} from '../pages/about/about';
 import {CategoryPage, CategoryPopover} from '../pages/category/category';
@@ -70,6 +71,7 @@ import {Clipboard} from '@ionic-native/clipboard';
     DevPage,
     AboutPage,
     NotificationsPage,
+    BankPage,
     ShareBudgetModal,
     AddBudgetModal,
     AddEditCategoryModal,
@@ -103,6 +105,7 @@ import {Clipboard} from '@ionic-native/clipboard';
   entryComponents: [
     App,
     HomePage,
+    BankPage,
     BudgetSettingsPage,
     BudgetPage,
     AccountPage,

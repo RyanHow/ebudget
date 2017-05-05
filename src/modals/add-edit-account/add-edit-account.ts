@@ -32,7 +32,7 @@ export class AddEditAccountModal {
       this.data.accountType = account.accountType;
       this.transaction = this.db.transactionProcessor.findTransactionsForRecord(account, CreateAccountTransaction)[0];
       this.data.accountNumber = account.x.accountNumber;
-      this.data.accountNumber = account.x.bankProviderName;
+      this.data.bankProviderName = account.x.bankProviderName;
     } else {
       this.editing = false;
       this.transaction = new CreateAccountTransaction();

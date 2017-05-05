@@ -22,6 +22,7 @@ import {CreateSplitTransfer} from '../data/transactions/create-split-transfer';
 import {InitCategoryTransferTransaction} from '../data/transactions/init-category-transfer-transaction';
 import {InitCategorySimpleWeeklyTransaction} from '../data/transactions/init-category-simple-weekly-transaction';
 import {CreateAccountTransaction} from '../data/transactions/create-account-transaction';
+import {MergeBankTransactions} from '../data/transactions/merge-bank-transactions';
 
 import {AddEditTransferModal} from '../modals/add-edit-transfer/add-edit-transfer';
 import {AddEditTransactionModal} from '../modals/add-edit-transaction/add-edit-transaction';
@@ -116,6 +117,7 @@ export class App {
     this.transactionSerializer.registerType(InitBudgetTransaction);
     this.transactionSerializer.registerType(InitCategorySimpleWeeklyTransaction);
     this.transactionSerializer.registerType(CreateAccountTransaction);
+    this.transactionSerializer.registerType(MergeBankTransactions);
   }
 
   registerBankProviders() {

@@ -9,6 +9,7 @@ import {BankSync} from '../../bank/bank-sync';
 import {Notifications} from '../../services/notifications';
 import {Logger} from '../../services/logger';
 import {StandardHostInterface} from '../../bank/standard-host-interface';
+import {BankPage} from '../bank/bank';
 
 @Component({
   templateUrl: 'account.html'
@@ -30,25 +31,8 @@ export class AccountPage {
     modal.present();
   }
 
-  async syncBank() {
-    this.syncing = true;
-
-    // TODO: Does try/catch work on async/await ?
-
-    try {
-      await this.bankSync.sync(this.account.x.bankProviderName, this.account.x.accountNumber);
-      this.notifications.notify("Syncing Done");
-    } catch (error) {
-      this.logger.info("Bank Sync Error", error);
-      this.notifications.notify("Error syncing: " + error);
-    } finally {
-      this.syncing = false;
-    }
+  gotoBank() {
+    this.nav.push(BankPage, {budgetId: this.navParams.data.budgetId,  accountId: this.navParams.data.accountId});
   }
-
-  showSyncWindow() {
-    this.standardHostInterface.manualShowBrowser();
-  }
-
 
 }

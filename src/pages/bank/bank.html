@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <main-menu-icon></main-menu-icon>
+    </button>
+    <ion-title>{{account.name}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-item>Account Number {{account.x.accountNumber}}</ion-item>
+  <button ion-item [disabled]="syncing" (click)="syncBank()">Sync Bank ({{account.x.bankProviderName}})</button>
+  <button ion-item [disabled]="!syncing" (click)="showSyncWindow()">Show Sync Window</button>
+
+  <ion-item *ngFor="let t of transactionView.data()">{{t.flagRemoved}} {{t.amount}} {{t.status}} {{t.date}} {{t.description}}</ion-item>
+
+</ion-content>

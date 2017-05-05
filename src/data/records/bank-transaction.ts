@@ -8,6 +8,7 @@ export class BankTransaction extends Record<BankTransaction> {
     public amount: BigJsLibrary.BigJS;
     public status: 'recent' | 'authorised' | 'processed';
     public accountId: number;
+    public flagRemoved: boolean;
 
     tableName(): string {
         return 'BankTransaction';
