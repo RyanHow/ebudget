@@ -140,8 +140,9 @@ export class TransactionSync {
             mergeBankTransactions.flags = toFlag;
 
         if (account.x.bankBalance + '' !== bankAccount.accountBalance + '') mergeBankTransactions.accountBalance = new Big(bankAccount.accountBalance);
+        if (account.x.bankAvailableBalance + '' !== bankAccount.accountAvailableBalance + '') mergeBankTransactions.accountAvailableBalance = new Big(bankAccount.accountAvailableBalance);
 
-        if (toUpgrade || toAdd || toFlag || mergeBankTransactions.accountBalance) mergeBankTransactions.generateChecksum(engine.db.transactionProcessor);
+        if (toUpgrade || toAdd || toFlag || mergeBankTransactions.accountBalance || mergeBankTransactions.accountAvailableBalance) mergeBankTransactions.generateChecksum(engine.db.transactionProcessor);
 
         mergeBankTransactions.timestamp = new Date().toISOString();
 

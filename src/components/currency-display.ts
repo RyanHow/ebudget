@@ -25,6 +25,10 @@ export class CurrencyDisplay {
 
   @Input()
   showPositive: boolean;
+
+  @Input()
+  showNegative: boolean;
+
   
   ngOnInit() {
     // this.formatCurrency();
@@ -42,7 +46,8 @@ export class CurrencyDisplay {
     if (typeof this.highlightNegative !== 'undefined') this.highlightNegative = true;
     if (typeof this.invertedCurrency !== 'undefined') this.invertedCurrency = true;
     if (typeof this.showPositive !== 'undefined') this.showPositive = true;
-    
+    if (typeof this.showNegative !== 'undefined') this.showNegative = true;
+
         
     if (this.checkValue === this.value) return this.formattedCurrencyCached;
     this.checkValue = this.value;
@@ -61,7 +66,9 @@ export class CurrencyDisplay {
 
     if (this.positive && this.showPositive && formattedVal !== '0.00') {
         formattedVal = '+' + formattedVal;
-    } 
+    } else if (!this.positive && this.showNegative && formattedVal !== '0.00') {
+        formattedVal = '-' + formattedVal;
+    }
 
 
     this.formattedCurrencyCached = formattedVal;

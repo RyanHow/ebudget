@@ -8,7 +8,8 @@ import {BankSync} from '../../bank/bank-sync';
 import {Notifications} from '../../services/notifications';
 import {Logger} from '../../services/logger';
 import {StandardHostInterface} from '../../bank/standard-host-interface';
-import {BankTransaction} from '../../data/records/bank-transaction';
+import { BankTransaction } from '../../data/records/bank-transaction';
+import { ViewBankTransactionModal } from "../../modals/view-bank-transaction/view-bank-transaction";
 
 
 @Component({
@@ -74,5 +75,11 @@ export class BankPage {
     this.transactionView = <any> {data: function() {return []; }};
 
   }
+
+  openTransaction(t: BankTransaction) {
+    let modal = this.modalController.create(ViewBankTransactionModal, {budgetId: this.navParams.data.budgetId, bankTransactionId: t.id});
+    modal.present();
+  }
+
 
 }

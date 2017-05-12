@@ -84,6 +84,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
                 bankAccount.bsb = ele.getElementsByClassName('accountNoSection')[0].textContent.trim().split(' ')[0];
                 bankAccount.accountNumber = ele.getElementsByClassName('accountNoSection')[0].textContent.trim().split(' ')[1];
                 bankAccount.accountBalance = ele.getElementsByClassName('listViewMobileCurrentBalanceValue')[0].textContent.trim().replace('$','').replace(',','').replace(',','');
+                bankAccount.accountAvailableBalance = ele.getElementsByClassName('listViewMobileAvailableBalanceValue')[0].textContent.trim().replace('$','').replace(',','').replace(',','');
                 bankAccounts.push(bankAccount);
             });
             return bankAccounts;

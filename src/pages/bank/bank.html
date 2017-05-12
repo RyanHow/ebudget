@@ -7,16 +7,29 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="bank-page">
 
   <ion-item>Account Number {{account.x.accountNumber}}</ion-item>
   <ion-item>Balance {{account.x.bankBalance}}</ion-item>
+  <ion-item>Available Balance {{account.x.bankAvailableBalance}}</ion-item>
   <ion-item>Calculated Balance {{account.x.calculatedBankBalance}}</ion-item>
+  <ion-item>Available Calculated Balance {{account.x.calculatedbankAvailableBalance}}</ion-item>
   <ion-item>Last Updated {{account.x.bankBalanceTimestamp}}</ion-item>
   <ion-item *ngIf="account.x.bankBalance && account.x.calculatedBankBalance">Difference {{account.x.bankBalance.minus(account.x.calculatedBankBalance)}}</ion-item>
+  <ion-item *ngIf="account.x.bankAvailableBalance && account.x.calculatedbankAvailableBalance">Available Difference {{account.x.bankAvailableBalance.minus(account.x.calculatedbankAvailableBalance)}}</ion-item>
   <button ion-item [disabled]="syncing" (click)="syncBank()">Sync Bank ({{account.x.bankProviderName}})</button>
   <button ion-item [disabled]="!syncing" (click)="showSyncWindow()">Show Sync Window</button>
 
-  <ion-item *ngFor="let t of transactionView.data()">{{t.flagRemoved}} {{t.amount}} {{t.status}} {{t.date}} {{t.description}}</ion-item>
+  <ion-list>
+    <ng-container *ngFor="let t of transactionView.data(); let i = index;">
+      <ion-item-divider *ngIf="i === 0 || t.date !== transactionView.data()[i-1].date" color="light">{{t.date | dFormat}}</ion-item-divider>
+      <button ion-item (click)="openTransaction(t)">
+        <div item-left [class.unreconciled-marker]="!t.x.reconciled"></div>
+        <p style="white-space:normal">{{t.flagRemoved ? 'Removed: ' : ''}}{{t.description}}</p>
+        <ion-note *ngIf="t.status !== 'processed'">{{t.status}}</ion-note>
+        <currency-display item-right highlightPositive showPositive [value]="t.amount"></currency-display>
+      </button>
+    </ng-container>
+  </ion-list>
 
 </ion-content>

@@ -3,7 +3,7 @@ import {HostInterface} from '../host-interface';
 
 export class MockDataProvider implements ProviderInterface {
 
-    accounts : BankAccount[] = [{accountName: "Mock Account", accountNumber: "12345678", accountBalance: "1430.00", bsb: "555666"}];
+    accounts : BankAccount[] = [{accountName: "Mock Account", accountNumber: "12345678", accountBalance: "1430.00", accountAvailableBalance: "1400.00", bsb: "555666"}];
 
     data : BankAccountTransaction[][] = <any> [
             [

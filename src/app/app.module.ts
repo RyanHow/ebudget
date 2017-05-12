@@ -57,7 +57,8 @@ import {StatusBar} from '@ionic-native/status-bar';
 import {SQLite} from '@ionic-native/sqlite';
 import {Device} from '@ionic-native/device';
 import {InAppBrowser} from '@ionic-native/in-app-browser';
-import {Clipboard} from '@ionic-native/clipboard';
+import { Clipboard } from '@ionic-native/clipboard';
+import { ViewBankTransactionModal } from "../modals/view-bank-transaction/view-bank-transaction";
 
 @NgModule({
   declarations: [
@@ -83,6 +84,7 @@ import {Clipboard} from '@ionic-native/clipboard';
     AddEditTransferModal,
     AddEditAccountModal,
     AddEditCategorySimpleWeeklyModal,
+    ViewBankTransactionModal,
     CurrencyField,
     NoFocusDirective,
     ErrorLabel,
@@ -125,6 +127,7 @@ import {Clipboard} from '@ionic-native/clipboard';
     AddEditTransferModal,
     AddEditAccountModal,
     AddEditCategorySimpleWeeklyModal,
+    ViewBankTransactionModal,
     CategoryPopover
   ],
   providers: [

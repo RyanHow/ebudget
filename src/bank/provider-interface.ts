@@ -3,6 +3,7 @@ import {HostInterface} from './host-interface';
 export class BankAccount {
     public accountName: string;
     public accountBalance: string;
+    public accountAvailableBalance: string;
     public accountNumber: string;
     public bsb: string;
 }

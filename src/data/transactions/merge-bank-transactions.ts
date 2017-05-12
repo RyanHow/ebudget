@@ -15,6 +15,7 @@ export class MergeBankTransactions extends DbTransaction {
     accountId: number;
     checksum: string;
     accountBalance: BigJsLibrary.BigJS;
+    accountAvailableBalance: BigJsLibrary.BigJS;
     timestamp: string; 
 
     getTypeId(): string {
@@ -75,8 +76,10 @@ export class MergeBankTransactions extends DbTransaction {
 
         // TODO: Move this to be a processor
         let openingBankBalance = tp.table(Account).by('id', <any> this.accountId).x.openingBankBalance || new Big('0');
-        tp.table(Account).by('id', <any> this.accountId).x.calculatedBankBalance = table.chain().find({'accountId': this.accountId}).data().filter(t => !t.flagRemoved).reduce((a, b) => a.plus(b.amount), openingBankBalance);
+        tp.table(Account).by('id', <any> this.accountId).x.calculatedBankBalance = table.chain().find({'accountId': this.accountId}).data().filter(t => !t.flagRemoved && t.status !== 'authorised').reduce((a, b) => a.plus(b.amount), openingBankBalance);
+        tp.table(Account).by('id', <any> this.accountId).x.calculatedbankAvailableBalance = table.chain().find({'accountId': this.accountId}).data().filter(t => !t.flagRemoved).reduce((a, b) => a.plus(b.amount), openingBankBalance);
         tp.table(Account).by('id', <any> this.accountId).x.bankBalance = this.accountBalance;
+        tp.table(Account).by('id', <any> this.accountId).x.bankAvailableBalance = this.accountAvailableBalance;
         tp.table(Account).by('id', <any> this.accountId).x.bankBalanceTimestamp = this.timestamp;
 
     }
