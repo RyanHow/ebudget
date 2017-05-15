@@ -22,6 +22,10 @@
             <ion-label>Amount</ion-label>
             <currency-display item-right showPositive [value]="t.amount"></currency-display>
         </ion-item>
+        <ion-item *ngIf="t.balance">
+            <ion-label>Balance</ion-label>
+            <currency-display item-right showPositive [value]="t.balance"></currency-display>
+        </ion-item>
 
         <div padding>
             <button ion-item [class.selected]="isSelected(t)" *ngFor="let t of unreconciliedAndThisReconciledTransactions()" (click)="toggleSelected(t)">

@@ -11,6 +11,7 @@ export class BankAccount {
 export class BankAccountTransaction {
     public transactionDate: string;
     public amount: string; // Big ?
+    public balance: string;
     public description: string;
     public status: 'processed' | 'recent' | 'authorised';
     // TODO: Any "extra" information?. like balance, card used, etc?

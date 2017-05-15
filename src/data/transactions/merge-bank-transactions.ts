@@ -9,8 +9,8 @@ import Big from 'big.js';
 export class MergeBankTransactions extends DbTransaction {
 
 
-    inserts: {date: string; status: string; description: string; amount: BigJsLibrary.BigJS}[];
-    upgrades: {bankTransactionId: number, date: string; status: string; description: string; amount: BigJsLibrary.BigJS}[];
+    inserts: {date: string; status: string; description: string; amount: BigJsLibrary.BigJS, balance: BigJsLibrary.BigJS, balanceSequence: number}[];
+    upgrades: {bankTransactionId: number, date: string; status: string; description: string; amount: BigJsLibrary.BigJS, balance: BigJsLibrary.BigJS, balanceSequence: number}[];
     flags: {bankTransactionId: number, flag: string; set: boolean}[];
     accountId: number;
     checksum: string;
@@ -43,6 +43,8 @@ export class MergeBankTransactions extends DbTransaction {
                 t.description = this.inserts[i].description;
                 t.status = <any> this.inserts[i].status;
                 t.accountId = this.accountId;
+                t.balance = this.inserts[i].balance;
+                t.balanceSequence = this.inserts[i].balanceSequence;
                 table.insert(t);        
                 tp.mapTransactionAndRecord(this, t);
             }
@@ -51,6 +53,8 @@ export class MergeBankTransactions extends DbTransaction {
         if (this.upgrades) {
             for (let i = 0; i < this.upgrades.length; i++) {
                 let t = table.by('id', <any> this.upgrades[i].bankTransactionId);
+                t.balance = this.upgrades[i].balance;
+                t.balanceSequence = this.upgrades[i].balanceSequence;
                 t.amount = this.upgrades[i].amount;
                 t.date = this.upgrades[i].date;
                 t.description = this.upgrades[i].description;
@@ -76,11 +80,19 @@ export class MergeBankTransactions extends DbTransaction {
 
         // TODO: Move this to be a processor
         let openingBankBalance = tp.table(Account).by('id', <any> this.accountId).x.openingBankBalance || new Big('0');
-        tp.table(Account).by('id', <any> this.accountId).x.calculatedBankBalance = table.chain().find({'accountId': this.accountId}).data().filter(t => !t.flagRemoved && t.status !== 'authorised').reduce((a, b) => a.plus(b.amount), openingBankBalance);
-        tp.table(Account).by('id', <any> this.accountId).x.calculatedbankAvailableBalance = table.chain().find({'accountId': this.accountId}).data().filter(t => !t.flagRemoved).reduce((a, b) => a.plus(b.amount), openingBankBalance);
+        let accountData = table.chain().find({'accountId': this.accountId}).data().filter(t => !t.flagRemoved);
+        let maxBalanceSequenceRecord = accountData.find(t => t.balanceSequence === Math.max.apply(null, accountData.filter(t => t.balanceSequence).map(t => t.balanceSequence)));
+        let minBalanceSequenceRecord = accountData.find(t => t.balanceSequence === Math.min.apply(null, accountData.filter(t => t.balanceSequence).map(t => t.balanceSequence)));
+        tp.table(Account).by('id', <any> this.accountId).x.calculatedBankBalance = accountData.filter(t => t.status !== 'authorised').reduce((a, b) => a.plus(b.amount), openingBankBalance);
+        tp.table(Account).by('id', <any> this.accountId).x.calculatedBankAvailableBalance = accountData.reduce((a, b) => a.plus(b.amount), openingBankBalance);
+        tp.table(Account).by('id', <any> this.accountId).x.calculatedBankProcessedBalance = accountData.filter(t => t.status === 'processed').reduce((a, b) => a.plus(b.amount), openingBankBalance);
         tp.table(Account).by('id', <any> this.accountId).x.bankBalance = this.accountBalance;
         tp.table(Account).by('id', <any> this.accountId).x.bankAvailableBalance = this.accountAvailableBalance;
+        tp.table(Account).by('id', <any> this.accountId).x.bankProcessedBalance = maxBalanceSequenceRecord ? maxBalanceSequenceRecord.balance : undefined;
+        tp.table(Account).by('id', <any> this.accountId).x.openingBankProcessedBalance = minBalanceSequenceRecord ? minBalanceSequenceRecord.balance : undefined;
         tp.table(Account).by('id', <any> this.accountId).x.bankBalanceTimestamp = this.timestamp;
+
+        // TODO: Could compare calculated balance vs bank balance for each processed to make sure records are consistent and correct and find where an error, duplicate or missing record may exist
 
     }
 
@@ -109,6 +121,7 @@ export class MergeBankTransactions extends DbTransaction {
         if (field === 'inserts' || field === 'upgrades') {
             value.forEach(line => {
                 line.amount = new Big(line.amount);
+                line.balance = line.balance == null ? undefined : new Big(line.balance);
             });
         }
         if (field === 'accountBalance' || field === 'accountAvailableBalance')

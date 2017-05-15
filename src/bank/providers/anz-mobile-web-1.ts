@@ -125,7 +125,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
 
                 bankAccountTransaction.description = ele.querySelector('.tran-desc-div').textContent.trim().split(/\s+/).join(' ');
                 bankAccountTransaction.amount = ele.querySelector('.tran-amount-div').textContent.trim().replace("$", "").replace(",", '').replace(',','').replace('+', '');
-                (<any> bankAccountTransaction).balance = (ele.querySelector('.tran-balance-div').textContent.replace('Balance', '').trim().match(/\S+/g) || [''])[0].replace("$", "").replace(",", '').replace(',','');
+                bankAccountTransaction.balance = (ele.querySelector('.tran-balance-div').textContent.replace('Balance', '').trim().match(/\S+/g) || [''])[0].replace("$", "").replace(",", '').replace(',','');
 
                 let dateMonthParts = ele.querySelector('.dateNmonthSection').textContent.match(/\S+/g) || [];
 
@@ -135,7 +135,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
                 while (previousSibling && previousSibling.getElementsByClassName('monthYearDisplay').length != 1) previousSibling = previousSibling.previousElementSibling;
                 let monthYearParts = previousSibling ? previousSibling.getElementsByClassName('monthYearDisplay')[0].textContent.match(/\S+/g) || [] : [];
                 
-                if (!(<any> bankAccountTransaction).balance && dateMonthParts.length == 2) {
+                if (!bankAccountTransaction.balance && dateMonthParts.length == 2) {
 
                     bankAccountTransaction.status = 'authorised';
                     let testDate = moment().date(Number(dateMonthParts[0])).month(dateMonthParts[1]);
@@ -163,6 +163,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
 
             });
 
+            bankAccountTransactions.reverse();
             return bankAccountTransactions;
         });
 
