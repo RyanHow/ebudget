@@ -30,7 +30,8 @@ import {AddEditSplitTransactionModal} from '../modals/add-edit-split-transaction
 import {AddEditSplitTransferModal} from '../modals/add-edit-split-transfer/add-edit-split-transfer';
 
 import {AnzMobileWeb1Provider} from '../bank/providers/anz-mobile-web-1';
-import {MockDataProvider} from '../bank/providers/mock-data-provider';
+import { MockDataProvider } from '../bank/providers/mock-data-provider';
+import { CreateTransactionReconciliation } from "../data/transactions/create-transaction-reconciliation";
 
 @Component({
   templateUrl: 'app.html'
@@ -118,6 +119,7 @@ export class App {
     this.transactionSerializer.registerType(InitCategorySimpleWeeklyTransaction);
     this.transactionSerializer.registerType(CreateAccountTransaction);
     this.transactionSerializer.registerType(MergeBankTransactions);
+    this.transactionSerializer.registerType(CreateTransactionReconciliation);
   }
 
   registerBankProviders() {

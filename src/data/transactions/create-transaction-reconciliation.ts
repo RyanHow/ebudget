@@ -99,7 +99,7 @@ export class CreateTransactionReconciliation extends DbTransaction {
     }
 
     updateBankTransactionReconciliationFlags(bankTransaction: BankTransaction) {
-        let reconTotal = bankTransaction.x.reconciliationRecords.reduce((tot, t) => tot.plus(t.amount), new Big('0'));
+        let reconTotal = bankTransaction.x.reconciliationRecords.reduce((tot, t) => tot.minus(t.amount), new Big('0'));
         bankTransaction.x.reconciled = reconTotal.eq(bankTransaction.amount);
     }
     

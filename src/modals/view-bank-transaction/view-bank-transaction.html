@@ -9,7 +9,7 @@
 
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="view-bank-transaction-modal">
     <div responsive-padding>
         <ion-item>
             {{t.description}}
@@ -23,7 +23,15 @@
             <currency-display item-right showPositive [value]="t.amount"></currency-display>
         </ion-item>
 
-        TODO HERE: List of unreconciled transaction / create transaction button as in notepad
+        <div padding>
+            <button ion-item [class.selected]="isSelected(t)" *ngFor="let t of unreconciliedAndThisReconciledTransactions()" (click)="toggleSelected(t)">
+                {{t.description}}
+                <currency-display item-right [value]="reconcileAmount(t)"></currency-display>
+            </button>
+            
+            Total: <currency-display [value]="reconciledTotal()"></currency-display>
+            
+        </div>
     </div>
     <button ion-button type="button" color="danger" clear small (click)="deleteBankTransactionConfirm()">Delete</button>
 </ion-content>

@@ -8,7 +8,7 @@ export class TransactionReconciliation extends Record<TransactionReconciliation>
     public amount: BigJsLibrary.BigJS;
 
     tableName(): string {
-        return 'Transaction';
+        return 'TransactionReconciliation';
     }
 
     initTable(table: LokiCollection<TransactionReconciliation>) {

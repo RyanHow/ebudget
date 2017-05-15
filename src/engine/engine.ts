@@ -3,11 +3,13 @@ import {Record} from '../db/record';
 import {Category} from '../data/records/category';
 import {Account} from '../data/records/account';
 import {Notifications} from '../services/notifications';
-import {Configuration} from '../services/configuration-service';
+import { Configuration } from '../services/configuration-service';
+import { Transaction } from "../data/records/transaction";
 
 export class Engine {
 
     categorySortedAlphabeticalDynamicView: LokiDynamicView<Category>;
+    transactionUnreconciledDynamicView: LokiDynamicView<Transaction>;
 
     constructor(public db: Db, notifications: Notifications, configuration: Configuration) {
         db.addEventListener(dbEvent => {
@@ -35,6 +37,11 @@ export class Engine {
         
         this.categorySortedAlphabeticalDynamicView = this.db.transactionProcessor.table(Category).addDynamicView("CategorySortedAlphabetical");
         this.categorySortedAlphabeticalDynamicView.applySort(((a, b) => (a.name+''.toLocaleLowerCase()).localeCompare(b.name+''.toLocaleLowerCase())));
+
+        this.transactionUnreconciledDynamicView = this.db.transactionProcessor.table(Transaction).addDynamicView("TransactionUnreconciled");
+        this.transactionUnreconciledDynamicView.applyWhere(t => !t.x.reconciled);
+//        this.transactionUnreconciledDynamicView.applySort(((a, b) => (a.name+''.toLocaleLowerCase()).localeCompare(b.name+''.toLocaleLowerCase())));
+
     }
     
     runAllProcessors() {
@@ -54,6 +61,10 @@ export class Engine {
         
         if (order == "alphabetical") return this.categorySortedAlphabeticalDynamicView.data();
         return this.db.transactionProcessor.table(Category).chain().data();
+    }
+
+    getTransactionsUnreconciledView() {
+        return this.transactionUnreconciledDynamicView;
     }
 
     getCategory(categoryId: any): Category {

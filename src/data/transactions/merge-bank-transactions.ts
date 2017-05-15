@@ -111,7 +111,7 @@ export class MergeBankTransactions extends DbTransaction {
                 line.amount = new Big(line.amount);
             });
         }
-        if (field === 'accountBalance')
+        if (field === 'accountBalance' || field === 'accountAvailableBalance')
             value = new Big(value);
         return value;
     }
