@@ -175,6 +175,9 @@ export class Db {
                     return;
                 } else if (!transaction.applied) {
                     // If it's not applied and it's deleted, that is the final state we want for the transaction, so lets leave it here...
+                    // Save the transaction still unless we are activating
+                    if (!this.activating) this.deleteTransaction(transaction);
+                    return;
                 } else {
                     // It's deleted AND applied, so we need to processes the deletion
                     this.deleteTransaction(transaction);

@@ -140,8 +140,8 @@ export class Configuration {
 
         return this.secureStorage.create('eBudget').then((secureStorageObject: SecureStorageObject) => {
             this.secure = secureStorageObject;
-            if (this.native) {
-                throw "Browser has no implementation of secure storage"
+            if (!this.native) {
+                throw new Error("Browser has no implementation of secure storage");
             }
             return this.secure.keys();
         }).then(keys => {
