@@ -8,6 +8,7 @@ import {Engine} from '../../engine/engine';
 import {CreateAccountTransaction} from '../../data/transactions/create-account-transaction';
 import {Component} from '@angular/core';
 import Big from 'big.js';
+import { Configuration } from "../../services/configuration-service";
 
 @Component({
   templateUrl: 'add-edit-account.html'
@@ -18,8 +19,9 @@ export class AddEditAccountModal {
   editing: boolean;
   data: {name: string; openingBalance: string; accountType: 'Cash' | 'Bank'; accountNumber: string; bankProviderName: string; openingBankBalance: string};
   transaction: CreateAccountTransaction;
+  securePrefix: string;
   
-  constructor(public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController, private engineFactory: EngineFactory, private appController: App, private bankProviderManager: BankProviderManager) {    
+  constructor(public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController, private engineFactory: EngineFactory, private appController: App, private bankProviderManager: BankProviderManager, private configuration: Configuration) {    
     this.db = dbms.getDb(navParams.data.budgetId);
     this.engine = engineFactory.getEngineById(this.db.id);
     this.data = <any>{};
@@ -34,6 +36,7 @@ export class AddEditAccountModal {
       this.data.accountNumber = account.x.accountNumber;
       this.data.bankProviderName = account.x.bankProviderName;
       this.data.openingBankBalance = account.x.openingBankBalance == null ? "0" : account.x.openingBankBalance;
+      this.securePrefix = this.engine.db.id + '-' + account.id;
     } else {
       this.editing = false;
       this.transaction = new CreateAccountTransaction();
@@ -87,6 +90,7 @@ export class AddEditAccountModal {
 
     confirm.present();
   }
+
   
   deleteAccount() {
     this.db.deleteTransaction(this.transaction);
@@ -95,4 +99,69 @@ export class AddEditAccountModal {
     this.viewCtrl.dismiss();
 
   }
+
+  securePrompt(field: string): Promise<void | boolean> {
+
+    if (!this.configuration.secureAvailable()) {
+      return this.alertController.create({
+        title: 'Secure Stoarge',
+        message: "Secure storage is unavailable: TODO: Why",
+        buttons: ['OK']
+      }).present();
+    }
+
+    return new Promise<boolean>((resolve, reject) => {
+
+      let prompt = this.alertController.create({
+        title: 'Secure Stoarge',
+        message: 'Enter secure data for "' + field + '"',
+        inputs: [
+          {
+            name: 'data',
+            placeholder: 'Secure Data',
+            type: 'password'
+          },
+        ],
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: data => {
+              resolve(false);
+            }
+          },
+          {
+            // TODO: Only if data already present
+            text: 'Delete',
+            cssClass: 'danger',
+            handler: data => {
+              this.configuration.removeSecure(field).then(() => {
+                resolve(false);
+              }).catch(error => {
+                // TODO: Prompt / log error ?
+                resolve(false);
+              });
+            }
+          },
+          {
+            text: 'Save',
+            handler: data => {
+              this.configuration.setSecure(field, data.data).then(() => {
+                resolve(true);
+              }).catch(error => {
+                // TODO: Prompt / log error ?
+                resolve(false);
+              });
+            }
+          }
+        ]
+      });
+
+      prompt.present();
+
+    });
+
+
+  }
+
 } 

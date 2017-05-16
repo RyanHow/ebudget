@@ -6,4 +6,5 @@ export interface HostInterface {
     hideBrowser();
     prompt();
     notify();
+    getParameter(key: string): string;
 }

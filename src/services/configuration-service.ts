@@ -4,11 +4,13 @@ import {Injectable} from '@angular/core';
 import {PersistenceProviderManager} from '../db/persistence-provider-manager';
 import {DbPersistenceProvider} from '../db/db-persistence-provider';
 import {Logger} from './logger';
+import {SecureStorage, SecureStorageObject} from '@ionic-native/secure-storage';
 
 type ConfigurationOption = 'experimental.transaction.notifications'
                          | 'latest-version'
                          | 'experimental.modals.show-split-transaction'
                          | 'experimental.accounts.enabled'
+                         | 'testing.secure-storage.enabled'
                          ;
 
 export interface BooleanValueAccessor {
@@ -28,6 +30,8 @@ export class Configuration {
     public persistence: DbPersistenceProvider;
     public cId: string = 'conf';
     public temporary: any = {};
+    private secure: SecureStorageObject;
+    private secureCache: any;
 
     private booleanValueAccessor = class implements BooleanValueAccessor {
         constructor(private option: string, private configuration: Configuration) {
@@ -62,8 +66,42 @@ export class Configuration {
         this.persistence.keyStore(this.cId, 'loglevel', value);
     }
 
+    removeSecure(key: string): Promise<string> {
+        let originalValue = this.secureCache[key];
+        delete this.secureCache[key];
+
+        return !this.native || (this.optionBoolean('testing.secure-storage.enabled') && !this.secure) ? Promise.resolve(originalValue) : this.secure.remove(key).catch(reason => {
+            this.logger.info("Unable to update secure storage", reason);
+            this.secureCache[key] = originalValue;
+            throw reason;
+        });
+
+    }
+
+    setSecure(key: string, value: string): Promise<string> {
+        if (value === undefined) {
+            return this.removeSecure(key);
+        }
+
+        let originalValue = this.secureCache[key];
+        this.secureCache[key] = value;
+
+        return !this.native || (this.optionBoolean('testing.secure-storage.enabled') && !this.secure) ? Promise.resolve(originalValue) : this.secure.set('secure', JSON.stringify(this.secureCache)).catch(reason => {
+            this.logger.info("Unable to update secure storage", reason);
+            this.secureCache[key] = originalValue;
+            throw reason;
+        });
+    }
+
+    getSecure(key: string): string {
+        return this.secureCache[key];
+    }
+
+    secureAvailable(): boolean {
+        return this.secureCache != null;
+    }
     
-    constructor(private persistenceProviderManager: PersistenceProviderManager, private platform: Platform, private device: Device) {
+    constructor(private persistenceProviderManager: PersistenceProviderManager, private platform: Platform, private device: Device, private secureStorage: SecureStorage) {
 
     }
     
@@ -100,7 +138,23 @@ export class Configuration {
 
         this.configured = true;
 
-        return Promise.resolve();
+        return this.secureStorage.create('eBudget').then((secureStorageObject: SecureStorageObject) => {
+            this.secure = secureStorageObject;
+            if (this.native) {
+                throw "Browser has no implementation of secure storage"
+            }
+            return this.secure.keys();
+        }).then(keys => {
+            if (keys.indexOf('secure') >= 0) return this.secure.get('secure');
+            else return '{}';
+        }).then(secureObjectString => {
+            this.secureCache = JSON.parse(secureObjectString);
+            this.logger.info("Secure storage initialised");
+        }).catch(reason => {
+            this.logger.info("Secure storage unable to be initialised", reason);
+            if (this.optionBoolean('testing.secure-storage.enabled')) this.secureCache = {};
+        });
+
     }
 
     initLogLevel() {

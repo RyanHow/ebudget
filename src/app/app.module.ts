@@ -59,6 +59,7 @@ import {Device} from '@ionic-native/device';
 import {InAppBrowser} from '@ionic-native/in-app-browser';
 import { Clipboard } from '@ionic-native/clipboard';
 import { ViewBankTransactionModal } from "../modals/view-bank-transaction/view-bank-transaction";
+import { SecureStorage } from "@ionic-native/secure-storage";
 
 @NgModule({
   declarations: [
@@ -138,6 +139,7 @@ import { ViewBankTransactionModal } from "../modals/view-bank-transaction/view-b
   BankSync,
   Device,
   Clipboard,
+  SecureStorage,
   SQLite,
   InAppBrowser,
   SplashScreen,

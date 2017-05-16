@@ -35,7 +35,18 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
                 this.browser.executeScript({code: 'document.title'}).then((val) => {
                     this.logger.info(val);
 
-                    this.hostInterface.showBrowser(); 
+
+                    let crn = this.hostInterface.getParameter('bank-login'); // TODO: These should be delcared by the provider - then can be prompted for / stored & managed...
+                    let password = this.hostInterface.getParameter('bank-password');
+                    let code = '';
+                    if (crn) code += "document.getElementById('main').contentWindow.document.getElementById('crn').value = '" + Utils.javaScriptEscape(crn) + "';";
+                    if (password) code += "document.getElementById('main').contentWindow.document.getElementById('Password').value = '" + Utils.javaScriptEscape(password) + "';";
+                    if (crn && password) {
+                        code += "document.getElementById('main').contentWindow.document.getElementById('SignonButton').click();";
+                        this.browser.executeScript({code: code});
+                    } else {
+                        this.hostInterface.showBrowser(); 
+                    }                    
 
                     let subscription1 = this.browser.on('loadstart').subscribe(ev => {
                         subscription1.unsubscribe();
@@ -48,7 +59,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
                                 // TODO: And the browser has stopped loading check (maybe record a browser "idle" ?), and wait for some idle time?, also check on browser finished loading... (the interval will get ajax calls..., not sure if they are triggered by cordova...)
                                 // So make a function to encapsulate that logic...
                                 this.connected = true;
-                                resolve();
+                                setTimeout(() => resolve(), 500); // Delay for page to render? - Seems to load accounts via ajax calls... need to really wait and check for those! - or wait until loading has stopped for X seconds (ie. page is "stable")
                                 clearInterval(checker);
                             } else {
                                 // TODO: If error, or if browser closed, or if cancelled (how to detect??), or if timeout ?

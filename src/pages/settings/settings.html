@@ -36,6 +36,13 @@
     <ion-toggle [(ngModel)]="configuration.optionBooleanAccessor('experimental.accounts.enabled').value"></ion-toggle>
   </ion-item>
 
+  <ion-list-header>
+    Testing
+  </ion-list-header>
+  <ion-item>
+    <ion-label>Temporary Secure Storage</ion-label>
+    <ion-toggle [(ngModel)]="configuration.optionBooleanAccessor('testing.secure-storage.enabled').value"></ion-toggle>
+  </ion-item>
 
   
 </ion-content>

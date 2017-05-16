@@ -53,6 +53,15 @@
                     <ion-label>Opening Balance</ion-label>
                     <ion-input currency-field name="openingBankBalance" [(ngModel)]="data.openingBankBalance"></ion-input>
                 </ion-item>
+                <ion-item *ngIf="data.bankProviderName && configuration.secureAvailable() && editing">
+                    <button ion-button type="button" (click)="securePrompt(securePrefix + '-bank-login')">{{(configuration.getSecure(securePrefix + '-bank-login')) ? "Edit Secure Login" : "Securely Store Login"}}</button>
+                </ion-item>
+                <ion-item *ngIf="data.bankProviderName && configuration.secureAvailable() && editing">
+                    <button ion-button type="button" (click)="securePrompt(securePrefix + '-bank-password')">{{(configuration.getSecure(securePrefix + '-bank-password')) ? "Edit Secure Password" : "Securely Store Password"}}</button>
+                </ion-item>
+                <ion-item *ngIf="data.bankProviderName && !configuration.secureAvailable() && editing">
+                    Secure storage is not available
+                </ion-item>
             </ion-list>
         </form>
     </div>

@@ -19,5 +19,9 @@ export class Utils {
     static toIonicFromYYYYMMDD(modelValue: string): any {
         return moment(modelValue, 'YYYYMMDD').format('YYYY-MM-DD');
     }
+
+    static javaScriptEscape(value: string): string {
+        return value.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"').replace(/\r/g,'').replace(/\n/g,'');
+    }
 }
 

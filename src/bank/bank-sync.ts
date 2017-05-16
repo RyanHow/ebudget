@@ -19,6 +19,8 @@ export class BankSync {
         await this.replication.sync();
 
         let provider = this.bankProviderManager.newProvider(providerName);
+        this.standardHostInterface.accountId = account.id;
+        this.standardHostInterface.budgetId = engine.db.id;
         await provider.connect(this.standardHostInterface);
         let bankAccounts = await provider.getAccounts();
         let bankAccount = bankAccounts.find(b => account.x.accountNumber == b.accountNumber);
