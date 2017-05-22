@@ -4,7 +4,8 @@ import {Configuration} from '../../services/configuration-service';
 import {Component} from '@angular/core';
 import Big from 'big.js';
 import {AddEditSplitTransactionModal} from './add-edit-split-transaction';
-import {Engine} from '../../engine/engine';
+import { Engine } from '../../engine/engine';
+import { BankTransaction } from "../../data/records/bank-transaction";
 
 @Component({
   templateUrl: 'add-edit-split-transaction-line.html'
@@ -58,8 +59,20 @@ export class AddEditSplitTransactionLineModal {
     return alert;
   }
     
+
   submit(event: Event) {
     event.preventDefault();
     this.viewCtrl.dismiss();
   }
+
+    /*---- Reconciliation ---- */
+
+
+  unreconciledAndThisReconciledBankTransactions(): BankTransaction[] {
+    return [];
+  }
+
+  
+
+
 } 

@@ -5,7 +5,7 @@
                 Category: {{engine.getCategory(line.categoryId)?.name}}
             </ion-card>
             <ion-item *ngIf="configuration.optionBooleanAccessor('experimental.accounts.enabled').value && engine.getAccounts().length > 0">
-                <ion-label>Account</ion-label>
+                <ion-label>Account (TODO: Lock this to reconciled account</ion-label>
                 <ion-select required name="account" [(ngModel)]="line.accountId">
                     <ion-option *ngFor="let account of engine.getAccounts()" value="{{account.id}}">{{account.name}}</ion-option>    
                 </ion-select>
@@ -14,7 +14,19 @@
                 <ion-label>Amount</ion-label>
                 <ion-input currency-field required name="amount" [(ngModel)]="line.amount" [attr.autofocus]="editing ? null : true"></ion-input>
             </ion-item>
+            <button ion-button block type="submit">Ok</button>
         </form>
     </div>
     <button ion-button type="button" *ngIf="editing" color="danger" clear small (click)="deleteLineConfirm()">Delete</button>
+
+    <ion-list>
+        <ion-list-header>
+            Reconciliation
+        </ion-list-header>
+        <button ion-item [class.reconcile-selected]="reconcileSelected(t)" type="button" *ngFor="let b of unreconciledAndThisReconciledBankTransactions()" (click)="toggleBankTransactionSelection(b)">
+            <ion-label>{{b.description}}</ion-label>
+            <currency-display item-right [value]="reconcileAmount(b)"></currency-display>
+        </button>
+    </ion-list>
+
 </ion-content>

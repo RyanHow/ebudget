@@ -6,6 +6,7 @@ export class TransactionReconciliation extends Record<TransactionReconciliation>
     public transactionId: number;
     public bankTransactionId: number;
     public amount: BigJsLibrary.BigJS;
+    public transactionAmountOverride: boolean;
 
     tableName(): string {
         return 'TransactionReconciliation';

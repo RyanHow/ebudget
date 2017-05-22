@@ -28,11 +28,15 @@
         </ion-item>
 
         <div padding>
+            <button ion-item (click)="createTransaction()">
+                (Create Transaction)
+            </button>
+
             <button ion-item [class.selected]="isSelected(t)" *ngFor="let t of unreconciliedAndThisReconciledTransactions()" (click)="toggleSelected(t)">
                 {{t.description}}
                 <currency-display item-right [value]="reconcileAmount(t)"></currency-display>
             </button>
-            
+
             Total: <currency-display [value]="reconciledTotal()"></currency-display>
             
         </div>

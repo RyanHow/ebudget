@@ -40,7 +40,7 @@ export class Engine {
 
         this.transactionUnreconciledDynamicView = this.db.transactionProcessor.table(Transaction).addDynamicView("TransactionUnreconciled");
         this.transactionUnreconciledDynamicView.applyWhere(t => !t.x.reconciled);
-//        this.transactionUnreconciledDynamicView.applySort(((a, b) => (a.name+''.toLocaleLowerCase()).localeCompare(b.name+''.toLocaleLowerCase())));
+        this.transactionUnreconciledDynamicView.applySimpleSort('date', true);
 
     }
     

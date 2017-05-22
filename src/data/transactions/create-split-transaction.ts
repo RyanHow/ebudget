@@ -34,7 +34,7 @@ export class CreateSplitTransaction extends DbTransaction {
             t.id = this.id * 100000 + i;
             t.amount = this.amounts[i].amount;
             t.date = this.date;
-            t.description = this.description;
+            t.description = this.description;            
             t.categoryId = this.amounts[i].categoryId;
             t.accountId = this.amounts[i].accountId;
             t.x.transactions = transactions;

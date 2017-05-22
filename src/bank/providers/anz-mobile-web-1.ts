@@ -32,7 +32,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
 
                 // TODO: Maybe change this to async / await? rather than all this nested promises
 
-                this.browser.executeScript({code: 'document.title'}).then((val) => {
+                this.executeScriptLogged({code: 'document.title'}).then((val) => {
                     this.logger.info(val);
 
 
@@ -43,7 +43,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
                     if (password) code += "document.getElementById('main').contentWindow.document.getElementById('Password').value = '" + Utils.javaScriptEscape(password) + "';";
                     if (crn && password) {
                         code += "document.getElementById('main').contentWindow.document.getElementById('SignonButton').click();";
-                        this.browser.executeScript({code: code});
+                        this.executeScriptLogged({code: code});
                     } else {
                         this.hostInterface.showBrowser(); 
                     }                    
@@ -54,7 +54,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
                     });
 
                     let checker = setInterval(() => {
-                        this.browser.executeScript({code: "var ele = document.getElementsByTagName('H1')[0]; ele ? ele.textContent.trim().toLowerCase() : '';"}).then(val => {                        
+                        this.executeScriptLogged({code: "var ele = document.getElementsByTagName('H1')[0]; ele ? ele.textContent.trim().toLowerCase() : '';"}).then(val => {                        
                             if (val[0] == 'your accounts') {
                                 // TODO: And the browser has stopped loading check (maybe record a browser "idle" ?), and wait for some idle time?, also check on browser finished loading... (the interval will get ajax calls..., not sure if they are triggered by cordova...)
                                 // So make a function to encapsulate that logic...
@@ -65,7 +65,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
                                 // TODO: If error, or if browser closed, or if cancelled (how to detect??), or if timeout ?
                             }
                         });
-                        this.browser.executeScript({code: "document.location.href"}).then(val => {
+                        this.executeScriptLogged({code: "document.location.href"}).then(val => {
                             if (val[0].match('relogin')) this.hostInterface.showBrowser();
                         });
                     }, 1000);
@@ -79,6 +79,16 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
 
     }
 
+    async executeScriptLogged(script: {code: string}) {
+        let wrappedCode = "try {" + script.code + "}catch(err){'Error: ' + JSON.stringify(err)}";
+        let result = await this.browser.executeScript({code: wrappedCode});
+        if ((<string> result[0] + '').startsWith('Error: ')) {
+            this.logger.error('Error executing script in browser', script.code, result[0]);
+            return [null];
+        }
+        return result;
+    }
+
     isConnected(): boolean {
         return this.connected;
     }
@@ -86,7 +96,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
     getAccounts(): Promise<BankAccount[]> {
         // TODO: make sure on accounts listing page, OR nav to that page
         
-        return this.browser.executeScript({code: 'document.getElementsByClassName("normalLayoutAccounts")[0].innerHTML'}).then((val) => {
+        return this.executeScriptLogged({code: 'document.getElementsByClassName("normalLayoutAccounts")[0].innerHTML'}).then((val) => {
             let dom = new DOMParser().parseFromString(val[0], 'text/html');
             let bankAccounts : BankAccount[] = []; 
             Array.from(dom.getElementsByClassName('listViewAccountWrapperYourAccounts')).forEach(ele => {
@@ -116,19 +126,19 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
         // TODO: state tracking... At the moment, always click "home", then nav to account (document.getElementById(accountName).click())
         
         // TODO: these shoudl be in a 
-        this.browser.executeScript({code: "document.querySelector('li.menuLiClass:nth-child(1) > a').click();"});
+        this.executeScriptLogged({code: "document.querySelector('li.menuLiClass:nth-child(1) > a').click();"});
         await this.waitForLoadingToStop();
 
-        this.browser.executeScript({code: "document.querySelector('#" + account.accountName.split(' ').join('') + " > a').click();"});
+        this.executeScriptLogged({code: "document.querySelector('#" + account.accountName.split(' ').join('') + " > a').click();"});
         await this.waitForLoadingToStop();
 
         // TODO: Sometimes this fires too soon ?
-        this.browser.executeScript({code: "document.querySelector('.transactionAuthSection > a:nth-child(1)').click();"});
+        this.executeScriptLogged({code: "document.querySelector('.transactionAuthSection > a:nth-child(1)').click();"});
         await this.waitForLoadingToStop();
 
         let bankAccountTransactions : BankAccountTransaction[] = []; 
 
-        return this.browser.executeScript({code: 'document.getElementsByClassName("tabsContainerAcctTranAuth")[0].innerHTML'}).then((val) => {
+        return this.executeScriptLogged({code: 'document.getElementsByClassName("tabsContainerAcctTranAuth")[0].innerHTML'}).then((val) => {
             let dom = new DOMParser().parseFromString(val[0], 'text/html');
             Array.from(dom.getElementsByClassName('displayTable')).forEach(ele => {
 
@@ -178,7 +188,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
             return bankAccountTransactions;
         });
 
-        /*return this.browser.executeScript({code: 'JSON.stringify(processedTransactionsSingleSet)'}).then((txnList) => {
+        /*return this.executeScriptLogged({code: 'JSON.stringify(processedTransactionsSingleSet)'}).then((txnList) => {
 
             JSON.parse(txnList[0]).forEach(txnObj => {
                 let bankAccountTransaction = new BankAccountTransaction();
@@ -200,7 +210,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
         // TODO: Logout (if possible) and close the browser object
         // TODO: Host needs to close any open browser objects here and log it if was left dangling
         // TODO: Note: logging out successfully should remove the window listener
-        this.browser.executeScript({code: "document.querySelector('.button-logout').click();"});
+        this.executeScriptLogged({code: "document.querySelector('.button-logout').click();"});
         await this.waitForLoadingToStop();
         this.connected = false;
         // TODO: If Not logged out, then force quit below...
@@ -208,7 +218,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
 
         // Force quit...
         /*
-        this.browser.executeScript({code: 'window.onbeforeunload = null;'}).then(() => {
+        this.executeScriptLogged({code: 'window.onbeforeunload = null;'}).then(() => {
             this.browser.close();
         }, () => {
             this.browser.close();

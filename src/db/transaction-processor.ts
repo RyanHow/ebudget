@@ -34,10 +34,9 @@ export class TransactionProcessor {
     }
 
 
-    // TODO: Unmap transaction / record (when undoing a transaction)
     unmapTransactionAndRecord(transaction: DbTransaction, record: Record<any>) {
-        if (transaction.records.indexOf(record) != -1) transaction.records.splice(transaction.records.indexOf(record), 1);
-        if (record.transactions.indexOf(transaction) != -1) record.transactions.splice(record.transactions.indexOf(transaction), 1);
+        if (transaction.records && transaction.records.indexOf(record) != -1) transaction.records.splice(transaction.records.indexOf(record), 1);
+        if (record.transactions && record.transactions.indexOf(transaction) != -1) record.transactions.splice(record.transactions.indexOf(transaction), 1);
     }
 
     mapTransactionAndRecord(transaction: DbTransaction, record: Record<any>) {

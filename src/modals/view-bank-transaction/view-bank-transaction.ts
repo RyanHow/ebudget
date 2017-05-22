@@ -1,4 +1,4 @@
-import {NavController, ViewController, NavParams, AlertController} from 'ionic-angular';
+import {NavController, ViewController, NavParams, AlertController, ModalController} from 'ionic-angular';
 import {Db} from '../../db/db';
 import {Dbms} from '../../db/dbms';
 import {Configuration} from '../../services/configuration-service';
@@ -10,6 +10,7 @@ import { EngineFactory } from "../../engine/engine-factory";
 import { Engine } from "../../engine/engine";
 import Big from 'big.js';
 import { CreateTransactionReconciliation } from "../../data/transactions/create-transaction-reconciliation";
+import { AddEditSplitTransactionModal } from "../add-edit-split-transaction/add-edit-split-transaction";
 
 @Component({
   templateUrl: 'view-bank-transaction.html'
@@ -19,11 +20,12 @@ export class ViewBankTransactionModal {
   engine: Engine;
   budget: Db;
   t: BankTransaction;
-  selectedTransactions: Map<Transaction, TransactionReconciliation | {amount: BigJsLibrary.BigJS}>
+  selectedTransactions: Map<Transaction, TransactionReconciliation | {amount: BigJsLibrary.BigJS, transactionAmountOverride?: boolean}>
   initialSelectedTransactions: Map<Transaction, TransactionReconciliation>
   transactionsUnreconciledCached: Transaction[];
+  forceRefresh: boolean;
 
-  constructor(private configuration: Configuration, private engineFactory: EngineFactory, public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController) {
+  constructor(private configuration: Configuration, private engineFactory: EngineFactory, public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController, private modalController: ModalController) {
     this.viewCtrl = viewCtrl;
     this.nav = nav;
     
@@ -46,9 +48,13 @@ export class ViewBankTransactionModal {
   unreconciliedAndThisReconciledTransactions(): Transaction[] {
 
     let view = this.engine.getTransactionsUnreconciledView();
-    if (view.sortDirty || view.resultsdirty || !this.transactionsUnreconciledCached) {
+    if (view.sortDirty || view.resultsdirty || this.forceRefresh || !this.transactionsUnreconciledCached) {
+      this.forceRefresh = false;
       this.transactionsUnreconciledCached = view.data();
+
       // TODO: Sorting based on match probability
+      // TODO: Group. ie. transactions on this account, transactions with no account, transactions on another account...
+
 
       this.initialSelectedTransactions.forEach((r1, t1) => {
         let existing = this.transactionsUnreconciledCached.indexOf(t1);
@@ -68,8 +74,39 @@ export class ViewBankTransactionModal {
   }
 
   toggleSelected(transaction: Transaction) {
-    if (this.selectedTransactions.has(transaction)) this.selectedTransactions.delete(transaction);
-    else this.selectedTransactions.set(transaction, {amount: this.reconcileAmount(transaction)});
+    if (this.selectedTransactions.has(transaction)) {
+      // TODO: Message if the transaction will be restored to it's initial amount and/or account - only for already saved reconciliations - not for new ones (you'd assume it would be)
+      // TODO: This needs to be implemented in the dbTransaction so when the "undo" or "update" event happens then it correctly restores the initial transaction
+
+      this.selectedTransactions.delete(transaction);
+    } else {
+      if (transaction.accountId != null && transaction.accountId != this.t.accountId) {
+        this.alertController.create({message: "The selected transaction is logged under a different account (TODO: Account name) in the budget. By reconciling against this bank account it will be changed to be logged under (TODO: This account name)."}).present();
+      }
+      if (! this.reconcileAmount(transaction).times(-1).eq(this.reconciledRemaining())) {
+        this.alertController.create({
+          message: "I've updated the budget amount from (TODO: Amount) to (TODO: New Amount) to match the bank transaction.",
+          buttons: [
+            {
+              text: 'Undo',
+              role: 'cancel',
+              handler: data => {
+                this.selectedTransactions.set(transaction, {amount: this.reconcileAmount(transaction)});
+              }
+            },
+            {
+              text: 'OK',
+              handler: data => {                
+                // TODO: If the amount is subsequently edited, then this needs to be addresses again
+                this.selectedTransactions.set(transaction, {amount: this.reconciledRemaining().times(-1), transactionAmountOverride: true});
+              }
+            }
+          ]
+        }).present();
+      } else {
+        this.selectedTransactions.set(transaction, {amount: this.reconcileAmount(transaction)});
+      }
+    }
 
   }
 
@@ -112,13 +149,11 @@ export class ViewBankTransactionModal {
         createTransactionReconciliation.amount = reconcilation.amount;
         createTransactionReconciliation.transactionId = transaction.id;
         createTransactionReconciliation.bankTransactionId = this.t.id;
-
-        if (this.t.accountId !== transaction.accountId) {
-          // TODO: Update the transaction account Id
-          // TODO: Transaction account change, show in UI
-        }
+        if (reconcilation.transactionAmountOverride) createTransactionReconciliation.transactionAmountOverride = true;
 
         this.budget.applyTransaction(createTransactionReconciliation);
+      } else {
+        // TODO: Update as needed (and only if needed)
       }
     });
 
@@ -134,6 +169,19 @@ export class ViewBankTransactionModal {
     this.save();
 
     this.viewCtrl.dismiss();    
+  }
+
+  createTransaction() {
+    let modal = this.modalController.create(AddEditSplitTransactionModal, {budgetId: this.budget.id, accountId: this.t.accountId, amount: this.reconciledRemaining().times(-1), description: this.t.description, date: this.t.date});
+    modal.onDidDismiss(data => {
+      if (data && data.transactions) {
+        data.transactions.forEach(transaction => {
+          this.selectedTransactions.set(transaction, {amount: transaction.amount});
+          this.forceRefresh = true;
+        });
+      }
+    });
+    modal.present();
   }
   
   deleteBankTransactionConfirm() {

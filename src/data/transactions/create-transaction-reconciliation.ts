@@ -11,7 +11,7 @@ export class CreateTransactionReconciliation extends DbTransaction {
     amount: BigJsLibrary.BigJS;
     transactionId: number;
     bankTransactionId: number;
-
+    transactionAmountOverride: boolean;
 
     getTypeId(): string {
         return 'CreateTransactionReconciliation';
@@ -27,14 +27,13 @@ export class CreateTransactionReconciliation extends DbTransaction {
         t.amount = this.amount;
         t.transactionId = this.transactionId;
         t.bankTransactionId = this.bankTransactionId;
+        t.transactionAmountOverride = this.transactionAmountOverride;
         
 
         let transactionTable = tp.table(Transaction);
         let transaction = transactionTable.by('id', <any> this.transactionId);
         if (!transaction.x.reconciliationRecords) transaction.x.reconciliationRecords = []; 
         transaction.x.reconciliationRecords.push(t);
-        this.updateTransactionReconciliationFlags(transaction);
-        transactionTable.update(transaction);
 
         let bankTransactionTable = tp.table(BankTransaction);
         let bankTransaction = bankTransactionTable.by('id', <any> this.bankTransactionId);
@@ -42,6 +41,11 @@ export class CreateTransactionReconciliation extends DbTransaction {
         bankTransaction.x.reconciliationRecords.push(t);
         this.updateBankTransactionReconciliationFlags(bankTransaction);
         bankTransactionTable.update(bankTransaction);
+
+        if (this.transactionAmountOverride) transaction.amount = this.amount;
+        transaction.accountId = bankTransaction.accountId;
+        this.updateTransactionReconciliationFlags(transaction);
+        transactionTable.update(transaction);
 
 
         table.insert(t);
@@ -58,16 +62,21 @@ export class CreateTransactionReconciliation extends DbTransaction {
         }
 
         t.amount = this.amount;
+        t.transactionAmountOverride = this.transactionAmountOverride;
 
         let transactionTable = tp.table(Transaction);
         let transaction = transactionTable.by('id', <any> this.transactionId);
-        this.updateTransactionReconciliationFlags(transaction);
-        transactionTable.update(transaction);
 
         let bankTransactionTable = tp.table(BankTransaction);
         let bankTransaction = bankTransactionTable.by('id', <any> this.bankTransactionId);
         this.updateBankTransactionReconciliationFlags(bankTransaction);
         bankTransactionTable.update(bankTransaction);
+
+        if (this.transactionAmountOverride) transaction.amount = this.amount;
+        // TODO: undoing the transactionAmountOverride needs to re-instate the initial amount from the initial transaction
+        transaction.accountId = bankTransaction.accountId;
+        this.updateTransactionReconciliationFlags(transaction);
+        transactionTable.update(transaction);
 
         table.update(t);
     }
@@ -88,6 +97,9 @@ export class CreateTransactionReconciliation extends DbTransaction {
         bankTransaction.x.reconciliationRecords.splice(bankTransaction.x.reconciliationRecords.indexOf(t), 1);
         this.updateBankTransactionReconciliationFlags(bankTransaction);
         bankTransactionTable.update(bankTransaction);
+
+        // TODO: undoing the transactionAmountOverride needs to re-instate the initial amount from the initial transaction
+        // TODO: Needs to re-instate the initial accountId from the initial transaction (if different)
 
         tp.unmapTransactionAndRecord(this, t);
 

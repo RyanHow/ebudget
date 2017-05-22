@@ -36,8 +36,10 @@ export class AddEditSplitTransactionModal {
   
   constructor(private configuration: Configuration, private modalController: ModalController, public viewCtrl: ViewController, private navParams: NavParams, private engineFactory: EngineFactory, private nav: NavController, private alertController: AlertController) {
     this.engine = engineFactory.getEngineById(navParams.data.budgetId);
-    this.engine.getCategory(navParams.data.categoryId);
-    this.category = this.engine.db.transactionProcessor.table(Category).by('id', navParams.data.categoryId);
+    if (navParams.data.categoryId != null) {
+      this.engine.getCategory(navParams.data.categoryId);
+      this.category = this.engine.db.transactionProcessor.table(Category).by('id', navParams.data.categoryId);
+    }
 
     // TODO: Validation that amounts must be equal
     this.data = <any> {};
@@ -49,6 +51,10 @@ export class AddEditSplitTransactionModal {
       let transactionRecord = this.engine.db.transactionProcessor.table(Transaction).by('id', navParams.data.transactionId);
       this.transaction = this.engine.db.transactionProcessor.findTransactionsForRecord(transactionRecord, CreateSplitTransaction)[0];
 
+      if (this.category == null) {
+        this.category = this.engine.db.transactionProcessor.table(Category).by('id', <any> this.transaction.amounts[0].categoryId);
+      }
+
       this.data.date = Utils.toIonicFromYYYYMMDD(this.transaction.date);
       this.data.expense = this.transaction.amounts[0].amount.cmp(Big(0)) >= 0;
       this.data.amount = this.totalAmount().toString();
@@ -59,11 +65,21 @@ export class AddEditSplitTransactionModal {
     } else {
       this.editing = false;
       this.data.expense = true;
-      this.data.date = Utils.nowIonic();
+      this.data.date = Utils.toIonicFromYYYYMMDD(this.navParams.data.date) || Utils.nowIonic();
+      this.data.description = this.navParams.data.description;
+      this.data.accountId = this.navParams.data.accountId;
+      this.data.amount = this.navParams.data.amount ? this.navParams.data.amount + '' : undefined;
+      if (this.data.amount) this.data.expense = new Big(this.data.amount).cmp(Big(0)) >= 0;
       this.data.lines.push({
-        categoryId: this.category.id,
-        amount: ''
+        categoryId: this.category ? this.category.id : undefined,
+        amount: this.data.amount,
+        accountId: this.data.accountId
       });
+
+
+      if (!this.category) {
+        this.editLine(this.data.lines[0]);
+      }
 
     }
     
@@ -86,12 +102,13 @@ export class AddEditSplitTransactionModal {
   }
 
   amountRemaining(): BigJsLibrary.BigJS {
-    return new Big((this.data.amount || '0').replace(',', '')).minus(this.totalAmount());
+    return new Big((this.data.amount + '' || '0').replace(',', '')).minus(this.totalAmount());
   }
 
   newLine() {
     this.data.lines.push({
       categoryId: null,
+      accountId: this.data.accountId,
       amount: ''
     });
     this.editLine(this.data.lines[this.data.lines.length-1]);
@@ -124,7 +141,7 @@ export class AddEditSplitTransactionModal {
 
     this.engine.db.applyTransaction(t);
 
-    this.viewCtrl.dismiss();
+    this.viewCtrl.dismiss({transactions: this.engine.db.transactionProcessor.findRecordsForTransaction(t, Transaction)});
   }
   
   cancel() {
@@ -163,4 +180,12 @@ export class AddEditSplitTransactionModal {
   toggleExpense() {
     this.data.expense = !this.data.expense;
   }
+
+
+  reconciledTotal(): BigJsLibrary.BigJS {
+    return new Big('0');
+  }
+
+
+
 } 
