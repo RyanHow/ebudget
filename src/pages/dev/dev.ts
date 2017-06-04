@@ -7,6 +7,8 @@ import {Notifications} from '../../services/notifications';
 import {LoggerUINotifierAppender} from '../../services/logger-ui-notifier-appender';
 import {InAppBrowser} from '@ionic-native/in-app-browser';
 import cronstrue from 'cronstrue';
+import { DemoRunner } from "../../demo/demo-runner";
+import { DemoBuilder } from "../../demo/demo-builder";
 
 @Component({
   templateUrl: 'dev.html'
@@ -74,11 +76,40 @@ export class DevPage {
     this.notifications.notify("Notification at " + Date.now(), true);
   }
 
+  testClick() {
+    window.alert(':P');
+  }
+
   humanReadableCron(): string {
     try {
       return cronstrue.toString(this.cronInput);
     } catch (err) {
       return err;
     }
+  }
+
+  demoTest() {
+    let demo = new DemoRunner();
+    setTimeout(() => demo.moveTo('#dev-cron-input'), 1000);
+
+  }
+
+  demoTest2() {
+    let demoRunner = new DemoRunner();
+    let demo = new DemoBuilder();
+    demo.queue('move', '#dev-generate-notification');
+    demo.queue('wait', 300);
+    demo.queue('click', '#dev-generate-notification');
+    demo.queue('wait', 2000);
+    demo.queue('move', '#dev-cron-input');
+    demo.queue('wait', 300);
+    demo.queue('click', '#dev-cron-input');
+    demo.queue('wait', 600);
+    demo.queue('type', '#dev-cron-input', '0 * 5 * *');
+    demo.queue('wait', 1600);
+    demo.queue('end');
+
+    demo.run(demoRunner);
+
   }
 }

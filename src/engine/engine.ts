@@ -5,11 +5,13 @@ import {Account} from '../data/records/account';
 import {Notifications} from '../services/notifications';
 import { Configuration } from '../services/configuration-service';
 import { Transaction } from "../data/records/transaction";
+import { Utils } from "../services/utils";
 
 export class Engine {
 
     categorySortedAlphabeticalDynamicView: LokiDynamicView<Category>;
     transactionUnreconciledDynamicView: LokiDynamicView<Transaction>;
+    currentDate: string;
 
     constructor(public db: Db, notifications: Notifications, configuration: Configuration) {
         db.addEventListener(dbEvent => {
@@ -42,6 +44,18 @@ export class Engine {
         this.transactionUnreconciledDynamicView.applyWhere(t => !t.x.reconciled);
         this.transactionUnreconciledDynamicView.applySimpleSort('date', true);
 
+        this.initMidnightWatch();
+    }
+
+    initMidnightWatch() {
+
+        let nowDate = Utils.nowYYYYMMDD();
+        if (this.currentDate !== nowDate) {
+            this.currentDate = nowDate;
+            this.runAllProcessors();
+        }
+
+        setTimeout(() => this.initMidnightWatch(), 60000);        
     }
     
     runAllProcessors() {

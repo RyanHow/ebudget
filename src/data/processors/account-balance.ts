@@ -5,6 +5,7 @@ import {Account} from '../records/account';
 import {Category} from '../records/category';
 import {Transaction} from '../records/transaction';
 import Big from 'big.js';
+import { Utils } from "../../services/utils";
 
 export class AccountBalanceProcessor extends Processor {
     
@@ -18,6 +19,8 @@ export class AccountBalanceProcessor extends Processor {
         
     execute(tp: TransactionProcessor) {
 
+        let currentDate = Utils.nowYYYYMMDD();
+
         let categoriesMap = new Map<number, Category>();
         let categoryTable = tp.table(Category);
         categoryTable.data.forEach(c => {
@@ -26,7 +29,7 @@ export class AccountBalanceProcessor extends Processor {
             c.x.accountBalances.clear();
         });
         let accountTransactions = <Transaction[]> <any> tp.table(Transaction).find({'accountId': this.account.id});
-        this.account.balance = accountTransactions.reduce((total, transaction) => {
+        this.account.balance = accountTransactions.filter(t => !t.status || (t.status === 'realised' && t.date >= currentDate)).reduce((total, transaction) => {
 
             let accountBalances = categoriesMap.get(transaction.categoryId).x.accountBalances;
             let categoryTotal = accountBalances.get(transaction.accountId || null) || new Big("0")

@@ -8,6 +8,7 @@ export class Transaction extends Record<Transaction> {
     public amount: BigJsLibrary.BigJS;
     public categoryId: number;
     public accountId?: number;
+    public status?: 'realised' | 'anticipated';
 
     tableName(): string {
         return 'Transaction';

@@ -26,6 +26,8 @@
             <ion-item *ngIf="configuration.optionBooleanAccessor('experimental.accounts.enabled').value && engine.getAccounts().length > 0">
                 <ion-label>Account (TODO: Lock this to reconciled account (or lock to multiple if multiple)</ion-label>
                 <ion-select required name="account" [(ngModel)]="data.accountId">
+                    <ion-option value="-1">&lt;No Account&gt;</ion-option>
+                    <ion-option value="-2">&lt;TODO Multiple&gt;</ion-option>
                     <ion-option *ngFor="let account of engine.getAccounts()" value="{{account.id}}">{{account.name}}</ion-option>    
                 </ion-select>
             </ion-item>
@@ -40,6 +42,12 @@
             <ion-item>
                 <ion-label>Date</ion-label>
                 <ion-datetime name="date" [(ngModel)]="data.date" displayFormat="MMM D, YYYY" pickerFormat="MMM D YYYY"></ion-datetime>
+            </ion-item>
+            <ion-item>
+                <ion-segment name="status" [(ngModel)]="data.status">
+                    <ion-segment-button value="realised">Realised</ion-segment-button>
+                    <ion-segment-button value="anticipated">Anticipated</ion-segment-button>
+                </ion-segment>
             </ion-item>
             <ion-list-header>
                 Allocation

@@ -24,7 +24,9 @@
         {{account(accountId).name}}
         <currency-display highlightNegative [value]="category.x.accountBalances.get(accountId)" item-right></currency-display>
     </ion-item>
+
     <button class="category-transaction-item" ion-item detail-none (click)="editTransaction(t)" *ngFor="let t of transactionsPaged">
+      TODO HERE (the index idea like with accounts) - Hopefully doesnt make render time too slow !?
       <span item-left>{{t.date | dFormat}}</span> {{t.description}}
         <ion-note small item-right *ngIf="t.x.type == 'Transfer'">
           <ion-icon small name="shuffle"></ion-icon>
@@ -32,6 +34,7 @@
         </ion-note>
       <currency-display invertedCurrency highlightPositive showPositive [value]="t.amount" item-right></currency-display>
     </button>
+
   </ion-list>
   <ion-infinite-scroll (ionInfinite)="doInfinite($event)" threshold="50%">
    <ion-infinite-scroll-content></ion-infinite-scroll-content>

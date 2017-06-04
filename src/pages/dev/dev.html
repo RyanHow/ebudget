@@ -8,6 +8,9 @@
 </ion-header>
 <ion-content>
 
+  <div style="position:fixed; height:100px; z-index:100; background-color:gainsboro; left:0; right:0; bottom:0">
+    <button ion-button small (mousedown)="$event.preventDefault();" (touchtap)="$event.preventDefault();" (click)="testClick()">Test Button :)</button>
+  </div>
   
   <ion-item>
   <label>toUpper1</label><input [(ngModel)]="testamount1"/>
@@ -61,12 +64,12 @@
 </ion-item>
 
  <ion-item>
-    <button ion-button (click)="generateNotification()">Generate Notification</button>
+    <button ion-button id="dev-generate-notification" (click)="generateNotification()">Generate Notification</button>
 </ion-item>
   
 <ion-item>
     <ion-label>Cron Rule</ion-label>
-    <ion-input [(ngModel)]="cronInput"></ion-input>
+    <ion-input id="dev-cron-input" [(ngModel)]="cronInput"></ion-input>
 </ion-item>
 
 <ion-item>
@@ -78,5 +81,14 @@
     Next 5 occurances
     <div item-right>TODO</div>
 </ion-item>
+
+<ion-item>
+  <button ion-button (click)="demoTest()">Demo Test</button>
+</ion-item>
+<ion-item>
+  <button ion-button (click)="demoTest2()">Demo Test 2</button>
+</ion-item>
+
+<div style="height:100px"></div>
 
 </ion-content>

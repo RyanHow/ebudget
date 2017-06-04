@@ -7,6 +7,7 @@
             <ion-item *ngIf="configuration.optionBooleanAccessor('experimental.accounts.enabled').value && engine.getAccounts().length > 0">
                 <ion-label>Account (TODO: Lock this to reconciled account</ion-label>
                 <ion-select required name="account" [(ngModel)]="line.accountId">
+                    <ion-option value="">&lt;No Account&gt;</ion-option>
                     <ion-option *ngFor="let account of engine.getAccounts()" value="{{account.id}}">{{account.name}}</ion-option>    
                 </ion-select>
             </ion-item>

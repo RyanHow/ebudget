@@ -4,6 +4,7 @@ import {TransactionProcessor} from '../../db/transaction-processor';
 import {Category} from '../records/category';
 import {Transaction} from '../records/transaction';
 import Big from 'big.js';
+import { Utils } from "../../services/utils";
 
 export class CategorySimpleWeeklyProcessor extends Processor {
     
@@ -19,6 +20,8 @@ export class CategorySimpleWeeklyProcessor extends Processor {
         
     execute(tp: TransactionProcessor) {
         
+        let currentDate = Utils.nowYYYYMMDD(); // TODO: Replace with engine current Date ?
+
         var transactions = <Array<Transaction>> <any> tp.table(Transaction).find({'categoryId': this.category.id});
         var weekDiff, startBalance;
         try {
@@ -27,7 +30,7 @@ export class CategorySimpleWeeklyProcessor extends Processor {
         } catch (e) {
             throw e;
         }
-        this.category.balance = transactions.reduce((a, b) => {
+        this.category.balance = transactions.filter(t => !t.status || (t.status === 'realised' && t.date >= currentDate)).reduce((a, b) => {
             if (b.date < this.balanceDate) return a;
             return a.minus(b.amount);
         }, startBalance);

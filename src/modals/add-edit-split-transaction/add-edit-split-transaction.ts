@@ -21,11 +21,14 @@ export class AddEditSplitTransactionModal {
     description: string;
     amount: string;
     accountId: number;
+    status: 'realised' | 'anticipated';
 
     lines: Array<{
       categoryId: number;
       accountId?: number;
       amount: string;
+      status?: 'realised' | 'anticipated'; // TODO: Override for each line..
+      date?: string;
     }>
   };
 
@@ -59,15 +62,17 @@ export class AddEditSplitTransactionModal {
       this.data.expense = this.transaction.amounts[0].amount.cmp(Big(0)) >= 0;
       this.data.amount = this.totalAmount().toString();
       this.data.description = this.transaction.description;
+      this.data.status = this.transaction.status;
       this.transaction.amounts.forEach(l => {
         this.data.lines.push({categoryId: l.categoryId, amount: l.amount.times(this.data.expense ? 1 : -1)+"", accountId: l.accountId});
       });
     } else {
       this.editing = false;
       this.data.expense = true;
-      this.data.date = Utils.toIonicFromYYYYMMDD(this.navParams.data.date) || Utils.nowIonic();
+      this.data.date = Utils.toIonicFromYYYYMMDD(this.navParams.data.date || Utils.nowYYYYMMDD());
       this.data.description = this.navParams.data.description;
       this.data.accountId = this.navParams.data.accountId;
+      this.data.status = 'realised';
       this.data.amount = this.navParams.data.amount ? this.navParams.data.amount + '' : undefined;
       if (this.data.amount) this.data.expense = new Big(this.data.amount).cmp(Big(0)) >= 0;
       this.data.lines.push({
@@ -102,7 +107,7 @@ export class AddEditSplitTransactionModal {
   }
 
   amountRemaining(): BigJsLibrary.BigJS {
-    return new Big((this.data.amount + '' || '0').replace(',', '')).minus(this.totalAmount());
+    return new Big((this.data.amount || '0').replace(',', '')).minus(this.totalAmount());
   }
 
   newLine() {
@@ -126,6 +131,7 @@ export class AddEditSplitTransactionModal {
     
     t.date = Utils.toYYYYMMDDFromIonic(this.data.date);
     t.description = this.data.description;
+    t.status = this.data.status;
 
     // Always clear out the records in the transaction and not "merge" them
     // Our indexes should be preserved...
