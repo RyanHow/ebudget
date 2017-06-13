@@ -9,12 +9,14 @@ import {InAppBrowser} from '@ionic-native/in-app-browser';
 import cronstrue from 'cronstrue';
 import { DemoRunner } from "../../demo/demo-runner";
 import { DemoBuilder } from "../../demo/demo-builder";
+import { Utils } from "../../services/utils";
 
 @Component({
   templateUrl: 'dev.html'
 })
 export class DevPage {
-  
+  randomFooterId: string;
+
   testamount1 = 'hi there';
   _testamount2;
 
@@ -34,6 +36,17 @@ export class DevPage {
     
   toUpper3(nv: string) {
     this.testamount3 = nv.toUpperCase();
+  }
+
+  ionViewDidEnter() {
+    this.randomFooterId = 'footer_' + Utils.randomChars(10);
+    let div = document.createElement('div');
+    div.innerHTML = '<div id="' + this.randomFooterId + '" style="position:fixed; height:100px; z-index:100; background-color:gainsboro; left:0; right:0; bottom:0"><button ion-button small (mousedown)="$event.preventDefault();" (touchtap)="$event.preventDefault();" (click)="testClick()">Test Button :)</button></div>';
+    document.querySelector('.app-root').appendChild(div.firstChild);
+  }
+
+  ionViewWillLeave() {
+    document.getElementById(this.randomFooterId).remove();
   }
 
   testError() {
@@ -97,6 +110,9 @@ export class DevPage {
   demoTest2() {
     let demoRunner = new DemoRunner();
     let demo = new DemoBuilder();
+
+    // TODO: Compress this (should just be able to call 'click' and it will do a move wait click to the location... Or call it iClick or something ?)
+
     demo.queue('move', '#dev-generate-notification');
     demo.queue('wait', 300);
     demo.queue('click', '#dev-generate-notification');

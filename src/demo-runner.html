@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <title>eBudget Demo Runner</title>
+</head>
+<body>
+
+  <div>Some controller stuff here to control the demo</div>
+  <a href="javascript:document.querySelector('iframe').contentWindow.postMessage('sdafasf', 'http://localhost:8100');">Test postMessage</a>
+
+  <iframe src="index.html?demo=1&demo_control_url=http://localhost:8100"></iframe>
+
+  <script>
+
+    var ebudgetDemoPostMessageUrls =  ['http://localhost:8100', 'https://ebudget.live'];
+
+    function demoListener(event) {
+          if (ebudgetDemoPostMessageUrls.indexOf(event.origin) >= 0) {
+            alert(event.data); // Contains a demo script to run and start data ? .. How to get a demo with a calling page ? - Need a localhost page set up with some links to control it....
+
+        }
+
+    }
+
+    window.addEventListener('message', demoListener, false);
+  </script>
+</body>
+</html>

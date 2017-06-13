@@ -6,6 +6,7 @@ import {Configuration} from './configuration-service';
 import {AppReady} from '../app/app-ready';
 import {BuildInfo} from '../app/build-info';
 import {Logger} from './logger';
+import { Utils } from "./utils";
 
 @Injectable()
 export class UpdateCheck {
@@ -21,6 +22,9 @@ export class UpdateCheck {
     public webVersion: string;
 
     constructor(appReady: AppReady, private notifications: Notifications, private configuration: Configuration, private applicationRef: ApplicationRef, private http: Http) {
+
+        if (Utils.getQueryStringValue('demo')) return; // Skip this for demos
+
         appReady.ready.then(() => {
             setTimeout(() => {
                 if (!this.checkAndNotifyServiceWorkerUpdate()) {
