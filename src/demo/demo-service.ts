@@ -1,10 +1,14 @@
 import { Injectable, NgZone } from "@angular/core";
 import { Utils } from "../services/utils";
+import { DemoBuilder } from "./demo-builder";
+import { DemoRunner } from "./demo-runner";
 
 declare var ebudget;
 
 @Injectable()
 export class DemoService {
+    demoRunner: DemoRunner;
+    demoBuilder: DemoBuilder;
 
     private controlUrls = ['http://localhost:8100', 'https://ebudgetapp.com'];
 
@@ -21,11 +25,23 @@ export class DemoService {
         if (window.parent && Utils.getQueryStringValue('demo_control_url')) {
             window.parent.postMessage({event: 'ready', id: Utils.getQueryStringValue('demo')}, decodeURI(Utils.getQueryStringValue('demo_control_url'))); // TODO: How to get this source ? maybe from demo query string?
         }
+
+        this.demoBuilder = new DemoBuilder();
+        this.demoRunner = new DemoRunner();
+
     }
 
     receiveMessage(event: MessageEvent) {
         if (this.controlUrls.indexOf(event.origin) >= 0) {
-            alert(event.data); // Contains a demo script to run and start data ? .. How to get a demo with a calling page ? - Need a localhost page set up with some links to control it....
+            if (event.data.demo && event.data.demo.command === 'script') {
+                let o = JSON.parse(event.data.demo.script);
+                this.demoBuilder.buildFrom(o);
+                this.demoBuilder.run(this.demoRunner);
+            } else if (event.data.demo && event.data.demo.command === 'reset') {
+                alert('TODO');
+            } else {
+                alert('invalid message' + JSON.stringify(event.data));
+            }
 
         }
     }

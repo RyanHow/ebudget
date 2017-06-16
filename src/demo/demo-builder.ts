@@ -17,6 +17,21 @@ export class DemoBuilder {
         this.q = [];
     }
 
+
+    example = {
+        setup: {},       
+        queue: [
+            ['move', ''],
+            ['click', ''],
+        ]
+    }
+
+    buildFrom(o: any) {
+        o.queue.forEach((line: Array<any>) => {
+            this.q.push({command: line[0], args: line.length > 1 ? line.slice(1) : []});
+        })
+    }
+
     queue(command: CommandTypes, ... args: Array<any>) {
         this.q.push({command: command, args: args});
     }
