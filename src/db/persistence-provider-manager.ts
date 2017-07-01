@@ -6,6 +6,8 @@ import {SqlStoragePersistenceProvider} from './sql-storage-persistence-provider'
 import {SQLite} from '@ionic-native/sqlite';
 import {Platform} from 'ionic-angular';
 import {Device} from '@ionic-native/device';
+import { Utils } from "../services/utils";
+import { NoPersistenceProvider } from "./no-persistence-provider";
 
 @Injectable()
 export class PersistenceProviderManager  {
@@ -18,7 +20,9 @@ export class PersistenceProviderManager  {
 
     provide(): DbPersistenceProvider {
         if (this.persistenceProvider == null) {
-            if (this.platform.is('cordova') && this.device.platform !== 'browser') {
+            if (Utils.getQueryStringValue('demo')) {
+                this.persistenceProvider = new NoPersistenceProvider(this.transactionSerializer);
+            } else if (this.platform.is('cordova') && this.device.platform !== 'browser') {
                 this.persistenceProvider = new SqlStoragePersistenceProvider('A', this.transactionSerializer, this.sqlite);
             } else {
                 this.persistenceProvider = new LocalStoragePersistenceProvider('A', this.transactionSerializer);

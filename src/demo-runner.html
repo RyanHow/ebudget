@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <title>eBudget Demo Runner</title>
+</head>
+<body>
+
+  <div>Some controller stuff here to control the demo</div>
+  Demo Script<br>
+  <textarea id="demo1script" rows=10></textarea><br>
+  <input type="button" id="demo1run" value="Run" disabled onclick="document.querySelector('#demo1').contentWindow.postMessage({'demo' : {'command' : 'script', 'script' : document.getElementById('demo1script').value}}, 'http://localhost:8100');">
+  <input type="button" id="demo1reset" value="Reset" disabled onclick="document.querySelector('#demo1').contentWindow.postMessage({'demo' : {'command' : 'reset'}}, 'http://localhost:8100');"><br>
+  <a href="javascript:document.querySelector('#demo1').contentWindow.postMessage('sdafasf', 'http://localhost:8100');">Test postMessage</a>
+  <br>
+  <iframe id="demo1" style="width:300px;height:600px;" src="index.html?demo=1&demo_control_url=http://localhost:8100"></iframe>
+
+  <script>
+
+    var ebudgetDemoPostMessageUrls =  ['http://localhost:8100', 'https://ebudget.live'];
+
+    function demoListener(event) {
+          if (ebudgetDemoPostMessageUrls.indexOf(event.origin) >= 0) {
+            if (event.data.event === 'ready' && event.data.id === '1') {
+              document.getElementById('demo1run').disabled = false;
+              document.getElementById('demo1reset').disabled = false;
+            }
+        }
+
+    }
+
+    window.addEventListener('message', demoListener, false);
+  </script>
+
+
+
+</body>
+</html>

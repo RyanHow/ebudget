@@ -4,6 +4,7 @@ import {DbPersistenceProvider} from './db-persistence-provider';
 import {PersistenceProviderManager} from './persistence-provider-manager';
 import Loki from 'lokijs';
 import {TransactionSerializer} from './transaction-serializer';
+import { Utils } from "../services/utils";
 
 @Injectable()
 export class Dbms {
@@ -44,7 +45,7 @@ export class Dbms {
     
     createDb(id?: string): Promise<Db> {
         
-        if (!id) id = this.randomString(20);
+        if (!id) id = Utils.randomChars(20);
 
         let db = new Db(id, this, this.persistenceProvider, this.loki, this.transactionSerializer);
         
@@ -69,10 +70,4 @@ export class Dbms {
         this.persistenceProvider.unlinkDb(id);
     }
 
-    randomString(length) {
-        var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        var result = '';
-        for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
-        return result;
-    }
 }
