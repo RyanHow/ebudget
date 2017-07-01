@@ -97,6 +97,9 @@ export class DevPage {
   demoTest2() {
     let demoRunner = new DemoRunner();
     let demo = new DemoBuilder();
+
+    // TODO: Compress this (should just be able to call 'click' and it will do a move wait click to the location... Or call it iClick or something ?)
+
     demo.queue('move', '#dev-generate-notification');
     demo.queue('wait', 300);
     demo.queue('click', '#dev-generate-notification');
