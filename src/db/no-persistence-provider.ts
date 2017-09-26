@@ -10,6 +10,11 @@ export class NoPersistenceProvider implements DbPersistenceProvider {
     constructor(private transactionSerializer: TransactionSerializer) {
     }
 
+    reset() {
+        this.dbArray.length = 0;
+        this.tempStorage.clear();
+    }
+
 
     init(): Promise<any> {
         return Promise.resolve();

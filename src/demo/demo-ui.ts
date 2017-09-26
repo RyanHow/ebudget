@@ -6,6 +6,7 @@ export class DemoUI {
     hotspotLeft: number;
 
     pointerElement: HTMLDivElement;
+    focusEnabled: boolean;
     
     constructor() {
         this.createPointer();
@@ -104,7 +105,7 @@ export class DemoUI {
             evt.initMouseEvent('mousedown',true,true,document.defaultView,0,0,0,this.pointerElement.offsetLeft,this.pointerElement.offsetTop,false,false,false,false,1,null);
             ele.dispatchEvent(evt);
 
-            if (true) { // TODO: If focusing is enabled, may cause issues ? - Should be ok if proteted by an iFrame
+            if (this.focusEnabled) {
                 if (ele.querySelector('input')) ele.querySelector('input').focus();
                 else ele.focus(); 
             }

@@ -4,6 +4,8 @@ import { BudgetPage } from "../pages/budget/budget";
 import { DevPage } from "../pages/dev/dev";
 import { HomePage } from "../pages/home/home";
 import { Dbms } from "../db/dbms";
+import { PersistenceProviderManager } from "../db/persistence-provider-manager";
+import { NoPersistenceProvider } from "../db/no-persistence-provider";
 
 @Injectable()
 export class DemoSetup {
@@ -17,7 +19,7 @@ export class DemoSetup {
         dev: DevPage
     };
 
-    constructor(private ionicApp: App, private dbms: Dbms) {
+    constructor(private ionicApp: App, private dbms: Dbms, private persistenceProviderManager: PersistenceProviderManager) {
         
     }
 
@@ -69,8 +71,12 @@ export class DemoSetup {
 
     async reset() {
         await this.nav.popToRoot({animate: false});
+        let persistenceProvider = this.persistenceProviderManager.provide();
+        if (persistenceProvider instanceof NoPersistenceProvider) {
+            (<NoPersistenceProvider> persistenceProvider).reset();
+            this.dbms.init();
+        }
         //Close any modals
-        //Clear the demo database
 
         //TODO: Optionally fade to black
 

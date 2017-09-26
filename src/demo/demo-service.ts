@@ -3,6 +3,7 @@ import { Utils } from "../services/utils";
 import { DemoPlayer } from "./demo-player";
 import { DemoUI } from "./demo-ui";
 import { DemoSetup } from "./demo-setup";
+import { Autofocus } from "../services/autofocus";
 
 declare var ebudget;
 
@@ -13,7 +14,7 @@ export class DemoService {
 
     private controlUrls = ['http://localhost:8100', 'https://ebudgetapp.com'];
 
-    constructor(zone: NgZone, private demoSetup: DemoSetup) {
+    constructor(zone: NgZone, private demoSetup: DemoSetup, private autofocus: Autofocus) {
         if (typeof (<any>window).ebudget === 'undefined') (<any>window).ebudget = {};
     }
 
@@ -29,6 +30,7 @@ export class DemoService {
 
         this.demoPlayer = new DemoPlayer();
         this.demoUI = new DemoUI();
+        this.demoUI.focusEnabled = this.autofocus.enabled && true;
 
     }
 

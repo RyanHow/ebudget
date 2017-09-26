@@ -17,8 +17,6 @@ export class Dbms {
         
     constructor(private transactionSerializer: TransactionSerializer, persistenceProviderManager: PersistenceProviderManager) {
         this.persistenceProvider = persistenceProviderManager.provide();
-        this.loki = new Loki(null);
-        this.loki.autosaveDisable();
         this.dbs = [];
         this.dbMap = new Map<string, Db>();
 
@@ -26,6 +24,11 @@ export class Dbms {
     
     init(): Promise<void> {
         this.initialising = true;
+
+        this.dbs.length = 0;
+        this.dbMap.clear();
+        this.loki = new Loki(null);
+        this.loki.autosaveDisable();
 
         let inits = new Array<Promise<any>>();
 
