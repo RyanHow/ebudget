@@ -7,7 +7,7 @@
     <ion-title>Add Budget</ion-title>
 
     <ion-buttons end>
-      <button ion-button (click)="submit($event)" [disabled]="!form.valid">{{editing ? "Save" : "Create"}}</button>
+      <button ion-button id="add-budget-create" (click)="submit($event)" [disabled]="!form.valid">{{editing ? "Save" : "Create"}}</button>
     </ion-buttons>
 
   </ion-toolbar>
@@ -17,7 +17,7 @@
     <form #form="ngForm" (submit)="submit($event)">
         <ion-item>
             <ion-label>Budget Name</ion-label>
-            <ion-input type="text" [(ngModel)]="budgetName" name="budgetName" autofocus required></ion-input>
+            <ion-input type="text" id="add-budget-budget-name" [(ngModel)]="budgetName" name="budgetName" [attr.autofocus]="autofocus.enabled" required></ion-input>
         </ion-item>
     </form>
 </ion-content>

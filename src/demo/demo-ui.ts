@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 
 @Injectable()
-export class DemoRunner {
+export class DemoUI {
     hotspotTop: number;
     hotspotLeft: number;
 

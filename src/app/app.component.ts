@@ -34,6 +34,7 @@ import { MockDataProvider } from '../bank/providers/mock-data-provider';
 import { CreateTransactionReconciliation } from "../data/transactions/create-transaction-reconciliation";
 import { Utils } from "../services/utils";
 import { DemoService } from "../demo/demo-service";
+import { Autofocus } from "../services/autofocus";
 
 @Component({
   templateUrl: 'app.html'
@@ -45,7 +46,7 @@ export class App {
   ready: boolean;
   @ViewChild(Nav) nav: Nav;
 
-  constructor(platform: Platform, private configuration: Configuration, dbms: Dbms, persistenceProviderManager: PersistenceProviderManager, replication: Replication, private transactionSerializer: TransactionSerializer, private editorProvider: EditorProvider, private appReady: AppReady, private statusBar: StatusBar, private splashScreen: SplashScreen, private bankProviderManager: BankProviderManager, private demoService: DemoService) {
+  constructor(platform: Platform, private configuration: Configuration, dbms: Dbms, persistenceProviderManager: PersistenceProviderManager, replication: Replication, private transactionSerializer: TransactionSerializer, private editorProvider: EditorProvider, private appReady: AppReady, private statusBar: StatusBar, private splashScreen: SplashScreen, private bankProviderManager: BankProviderManager, private demoService: DemoService, private autofocus: Autofocus) {
     this.logger.info('Constructing App');
     
     platform.ready().then(() => {
@@ -94,7 +95,10 @@ export class App {
 
         appReady.readyResolve();
 
-        if (Utils.getQueryStringValue('demo')) demoService.start(); // TODO: Create and start the demo service which registers a javascript interface for listening (among other things ?).
+        if (Utils.getQueryStringValue('demo')) {
+          autofocus.setEnabled(false);
+          demoService.start();
+        }
 
         }).catch(err => {
           this.logger.error('Error in initialisation', err);

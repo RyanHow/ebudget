@@ -61,6 +61,8 @@ import { Clipboard } from '@ionic-native/clipboard';
 import { ViewBankTransactionModal } from "../modals/view-bank-transaction/view-bank-transaction";
 import { SecureStorage } from "@ionic-native/secure-storage";
 import { DemoService } from "../demo/demo-service";
+import { DemoSetup } from "../demo/demo-setup";
+import { Autofocus } from "../services/autofocus";
 
 @NgModule({
   declarations: [
@@ -157,7 +159,9 @@ import { DemoService } from "../demo/demo-service";
   TransactionSerializer,
   EngineFactory,
   Replication,
-  DemoService]
+  DemoService,
+  DemoSetup,
+  Autofocus]
 })
 export class AppModule {
   constructor(updatedCheck: UpdatedCheck, updateCheck: UpdateCheck) {}

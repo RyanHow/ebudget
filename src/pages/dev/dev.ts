@@ -7,8 +7,8 @@ import {Notifications} from '../../services/notifications';
 import {LoggerUINotifierAppender} from '../../services/logger-ui-notifier-appender';
 import {InAppBrowser} from '@ionic-native/in-app-browser';
 import cronstrue from 'cronstrue';
-import { DemoRunner } from "../../demo/demo-runner";
-import { DemoBuilder } from "../../demo/demo-builder";
+import { DemoUI } from "../../demo/demo-ui";
+import { DemoPlayer } from "../../demo/demo-player";
 import { Utils } from "../../services/utils";
 
 @Component({
@@ -102,14 +102,14 @@ export class DevPage {
   }
 
   demoTest() {
-    let demo = new DemoRunner();
+    let demo = new DemoUI();
     setTimeout(() => demo.moveTo('#dev-cron-input'), 1000);
 
   }
 
   demoTest2() {
-    let demoRunner = new DemoRunner();
-    let demo = new DemoBuilder();
+    let demoRunner = new DemoUI();
+    let demo = new DemoPlayer();
 
     // TODO: Compress this (should just be able to call 'click' and it will do a move wait click to the location... Or call it iClick or something ?)
 

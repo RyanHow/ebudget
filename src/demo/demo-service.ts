@@ -1,18 +1,19 @@
 import { Injectable, NgZone } from "@angular/core";
 import { Utils } from "../services/utils";
-import { DemoBuilder } from "./demo-builder";
-import { DemoRunner } from "./demo-runner";
+import { DemoPlayer } from "./demo-player";
+import { DemoUI } from "./demo-ui";
+import { DemoSetup } from "./demo-setup";
 
 declare var ebudget;
 
 @Injectable()
 export class DemoService {
-    demoRunner: DemoRunner;
-    demoBuilder: DemoBuilder;
+    demoUI: DemoUI;
+    demoPlayer: DemoPlayer;
 
     private controlUrls = ['http://localhost:8100', 'https://ebudgetapp.com'];
 
-    constructor(zone: NgZone) {
+    constructor(zone: NgZone, private demoSetup: DemoSetup) {
         if (typeof (<any>window).ebudget === 'undefined') (<any>window).ebudget = {};
     }
 
@@ -26,8 +27,8 @@ export class DemoService {
             window.parent.postMessage({event: 'ready', id: Utils.getQueryStringValue('demo')}, decodeURI(Utils.getQueryStringValue('demo_control_url'))); // TODO: How to get this source ? maybe from demo query string?
         }
 
-        this.demoBuilder = new DemoBuilder();
-        this.demoRunner = new DemoRunner();
+        this.demoPlayer = new DemoPlayer();
+        this.demoUI = new DemoUI();
 
     }
 
@@ -35,10 +36,12 @@ export class DemoService {
         if (this.controlUrls.indexOf(event.origin) >= 0) {
             if (event.data.demo && event.data.demo.command === 'script') {
                 let o = JSON.parse(event.data.demo.script);
-                this.demoBuilder.buildFrom(o);
-                this.demoBuilder.run(this.demoRunner);
+                this.demoPlayer.buildFrom(o);
+                this.demoPlayer.setup(this.demoSetup).then(() => {
+                    this.demoPlayer.run(this.demoUI);
+                });
             } else if (event.data.demo && event.data.demo.command === 'reset') {
-                alert('TODO');
+                this.demoSetup.reset();
             } else {
                 alert('invalid message' + JSON.stringify(event.data));
             }

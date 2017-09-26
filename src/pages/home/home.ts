@@ -19,7 +19,7 @@ export class HomePage {
   addBudget() {
     let modal = this.modalController.create(AddBudgetModal);
 
-    modal.onDidDismiss((data) => {
+    modal.onWillDismiss((data) => {
       if (data && data.budgetName !== '') {
         this.dbms.createDb().then(db => {
           db.activate().then(() => {
@@ -28,7 +28,7 @@ export class HomePage {
             db.applyTransaction(t);
             db.deactivate();
 
-            this.nav.setRoot(BudgetPage, {'budget' : db});
+            this.nav.setRoot(BudgetPage, {'budget' : db}, {animate: false});
           });
         });
       }
