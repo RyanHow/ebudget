@@ -14,7 +14,7 @@ export class TransactionSerializer {
         this.logger.info('Registered Transaction Type ' + new type().getTypeId());
     }
     
-    newTransaction<T>(typeId: string, jsonObject?: Object): T {
+    newTransaction<T extends DbTransaction>(typeId: string, jsonObject?: Object): T {
         var transactionType = this.transactionTypeIdMap.get(typeId);
         if (!transactionType) {
             this.logger.error({'msg': 'No transaction type available for ' + typeId, 'obj': jsonObject});

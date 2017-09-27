@@ -9,28 +9,30 @@
   <div>Some controller stuff here to control the demo</div>
   Demo Script<br>
   <textarea id="demo1script" rows=10>
-{"setup":[
-["root", "dev"]
-],
-"queue":[
-["move", ".bar-buttons"], 
-["click", ".bar-buttons"], 
-["wait", 1000], 
-["move", "#main-menu-home"], 
-["click", "#main-menu-home"], 
-["wait", 1000], 
-["move", "#home-create-new-budget"], 
-["click", "#home-create-new-budget"],
-["wait", 1000], 
-["move", "#add-budget-budget-name"], 
-["click", "#add-budget-budget-name"],
-["type", "#add-budget-budget-name", "My First Budget"],
-["move", "#add-budget-create"], 
-["click", "#add-budget-create"],
-["wait", 5000], 
-["loop"]
-]}    
-  </textarea><br>
+  {"setup":[
+  ["create-db", "Testing123"],
+  ["root", "budget", {"budgetId": "${current-db-id}"}]
+  ],
+  "queue":[
+  ["wait", 1000], 
+  ["move", ".bar-buttons"], 
+  ["click", ".bar-buttons"], 
+  ["wait", 1000], 
+  ["move", "#main-menu-home"], 
+  ["click", "#main-menu-home"], 
+  ["wait", 1000], 
+  ["move", "#home-create-new-budget"], 
+  ["click", "#home-create-new-budget"],
+  ["wait", 1000], 
+  ["move", "#add-budget-budget-name"], 
+  ["click", "#add-budget-budget-name"],
+  ["type", "#add-budget-budget-name", "My First Budget"],
+  ["move", "#add-budget-create"], 
+  ["click", "#add-budget-create"],
+  ["wait", 5000], 
+  ["loop"]
+  ]}    
+      </textarea><br>
   <input type="button" id="demo1run" value="Run" disabled onclick="document.querySelector('#demo1').contentWindow.postMessage({'demo' : {'command' : 'script', 'script' : document.getElementById('demo1script').value}}, 'http://localhost2:8100');">
   <input type="button" id="demo1reset" value="Reset" disabled onclick="document.querySelector('#demo1').contentWindow.postMessage({'demo' : {'command' : 'reset'}}, 'http://localhost2:8100');"><br>
   <a href="javascript:document.querySelector('#demo1').contentWindow.postMessage('sdafasf', 'http://localhost2:8100');">Test postMessage</a>

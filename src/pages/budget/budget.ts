@@ -33,7 +33,7 @@ export class BudgetPage {
     this.nav = nav;
     this.dbms = dbms;
     
-    this.budget = this.params.data.budget;
+    this.budget = this.params.data.budget ? this.params.data.budget : dbms.getDb(this.params.data.budgetId);
     this.engine = engineFactory.getEngine(this.budget);
 
     this.activated = false;

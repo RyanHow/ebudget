@@ -6,9 +6,12 @@ import { HomePage } from "../pages/home/home";
 import { Dbms } from "../db/dbms";
 import { PersistenceProviderManager } from "../db/persistence-provider-manager";
 import { NoPersistenceProvider } from "../db/no-persistence-provider";
+import { InitBudgetTransaction } from "../data/transactions/init-budget-transaction";
+import { TransactionSerializer } from "../db/transaction-serializer";
 
 @Injectable()
 export class DemoSetup {
+    vars: any = {};
     nav: NavController;
 
     script: Array<any>;
@@ -19,7 +22,7 @@ export class DemoSetup {
         dev: DevPage
     };
 
-    constructor(private ionicApp: App, private dbms: Dbms, private persistenceProviderManager: PersistenceProviderManager) {
+    constructor(private ionicApp: App, private dbms: Dbms, private persistenceProviderManager: PersistenceProviderManager, private transactionSerializer: TransactionSerializer) {
         
     }
 
@@ -47,19 +50,43 @@ export class DemoSetup {
         let line = this.script[this.currentLine];
         this.currentLine++;
 
+        Object.keys(this.vars).forEach(key => {
+            for (let i = 1; i < line.length; i++) {
+                line[i] = JSON.parse(JSON.stringify(line[i]).replace('${' + key + '}', this.vars[key]));
+            }                            
+        });
+
         switch (line[0]) {
             case 'eval':
                 let result = eval ('(' + line[1] + ')');
                 if (result instanceof Promise) await (<Promise<any>> result).then();
                 break;
             case 'nav':
-                await this.nav.push(this.classMap[line[1]], undefined, {animate: false});
+            // TODO: How to get ID of budget / category, etc ?
+            /* Maybe a get/set variable and then can inject those into the scripts using some find/replace, like ${variableName}
+            Some command can implicitly set a variable
+            Or have query commands to get a budget / category by name, etc ?
+
+            */
+
+                await this.nav.push(this.classMap[line[1]], line.length > 2 ? line[2] : undefined, {animate: false});
                 break;
             case 'root':
-                await this.nav.setRoot(this.classMap[line[1]], undefined, {animate: false});
+                await this.nav.setRoot(this.classMap[line[1]], line.length > 2 ? line[2] : undefined, {animate: false});
                 break;
-            case 'db':
-                // TODO
+            case 'create-db':
+                let db = await this.dbms.createDb();
+                this.vars['current-db-id'] = db.id;
+                let t = new InitBudgetTransaction();
+                t.budgetName = line[1];
+                db.applyTransaction(t);
+                break;
+            case 'transaction':
+                let transaction = this.transactionSerializer.newTransaction(line[1], line[2]);
+                this.dbms.getDb(this.vars['current-db-id']).applyTransaction(transaction);
+                break;
+            case 'import-db' :
+                // TODO: Import a whole database json so we can just use a pre setup database ? - Maybe base this off an "export / clone" database command so we don't have to make the database Ids portable
                 break;
             default:
                 throw new Error("Invalid Setup Command " + line[0]);
@@ -79,6 +106,8 @@ export class DemoSetup {
         //Close any modals
 
         //TODO: Optionally fade to black
+
+        this.vars = {};
 
     }
 }
