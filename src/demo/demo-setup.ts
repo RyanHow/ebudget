@@ -47,13 +47,13 @@ export class DemoSetup {
 
     async executeScript() {
         if (this.currentLine >= this.script.length) return;
-        let line = this.script[this.currentLine];
+        let line = this.script[this.currentLine].slice();
         this.currentLine++;
 
         Object.keys(this.vars).forEach(key => {
             for (let i = 1; i < line.length; i++) {
                 line[i] = JSON.parse(JSON.stringify(line[i]).replace('${' + key + '}', this.vars[key]));
-            }                            
+            }
         });
 
         switch (line[0]) {
@@ -98,10 +98,11 @@ export class DemoSetup {
 
     async reset() {
         await this.nav.popToRoot({animate: false});
+        //await this.nav.setRoot(HomePage, undefined, {animate: false});        
         let persistenceProvider = this.persistenceProviderManager.provide();
         if (persistenceProvider instanceof NoPersistenceProvider) {
             (<NoPersistenceProvider> persistenceProvider).reset();
-            this.dbms.init();
+            await this.dbms.init();
         }
         //Close any modals
 
