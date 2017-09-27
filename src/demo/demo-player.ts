@@ -93,7 +93,7 @@ export class DemoPlayer {
                 return this.demoSetup.reset();
             case 'loop':
                 this.actionListCurrentLine = 0;
-                return this.demoSetup.reset().then(() => this.demoSetup.setup(this.setupScript));
+                return this.demoSetup.reset();
             case 'end':
                 this.demoUI.dispose();
                 return Promise.resolve();

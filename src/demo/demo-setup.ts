@@ -8,6 +8,7 @@ import { PersistenceProviderManager } from "../db/persistence-provider-manager";
 import { NoPersistenceProvider } from "../db/no-persistence-provider";
 import { InitBudgetTransaction } from "../data/transactions/init-budget-transaction";
 import { TransactionSerializer } from "../db/transaction-serializer";
+import { Logger } from "../services/logger";
 
 @Injectable()
 export class DemoSetup {
@@ -26,12 +27,13 @@ export class DemoSetup {
         
     }
 
-    setup(script: Array<any>): Promise<void> {
+    async setup(script: Array<any>) {
         this.script = script;
         this.currentLine = 0;
 
         this.nav = this.ionicApp.getActiveNav();
-        return this.executeScript();
+        await this.executeScript();
+        await this.fadeIn();
     }
 
     // TODO: Add a command for database operations
@@ -47,6 +49,7 @@ export class DemoSetup {
 
     async executeScript() {
         if (this.currentLine >= this.script.length) return;
+
         let line = this.script[this.currentLine].slice();
         this.currentLine++;
 
@@ -97,6 +100,8 @@ export class DemoSetup {
     }
 
     async reset() {
+        await this.fadeOut();
+
         await this.nav.popToRoot({animate: false});
         //await this.nav.setRoot(HomePage, undefined, {animate: false});        
         let persistenceProvider = this.persistenceProviderManager.provide();
@@ -106,9 +111,36 @@ export class DemoSetup {
         }
         //Close any modals
 
-        //TODO: Optionally fade to black
-
         this.vars = {};
 
+        await this.setup(this.script);
+    }
+
+    async fadeOut(instant: boolean = false) {
+        Logger.get('demo-setup').info('demo fade-out');
+        if (document.getElementById('demo-blank')) {
+            document.getElementById('demo-blank').className='active';            
+        } else {
+            let ele = document.createElement('div');
+            ele.id = 'demo-blank';
+            document.body.appendChild(ele);
+            if (instant) {
+                ele.className='active';
+            } else {
+                await new Promise(resolve => setTimeout(() => {ele.className='active'; resolve();}));
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        }
+    }
+
+    async fadeIn() {
+        Logger.get('demo-setup').info('demo fade-in');
+
+        if (!document.getElementById('demo-blank')) return;
+
+        let ele = document.getElementById('demo-blank');
+        ele.className = '';
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        ele.remove();
     }
 }

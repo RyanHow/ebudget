@@ -1,3 +1,20 @@
 #demo-pointer {
     transition: left 0.5s, top 0.5s;
 }
+
+#demo-blank {
+    content: '';
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    transition: opacity 1s;
+    opacity: 0;
+    z-index: 999999999;
+}
+
+#demo-blank.active {
+    opacity: 1;
+}

@@ -35,6 +35,7 @@ import { CreateTransactionReconciliation } from "../data/transactions/create-tra
 import { Utils } from "../services/utils";
 import { DemoService } from "../demo/demo-service";
 import { Autofocus } from "../services/autofocus";
+import { DemoSetup } from "../demo/demo-setup";
 
 @Component({
   templateUrl: 'app.html'
@@ -46,7 +47,7 @@ export class App {
   ready: boolean;
   @ViewChild(Nav) nav: Nav;
 
-  constructor(platform: Platform, private configuration: Configuration, dbms: Dbms, persistenceProviderManager: PersistenceProviderManager, replication: Replication, private transactionSerializer: TransactionSerializer, private editorProvider: EditorProvider, private appReady: AppReady, private statusBar: StatusBar, private splashScreen: SplashScreen, private bankProviderManager: BankProviderManager, private demoService: DemoService, private autofocus: Autofocus) {
+  constructor(platform: Platform, private configuration: Configuration, dbms: Dbms, persistenceProviderManager: PersistenceProviderManager, replication: Replication, private transactionSerializer: TransactionSerializer, private editorProvider: EditorProvider, private appReady: AppReady, private statusBar: StatusBar, private splashScreen: SplashScreen, private bankProviderManager: BankProviderManager, private demoService: DemoService, private autofocus: Autofocus, private demoSetup: DemoSetup) {
     this.logger.info('Constructing App');
     
     platform.ready().then(() => {
@@ -96,6 +97,7 @@ export class App {
         appReady.readyResolve();
 
         if (Utils.getQueryStringValue('demo')) {
+          demoSetup.fadeOut(true);
           autofocus.setEnabled(false);
           demoService.start();
         }
