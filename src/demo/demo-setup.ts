@@ -31,7 +31,7 @@ export class DemoSetup {
         this.script = script;
         this.currentLine = 0;
 
-        this.nav = this.ionicApp.getActiveNav();
+        this.nav = this.ionicApp.getActiveNavs()[0];
         await this.executeScript();
         await this.fadeIn();
     }
@@ -106,7 +106,7 @@ export class DemoSetup {
     }
 
     async fadeOut(instant: boolean = false) {
-        Logger.get('demo-setup').info('demo fade-out');
+
         if (document.getElementById('demo-blank')) {
             document.getElementById('demo-blank').className='active';            
         } else {
@@ -123,7 +123,6 @@ export class DemoSetup {
     }
 
     async fadeIn() {
-        Logger.get('demo-setup').info('demo fade-in');
 
         if (!document.getElementById('demo-blank')) return;
 
