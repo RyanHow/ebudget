@@ -1,0 +1,5 @@
+vendor
+.bundle
+build/*
+Gemfile.lock
+report.xml

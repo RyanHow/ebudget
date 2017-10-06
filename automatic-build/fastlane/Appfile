@@ -1,0 +1,4 @@
+app_identifier "com.ebudgetapp.live" # The bundle identifier of your app
+apple_id "ryan@bitworks.com.au" # Your Apple ID Email address
+team_id "WGR7N36CTU"  # Developer Portal Team ID
+itc_team_id "WGR7N36CTU" # Your iTunes Connect Team ID

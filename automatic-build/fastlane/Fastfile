@@ -1,0 +1,58 @@
+# This is the minimum version number required.
+# Update this, if you use features of a newer version
+fastlane_version "2.11.0"
+require 'xcodeproj'
+ 
+default_platform :ios
+ 
+platform :ios do
+ 
+# Put in Lanes here!
+
+desc "Submit a new Beta Build to Apple TestFlight"
+  lane :beta do    
+    # Fetch and Create Profiles
+    match
+ 
+    # Retrieve App Name and ID from environment
+    name = ENV['CUSTOM_APP_NAME']
+    app_id = ENV['CUSTOM_APP_ID']
+    team_id = ENV['CUSTOM_TEAM_ID']
+ 
+    xcodeprojpath = "../platforms/ios/" + name + ".xcodeproj"
+ 
+    # Update Code Signing
+    update_project_codesigning(path: xcodeprojpath, use_automatic_signing: false, team_id: team_id)
+ 
+    # Patch Project Settings
+    proj = Xcodeproj::Project.open("../" + xcodeprojpath)
+    
+    proj.build_configurations.each do |item|
+        item.build_settings['DEVELOPMENT_TEAM'] = team_id
+        item.build_settings['CODE_SIGN_IDENTITY[sdk=iphoneos*]'] = "iPhone Developer"
+        item.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = "match AppStore " + app_id
+    end
+ 
+    proj.recreate_user_schemes
+    proj.save
+    # End of Patching Project Settings
+ 
+    increment_build_number_in_plist({
+      xcodeproj: xcodeprojpath
+    })
+    
+    # Build the IPA
+    gym
+ 
+    # Upload the IPA to Testflight
+    testflight(
+       skip_waiting_for_build_processing: true, 
+       ipa: "./build/eBudget.ipa"
+    )
+ 
+  end
+
+
+
+end
+
