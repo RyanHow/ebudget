@@ -109,7 +109,7 @@ export class DevPage {
 
   demoTest2() {
     let demoRunner = new DemoUI();
-    let demo = new DemoPlayer();
+    let demo = new DemoPlayer(demoRunner, undefined);
 
     // TODO: Compress this (should just be able to call 'click' and it will do a move wait click to the location... Or call it iClick or something ?)
 
@@ -123,9 +123,8 @@ export class DevPage {
     demo.queue('wait', 600);
     demo.queue('type', '#dev-cron-input', '0 * 5 * *');
     demo.queue('wait', 1600);
-    demo.queue('end');
 
-    demo.run(demoRunner);
+    demo.run();
 
   }
 }

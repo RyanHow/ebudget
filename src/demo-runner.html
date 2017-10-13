@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>eBudget Demo Runner</title>
+  <script src="demo-controller.js"></script>
 </head>
 <body>
 
@@ -14,6 +15,7 @@
   ["root", "budget", {"budgetId": "${current-db-id}"}]
   ],
   "queue":[
+  ["show-pointer"], 
   ["wait", 1000], 
   ["move", ".bar-buttons"], 
   ["click", ".bar-buttons"], 
@@ -29,25 +31,38 @@
   ["type", "#add-budget-budget-name", "My First Budget"],
   ["move", "#add-budget-create"], 
   ["click", "#add-budget-create"],
+  ["hide-pointer"], 
   ["wait", 5000], 
   ["loop"]
   ]}    
       </textarea><br>
-  <input type="button" id="demo1run" value="Run" disabled onclick="document.querySelector('#demo1').contentWindow.postMessage({'demo' : {'command' : 'script', 'script' : document.getElementById('demo1script').value}}, 'http://localhost2:8100');">
+  <input type="button" id="demo1setup" value="Setup" disabled onclick="document.querySelector('#demo1').contentWindow.postMessage({'demo' : {'command' : 'script', 'script' : document.getElementById('demo1script').value}}, 'http://localhost2:8100');">
+  <input type="button" id="demo1stop" value="Stop" disabled onclick="document.querySelector('#demo1').contentWindow.postMessage({'demo' : {'command' : 'stop'}}, 'http://localhost2:8100');"><br>
+  <input type="button" id="demo1pause" value="Pause" disabled onclick="document.querySelector('#demo1').contentWindow.postMessage({'demo' : {'command' : 'pause'}}, 'http://localhost2:8100');"><br>
+  <input type="button" id="demo1run" value="Run" disabled onclick="document.querySelector('#demo1').contentWindow.postMessage({'demo' : {'command' : 'run'}}, 'http://localhost2:8100');"><br>
   <input type="button" id="demo1reset" value="Reset" disabled onclick="document.querySelector('#demo1').contentWindow.postMessage({'demo' : {'command' : 'reset'}}, 'http://localhost2:8100');"><br>
-  <a href="javascript:document.querySelector('#demo1').contentWindow.postMessage('sdafasf', 'http://localhost2:8100');">Test postMessage</a>
+  <input type="button" id="demo1clear" value="Clear" disabled onclick="document.querySelector('#demo1').contentWindow.postMessage({'demo' : {'command' : 'clear'}}, 'http://localhost2:8100');"><br>
+  <span id="demo1state"></span><br>
   <br>
   <iframe id="demo1" style="width:300px;height:600px;" src="http://localhost2:8100/index.html?demo=1&demo_control_url=http://localhost:8100"></iframe>
 
   <script>
 
-    var ebudgetDemoPostMessageUrls =  ['http://localhost2:8100', 'https://ebudget.live'];
+    var ebudgetDemoPostMessageUrls =  ['http://localhost2:8100', 'https://ebudget.live']; // TODO Allow override when constructing - default to ebudget.live
 
     function demoListener(event) {
           if (ebudgetDemoPostMessageUrls.indexOf(event.origin) >= 0) {
             if (event.data.event === 'ready' && event.data.id === '1') {
-              document.getElementById('demo1run').disabled = false;
-              document.getElementById('demo1reset').disabled = false;
+              document.querySelector('#demo1').contentWindow.postMessage({'demo' : {'command' : 'script', 'script' : document.getElementById('demo1script').value}}, 'http://localhost2:8100');
+            } else if (event.data.event === 'state-change' && event.data.id === '1') {
+              document.getElementById('demo1state').innerText = event.data.state;
+              document.getElementById('demo1setup').disabled = event.data.state != 'uninitialised';
+              document.getElementById('demo1run').disabled = event.data.state != 'ready' && event.data.state != 'paused';
+              document.getElementById('demo1stop').disabled = event.data.state != 'running';
+              document.getElementById('demo1pause').disabled = event.data.state != 'running';
+              document.getElementById('demo1reset').disabled = event.data.state != 'stopped';
+              document.getElementById('demo1clear').disabled = event.data.state != 'stopped' && event.data.state != 'ready';
+              
             }
         }
 

@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 
 @Injectable()
 export class DemoUI {
+    interrupted: boolean;
     hotspotTop: number;
     hotspotLeft: number;
 
@@ -50,12 +51,20 @@ export class DemoUI {
 
     }
 
-    showPointer() {
+    async showPointer() {
         this.pointerElement.style.display = '';
     }
 
-    hidePointer() {
+    async hidePointer() {
         this.pointerElement.style.display = 'none';
+    }
+
+    interrupt() {
+        this.interrupted = true;
+    }
+
+    resetInterrupt() {
+        this.interrupted = false;
     }
 
     private getElementCenterPosition(elementSelector: string): {x: number, y: number} {
@@ -138,6 +147,7 @@ export class DemoUI {
     }
 
     private typeChars(ele: HTMLInputElement, chars: string, resolve: () => void) {
+        if (this.interrupted) return;
         ele.value = ele.value + chars.substr(0, 1);
         ele.dispatchEvent(new Event('input', {'bubbles': true, 'cancelable': true}));
         if (chars.length > 1) setTimeout(() => this.typeChars(ele, chars.substr(1), resolve), 200);
