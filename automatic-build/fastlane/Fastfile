@@ -36,11 +36,21 @@ desc "Submit a new Beta Build to Apple TestFlight"
     proj.recreate_user_schemes
     proj.save
     # End of Patching Project Settings
- 
-    increment_build_number_in_plist({
-      xcodeproj: xcodeprojpath
-    })
-    
+
+    version = get_version_number_from_plist(xcodeproj: xcodeprojpath)
+    build = get_build_number_from_plist(xcodeproj: xcodeprojpath)
+
+    if version == build
+      increment_build_number_in_plist({
+        xcodeproj: xcodeprojpath,
+        build_number: version + ".0"
+      })
+    else
+      increment_build_number_in_plist({
+        xcodeproj: xcodeprojpath
+      })
+    end
+
     # Build the IPA
     gym
  
