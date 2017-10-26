@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="format-detection" content="telephone=no">
   <script>
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && !window.location.hostname.match('no-sw')) {
 
       navigator.serviceWorker.addEventListener('message', function(event) {
         console.log('Message from service worker: ' + JSON.stringify(event.data));

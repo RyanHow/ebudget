@@ -88,9 +88,9 @@ export class DemoSetup {
             
     }
 
-    async reset() {
+    async clear() {
         await this.fadeOut();
-
+        
         await this.nav.popToRoot({animate: false});
         //await this.nav.setRoot(HomePage, undefined, {animate: false});        
         let persistenceProvider = this.persistenceProviderManager.provide();
@@ -101,7 +101,10 @@ export class DemoSetup {
         //Close any modals
 
         this.vars = {};
+    }
 
+    async reset() {
+        await this.clear();
         await this.setup(this.script);
     }
 

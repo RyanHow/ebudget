@@ -12,7 +12,7 @@ export class DemoService {
     demoUI: DemoUI;
     demoPlayer: DemoPlayer;
 
-    private controlUrls = ['http://localhost:8100', 'https://ebudgetapp.com'];
+    private controlUrls = ['https://ebudgetapp.com'];
 
     constructor(zone: NgZone, private demoSetup: DemoSetup, private autofocus: Autofocus) {
         if (typeof (<any>window).ebudget === 'undefined') (<any>window).ebudget = {};
@@ -28,22 +28,33 @@ export class DemoService {
             window.parent.postMessage({event: 'ready', id: Utils.getQueryStringValue('demo')}, decodeURI(Utils.getQueryStringValue('demo_control_url'))); // TODO: How to get this source ? maybe from demo query string?
         }
 
-        this.demoPlayer = new DemoPlayer();
         this.demoUI = new DemoUI();
         this.demoUI.focusEnabled = this.autofocus.enabled && true;
-
+        this.demoPlayer = new DemoPlayer(this.demoUI, this.demoSetup);
+        
+        this.demoPlayer.onStateChange(state => {
+            window.parent.postMessage({event: 'state-change', id: Utils.getQueryStringValue('demo'), state: state}, decodeURI(Utils.getQueryStringValue('demo_control_url'))); // TODO: How to get this source ? maybe from demo query string?            
+        })
     }
 
     receiveMessage(event: MessageEvent) {
-        if (this.controlUrls.indexOf(event.origin) >= 0) {
+        if (event.origin.startsWith('http://localhost:') || this.controlUrls.indexOf(event.origin) >= 0) {
             if (event.data.demo && event.data.demo.command === 'script') {
-                let o = JSON.parse(event.data.demo.script);
+                let o = typeof event.data.demo.script == 'string' ? JSON.parse(event.data.demo.script) : event.data.demo.script;
                 this.demoPlayer.buildFrom(o);
-                this.demoPlayer.setup(this.demoSetup).then(() => {
-                    this.demoPlayer.run(this.demoUI);
+                this.demoPlayer.setup().then(() => {
+                    if (o.autoplay) this.demoPlayer.run();
                 });
+            } else if (event.data.demo && event.data.demo.command === 'stop') {
+                this.demoPlayer.stop();
+            } else if (event.data.demo && event.data.demo.command === 'pause') {
+                this.demoPlayer.pause();
             } else if (event.data.demo && event.data.demo.command === 'reset') {
-                this.demoSetup.reset();
+                this.demoPlayer.reset();
+            } else if (event.data.demo && event.data.demo.command === 'run') {
+                this.demoPlayer.run();
+            } else if (event.data.demo && event.data.demo.command === 'clear') {
+                this.demoPlayer.clear();
             } else {
                 alert('invalid message' + JSON.stringify(event.data));
             }
