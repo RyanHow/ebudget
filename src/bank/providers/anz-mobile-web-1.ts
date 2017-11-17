@@ -114,8 +114,13 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
 
     waitForLoadingToStop(): Promise<void> {
         return new Promise<void>(resolve => {
+            let t = setTimeout(() => {
+                subscription.unsubscribe();
+                resolve();
+            }, 20000);
             let subscription = this.browser.on('loadstop').subscribe(ev => {
                 subscription.unsubscribe();
+                clearTimeout(t);
                 resolve();
             });
             // TODO: Errors...
@@ -159,7 +164,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
                 if (!bankAccountTransaction.balance && dateMonthParts.length == 2) {
 
                     bankAccountTransaction.status = 'authorised';
-                    let testDate = moment().date(Number(dateMonthParts[0])).month(dateMonthParts[1]);
+                    let testDate = moment().month(dateMonthParts[1]).date(Number(dateMonthParts[0]));
                     if (testDate.format(Utils.STANDARD_DATE_FORMAT) > moment().format(Utils.STANDARD_DATE_FORMAT)) testDate.subtract(1, 'years');
                     bankAccountTransaction.transactionDate = testDate.format(Utils.STANDARD_DATE_FORMAT);
 
@@ -171,8 +176,8 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
                 } else if (dateMonthParts.length == 2 && monthYearParts.length == 2) {
 
                     bankAccountTransaction.status = 'processed';
-                    let dateMonth = moment().date(Number(dateMonthParts[0])).month(dateMonthParts[1]);
-                    let monthYear = moment().month(monthYearParts[0]).year(Number(monthYearParts[1]));
+                    let dateMonth = moment().month(dateMonthParts[1]).date(Number(dateMonthParts[0]));
+                    let monthYear = moment().year(Number(monthYearParts[1])).month(monthYearParts[0]);
                     if (dateMonth.month() != monthYear.month()) {/* TODO: Error */}
                     bankAccountTransaction.transactionDate = dateMonth.year(monthYear.year()).format(Utils.STANDARD_DATE_FORMAT);
 

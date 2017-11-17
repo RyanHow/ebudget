@@ -1,7 +1,7 @@
 {
   "name": "ebudget",
   "description": "eBudget",
-  "version": "0.0.115",
+  "version": "0.0.117",
   "author": "BitWorks",
   "homepage": "https://ebudgetapp.com",
   "private": true,
@@ -81,7 +81,7 @@
     "@ionic/app-scripts": "^2.0.2",
     "cli-real-favicon": "0.0.6",
     "google-closure-compiler": "^20170124.0.0",
-    "ionic": "3.12.0",
+    "ionic": "3.13.0",
     "keycdn": "^0.2.0",
     "mailgun-js": "^0.8.1",
     "replace-in-file": "^2.4.0",
