@@ -1,13 +1,13 @@
 
 {
-	"masterPicture": "resources/icon.png",
+	"masterPicture": "resources/icon.svg",
 	"iconsPath": "/",
 	"design": {
 		"ios": {
 			"pictureAspect": "noChange",
 			"assets": {
 				"ios6AndPriorIcons": false,
-				"ios7AndLaterIcons": false,
+				"ios7AndLaterIcons": true,
 				"precomposedIcons": false,
 				"declareOnlyDefaultIcon": true
 			}
@@ -15,7 +15,7 @@
 		"desktopBrowser": {},
 		"windows": {
 			"pictureAspect": "noChange",
-			"backgroundColor": "#2b5797",
+			"backgroundColor": "#796969",
 			"onConflict": "override",
 			"assets": {
 				"windows80Ie10Tile": false,
@@ -29,12 +29,13 @@
 		},
 		"androidChrome": {
 			"pictureAspect": "noChange",
-			"themeColor": "#ffffff",
+			"themeColor": "#796969",
 			"manifest": {
-				"name": "eBudget",
 				"display": "standalone",
-				"orientation": "notSet",
-				"onConflict": "override",
+				"orientation": "portrait",
+				"start_url": ".",
+				"existing_manifest": "{\"name\": \"eBudget\", \"short_name\": \"eBudget\", \"display\": \"fullscreen\"}",
+				"onConflict": "keep_existing",
 				"declared": true
 			},
 			"assets": {
@@ -43,13 +44,15 @@
 			}
 		},
 		"safariPinnedTab": {
-			"pictureAspect": "silhouette",
-			"themeColor": "#5bbad5"
+			"pictureAspect": "black_and_white",
+			"threshold": 60,
+			"themeColor": "#796969"
 		}
 	},
 	"settings": {
 		"compression": 2,
 		"scalingAlgorithm": "Mitchell",
 		"errorOnImageTooSmall": true
-	}
+	},
+	"versioning": true
 }

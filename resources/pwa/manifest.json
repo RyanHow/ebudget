@@ -1,0 +1,21 @@
+{
+    "name": "eBudget",
+    "short_name": "eBudget",
+    "display": "fullscreen",
+    "icons": [
+        {
+            "src": "/android-chrome-192x192.png?v=ngkeml9YEn",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/android-chrome-512x512.png?v=ngkeml9YEn",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#796969",
+    "background_color": "#796969",
+    "start_url": ".",
+    "orientation": "portrait"
+}
