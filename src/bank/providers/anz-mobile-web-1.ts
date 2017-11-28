@@ -62,11 +62,10 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
                                 setTimeout(() => resolve(), 500); // Delay for page to render? - Seems to load accounts via ajax calls... need to really wait and check for those! - or wait until loading has stopped for X seconds (ie. page is "stable")
                                 clearInterval(checker);
                             } else {
-                                // TODO: If error, or if browser closed, or if cancelled (how to detect??), or if timeout ?
+                                this.executeScriptLogged({code: "document.location.href"}).then(val => {
+                                    if (val[0].match('relogin')) this.hostInterface.showBrowser();
+                                });
                             }
-                        });
-                        this.executeScriptLogged({code: "document.location.href"}).then(val => {
-                            if (val[0].match('relogin')) this.hostInterface.showBrowser();
                         });
                     }, 1000);
 
@@ -79,14 +78,17 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
 
     }
 
-    async executeScriptLogged(script: {code: string}) {
+    executeScriptLogged(script: {code: string}): Promise<any> {
         let wrappedCode = "try {" + script.code + "}catch(err){'Error: ' + JSON.stringify(err)}";
-        let result = await this.browser.executeScript({code: wrappedCode});
-        if ((<string> result[0] + '').startsWith('Error: ')) {
-            this.logger.error('Error executing script in browser', script.code, result[0]);
-            return [null];
-        }
-        return result;
+        return this.browser.executeScript({code: wrappedCode}).then((result) => {
+            if ((<string> result[0] + '').startsWith('Error: ')) {
+                this.logger.info('Error executing script in browser', script.code, result[0]);
+                return [null];
+            }
+            return result;
+        }).catch(reason => {
+            this.logger.info('Error executing script in browser', script.code, reason);            
+        });
     }
 
     isConnected(): boolean {
@@ -117,7 +119,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
             let t = setTimeout(() => {
                 subscription.unsubscribe();
                 resolve();
-            }, 20000);
+            }, 10000);
             let subscription = this.browser.on('loadstop').subscribe(ev => {
                 subscription.unsubscribe();
                 clearTimeout(t);
@@ -141,56 +143,14 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
         this.executeScriptLogged({code: "document.querySelector('.transactionAuthSection > a:nth-child(1)').click();"});
         await this.waitForLoadingToStop();
 
-        let bankAccountTransactions : BankAccountTransaction[] = []; 
 
         return this.executeScriptLogged({code: 'document.getElementsByClassName("tabsContainerAcctTranAuth")[0].innerHTML'}).then((val) => {
-            let dom = new DOMParser().parseFromString(val[0], 'text/html');
-            Array.from(dom.getElementsByClassName('displayTable')).forEach(ele => {
-
-                let bankAccountTransaction = new BankAccountTransaction();
-
-                bankAccountTransaction.description = ele.querySelector('.tran-desc-div').textContent.trim().split(/\s+/).join(' ');
-                bankAccountTransaction.amount = ele.querySelector('.tran-amount-div').textContent.trim().replace("$", "").replace(",", '').replace(',','').replace('+', '');
-                bankAccountTransaction.balance = (ele.querySelector('.tran-balance-div').textContent.replace('Balance', '').trim().match(/\S+/g) || [''])[0].replace("$", "").replace(",", '').replace(',','');
-
-                let dateMonthParts = ele.querySelector('.dateNmonthSection').textContent.match(/\S+/g) || [];
-
-                let lastParentElement = ele.parentElement;
-                while (lastParentElement.parentElement.getElementsByClassName('monthYearDisplay').length == 0) lastParentElement = lastParentElement.parentElement;
-                let previousSibling = lastParentElement.previousElementSibling;
-                while (previousSibling && previousSibling.getElementsByClassName('monthYearDisplay').length != 1) previousSibling = previousSibling.previousElementSibling;
-                let monthYearParts = previousSibling ? previousSibling.getElementsByClassName('monthYearDisplay')[0].textContent.match(/\S+/g) || [] : [];
-                
-                if (!bankAccountTransaction.balance && dateMonthParts.length == 2) {
-
-                    bankAccountTransaction.status = 'authorised';
-                    let testDate = moment().month(dateMonthParts[1]).date(Number(dateMonthParts[0]));
-                    if (testDate.format(Utils.STANDARD_DATE_FORMAT) > moment().format(Utils.STANDARD_DATE_FORMAT)) testDate.subtract(1, 'years');
-                    bankAccountTransaction.transactionDate = testDate.format(Utils.STANDARD_DATE_FORMAT);
-
-                } else if (dateMonthParts.length == 0 && monthYearParts.length == 1 && monthYearParts[0] == 'Recent') {
-
-                    bankAccountTransaction.status = 'recent';
-                    bankAccountTransaction.transactionDate = null;
-
-                } else if (dateMonthParts.length == 2 && monthYearParts.length == 2) {
-
-                    bankAccountTransaction.status = 'processed';
-                    let dateMonth = moment().month(dateMonthParts[1]).date(Number(dateMonthParts[0]));
-                    let monthYear = moment().year(Number(monthYearParts[1])).month(monthYearParts[0]);
-                    if (dateMonth.month() != monthYear.month()) {/* TODO: Error */}
-                    bankAccountTransaction.transactionDate = dateMonth.year(monthYear.year()).format(Utils.STANDARD_DATE_FORMAT);
-
-                } else {
-                    // Invalid / Error
-                }
-
-                bankAccountTransactions.push(bankAccountTransaction);
-
-            });
-
-            bankAccountTransactions.reverse();
-            return bankAccountTransactions;
+            try {
+                return this.parseTransactionPage(val[0]);
+            } catch (e) {
+                this.logger.info('Error parsing transaction list', e, val[0]);
+                throw e;
+            }
         });
 
         /*return this.executeScriptLogged({code: 'JSON.stringify(processedTransactionsSingleSet)'}).then((txnList) => {
@@ -209,6 +169,60 @@ export class AnzMobileWeb1Provider implements ProviderInterface {
             return bankAccountTransactions;
         });*/
 
+    }
+
+    private parseTransactionPage(html: string) : BankAccountTransaction[] {
+        let bankAccountTransactions : BankAccountTransaction[] = []; 
+        let dom = new DOMParser().parseFromString(html, 'text/html');
+        Array.from(dom.getElementsByClassName('displayTable')).forEach(ele => {
+
+            let bankAccountTransaction = new BankAccountTransaction();
+
+            bankAccountTransaction.description = ele.querySelector('[class*="desc"]').textContent.trim().split(/\s+/).join(' ');
+            bankAccountTransaction.amount = ele.querySelector('.tran-amount-div').textContent.trim().replace("$", "").replace(",", '').replace(',','').replace('+', '');
+            bankAccountTransaction.balance = (ele.querySelector('.tran-balance-div').textContent.replace('Balance', '').trim().match(/\S+/g) || [''])[0].replace("$", "").replace(",", '').replace(',','');
+
+            let dateMonthParts = ele.querySelector('.dateNmonthSection').textContent.match(/\S+/g) || [];
+
+            let lastParentElement = ele.parentElement;
+            while (lastParentElement.parentElement.getElementsByClassName('monthYearDisplay').length == 0) lastParentElement = lastParentElement.parentElement;
+            let previousSibling = lastParentElement.previousElementSibling;
+            while (previousSibling && previousSibling.getElementsByClassName('monthYearDisplay').length != 1) previousSibling = previousSibling.previousElementSibling;
+            let monthYearParts = previousSibling ? previousSibling.getElementsByClassName('monthYearDisplay')[0].textContent.match(/\S+/g) || [] : [];
+            if (monthYearParts.length == 0) monthYearParts = lastParentElement.parentElement.getElementsByClassName('monthYearDisplay')[0].textContent.match(/\S+/g) || [];
+            
+
+            if (!bankAccountTransaction.balance && dateMonthParts.length == 2) {
+
+                bankAccountTransaction.status = 'authorised';
+                let testDate = moment().month(dateMonthParts[1]).date(Number(dateMonthParts[0]));
+                if (testDate.format(Utils.STANDARD_DATE_FORMAT) > moment().format(Utils.STANDARD_DATE_FORMAT)) testDate.subtract(1, 'years');
+                bankAccountTransaction.transactionDate = testDate.format(Utils.STANDARD_DATE_FORMAT);
+
+            } else if (dateMonthParts.length == 0 && monthYearParts.length == 1 && monthYearParts[0] == 'Recent') {
+
+                bankAccountTransaction.status = 'recent';
+                bankAccountTransaction.transactionDate = null;
+
+            } else if (dateMonthParts.length == 2 && monthYearParts.length == 2) {
+
+                bankAccountTransaction.status = 'processed';
+                let dateMonth = moment().month(dateMonthParts[1]).date(Number(dateMonthParts[0]));
+                let monthYear = moment().year(Number(monthYearParts[1])).month(monthYearParts[0]);
+                if (dateMonth.month() != monthYear.month()) {/* TODO: Error */}
+                bankAccountTransaction.transactionDate = dateMonth.year(monthYear.year()).format(Utils.STANDARD_DATE_FORMAT);
+
+            } else {
+                // Invalid / Error
+                this.logger.info("Unable to determine status and date for transaction", bankAccountTransaction);
+            }
+
+            bankAccountTransactions.push(bankAccountTransaction);
+
+        });
+
+        bankAccountTransactions.reverse();
+        return bankAccountTransactions;
     }
 
     async close() {

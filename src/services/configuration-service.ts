@@ -86,7 +86,7 @@ export class Configuration {
         let originalValue = this.secureCache[key];
         this.secureCache[key] = value;
 
-        return !this.native || (this.optionBoolean('testing.secure-storage.enabled') && !this.secure) ? Promise.resolve(originalValue) : this.secure.set('secure', JSON.stringify(this.secureCache)).catch(reason => {
+        return (!this.native || this.optionBoolean('testing.secure-storage.enabled')) ? Promise.resolve(originalValue) : this.secure.set('secure', JSON.stringify(this.secureCache)).catch(reason => {
             this.logger.info("Unable to update secure storage", reason);
             this.secureCache[key] = originalValue;
             throw reason;
