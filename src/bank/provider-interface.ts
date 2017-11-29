@@ -1,4 +1,6 @@
 import {HostInterface} from './host-interface';
+import { BankLink } from "../data/records/bank-link";
+import { SecureAccessor } from "../services/configuration-service";
 
 export class BankAccount {
     public accountName: string;
@@ -17,9 +19,21 @@ export class BankAccountTransaction {
     // TODO: Any "extra" information?. like balance, card used, etc?
 }
 
+export class ProviderSchema {
+    name: string;
+    perAccountFields: string[];
+    configurationFields: string[];
+    secureConfigurationFields: string[];
+    requireBrowser?: boolean;
+    singleInstancePerBankLink: boolean = true;
+}
+
 export interface ProviderInterface {
-    getName(): string;
-    connect(hostInterface: HostInterface): Promise<void>;
+    getSchema(): ProviderSchema;
+
+    configure(bankLink: BankLink, secure: SecureAccessor, hostInterface: HostInterface): void;
+
+    connect(): Promise<void>;
     isConnected(): boolean;
     getAccounts(): Promise<BankAccount[]>;
     getTransactions(account: BankAccount): Promise<BankAccountTransaction[]>;

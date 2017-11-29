@@ -1,30 +1,49 @@
-import {ProviderInterface, BankAccount, BankAccountTransaction} from '../provider-interface';
+import {ProviderInterface, BankAccount, BankAccountTransaction, ProviderSchema} from '../provider-interface';
 import {HostInterface} from '../host-interface';
 import {InAppBrowserObject} from '@ionic-native/in-app-browser';
 import {Logger} from '../../services/logger';
 import moment from 'moment';
 import {Utils} from '../../services/utils'
+import { BankLink } from "../../data/records/bank-link";
+import { SecureAccessor } from "../../services/configuration-service";
+import { ProviderRequiresBrowser, BrowserInterface } from "../browser-interface";
 
-export class AnzMobileWeb1Provider implements ProviderInterface {
+export class AnzMobileWeb1Provider implements ProviderInterface, ProviderRequiresBrowser {
+    browser: BrowserInterface;
 
-    // TODO: Any kind of settings / setup, or a factory type setup here where we pump out sessions
+    secureAccessor: SecureAccessor;
+    bankLink: BankLink;
 
-    // TODO: Inject / get a logger ?
     private logger = Logger.get('AnzMobileWeb1Provider');
 
     // TODO: Move this to some kind of helper
-    browser: InAppBrowserObject;
+
     connected: boolean;
     hostInterface: HostInterface;
 
-    getName(): string {
-        return "ANZ";
+    getSchema(): ProviderSchema {
+        let s = new ProviderSchema();
+        s.name = "ANZ";
+        s.perAccountFields = ["Account Number"];
+        s.secureConfigurationFields = ["CRN", "Password"];
+        s.requireBrowser = true;
+        return s;
     }
 
-    connect(hostInterface: HostInterface): Promise<void> {
-        this.browser = hostInterface.provideBrowser('https://www.anz.com/INETBANK/bankmain.asp');
-        this.browser.on('loaderror'); // ?
+    configure(bankLink: BankLink, secureAccessor: SecureAccessor, hostInterface: HostInterface): void {
+        this.bankLink = bankLink;
+        this.secureAccessor = secureAccessor;
         this.hostInterface = hostInterface;
+    }
+
+    setBrowser(browser: BrowserInterface) {
+        this.browser = browser;
+    }
+
+    connect(): Promise<void> {
+
+        this.browser.on('loaderror'); // ?
+        
 
         return new Promise<void>((resolve, reject) => {
             let subscription = this.browser.on('loadstop').subscribe(ev => {

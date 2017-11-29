@@ -1,42 +1,130 @@
 import {Injectable} from '@angular/core';
 import {StandardHostInterface} from './standard-host-interface';
 import {TransactionSync} from './transaction-sync';
-import {BankProviderManager} from './bank-provider-manager';
+import {BankProviderRegistry} from './bank-provider-registry';
 import {Account} from '../data/records/account';
 import {Replication} from '../services/replication-service';
 import {Engine} from '../engine/engine';
+import { BankLink } from "../data/records/bank-link";
+import { Configuration, SecureAccessor } from "../services/configuration-service";
+import { Dbms } from "../db/dbms";
+import { EngineFactory } from "../engine/engine-factory";
+import { InAppBrowserInterfaceFactory } from "./in-app-browser-interface-factory";
+import { ProviderRequiresBrowser, BrowserInterface } from "./browser-interface";
+import { ProviderSchema, ProviderInterface } from "./provider-interface";
+
+export class BankSyncMonitor {
+    error: boolean;
+    errorMessage: string;
+
+    bankLink: BankLink;
+    providerSchema: ProviderSchema;
+    provider: ProviderInterface;
+    engine: Engine;
+    accounts: Account[];
+
+    cancel() {
+
+    }
+
+    running: boolean;
+    complete: boolean;
+    cancelling: boolean;
+    cancelled: boolean;
+    
+}
 
 @Injectable()
 export class BankSync {
 
-    constructor(private standardHostInterface: StandardHostInterface, private transactionSync: TransactionSync, private bankProviderManager: BankProviderManager, private replication: Replication) {
+    // TODO: Do this by UUID for cross budget
+    activeSyncs: BankSyncMonitor[];
+
+
+    constructor(private standardHostInterface: StandardHostInterface, private transactionSync: TransactionSync, private bankProviderRegistry: BankProviderRegistry, private replication: Replication, private configuration: Configuration, private dbms: Dbms, private engineFactory: EngineFactory, private inAppBrowserInterfaceFactory: InAppBrowserInterfaceFactory) {
 
     }
 
     // TODO: Sync should return a handle to the sync process, which can then be awaited, cancelled, have events watched on it, etc, accounts can also be multiple (for instance if we have the 1 budget, we can sync multiple accounts from the same provider at the same time)
     //
 
-    async sync(providerName: string, account: Account, engine: Engine) {        
+    sync(bankLink: BankLink, engine: Engine, accounts?: Account[]): BankSyncMonitor {        
 
-        // TODO: Want to handle errors from this gracefully - Unable to sync budget prior to bank account linking... (maybe a force to do it anyway?)
-        await this.replication.sync();
+        let bankSyncMonitor = new BankSyncMonitor();
+        bankSyncMonitor.bankLink = bankLink;
+        bankSyncMonitor.engine = engine;
 
-        let provider = this.bankProviderManager.newProvider(providerName);
+        if (!accounts) accounts = engine.getAccounts().filter(account => account.bankLinkId === bankLink.id);
+        if (accounts.length === 0) {
+            bankSyncMonitor.errorMessage = "No Accounts Selected for Sync";
+            bankSyncMonitor.error = true;
+            return bankSyncMonitor;
+        }
 
-        // Note here, we need to be able to share credentials between accounts - a "provider" needs to be a higher level entity and can be linked to multiple "accounts"
-        this.standardHostInterface.accountId = account.id;
-        this.standardHostInterface.budgetId = engine.db.id;
-        await provider.connect(this.standardHostInterface);
+        bankSyncMonitor.accounts = accounts;
+        
+        // TODO: Get connected BankLinks in other budgets - this will be run off some kind of locally stored link map of bankLinks
+        //this.dbms.dbs.filter(db => db.isActive()).forEach(db => {
+        //})        
+        
+        let provider = this.bankProviderRegistry.newProvider(bankLink.provider);
+        let providerSchema = provider.getSchema();
+        bankSyncMonitor.provider = provider;
+        bankSyncMonitor.providerSchema = providerSchema;
 
-        // TODO: We don't have to always get accounts, then go to the back account, why can't we go straight by account number?, get accounts is useful for account balance... Just leave it here for now...
-        // I think it may be better sending a single request to the provider for ALL the info needed from it
+        let secureAccessor = this.configuration.secureAccessor("banklink_" + bankLink.id);
+        provider.configure(bankLink, secureAccessor, this.standardHostInterface);
 
-        let bankAccounts = await provider.getAccounts();
-        let bankAccount = bankAccounts.find(b => account.x.accountNumber == b.accountNumber);
-        let transactions = await provider.getTransactions(bankAccount);
-        this.transactionSync.merge(engine, account, bankAccount, transactions);
-        await provider.close();
+        if (providerSchema.singleInstancePerBankLink) {
+            if (this.activeSyncs.find(m => m.bankLink.uuid == bankLink.uuid)) {
+                throw new Error("Bank Link " + bankLink.name + " Is already active");
+            }
+        }
+
+        this.activeSyncs.push(bankSyncMonitor);
+
+        this.doSync(bankSyncMonitor).then(() => {
+            this.activeSyncs.splice(this.activeSyncs.indexOf(bankSyncMonitor), 1);      
+        });
+
+        return bankSyncMonitor;
     }
+
+
+    private async doSync(bankSyncMonitor: BankSyncMonitor) {
+        let browserInterface: BrowserInterface;
+
+        try {
+            await this.replication.sync();
+
+            if (bankSyncMonitor.providerSchema.requireBrowser) {
+                browserInterface = this.inAppBrowserInterfaceFactory.createBrowser();
+                (<ProviderRequiresBrowser> <any> bankSyncMonitor.provider).setBrowser(browserInterface);
+            }
+
+            await bankSyncMonitor.provider.connect();
+
+            let bankAccounts = await bankSyncMonitor.provider.getAccounts();
+
+            for (let account of bankSyncMonitor.accounts) {
+                let bankAccount = bankAccounts.find(b => account.x.accountNumber == b.accountNumber);
+                let transactions = await bankSyncMonitor.provider.getTransactions(bankAccount);
+                this.transactionSync.merge(bankSyncMonitor.engine, account, bankAccount, transactions);
+            }
+            // TODO: Multiple accounts
+
+            await bankSyncMonitor.provider.close();
+
+            bankSyncMonitor.complete = true;
+        } catch (e) {
+            bankSyncMonitor.error = true;
+            // TODO differentiate between an error and an exception (unhandled)
+            bankSyncMonitor.errorMessage = e + "";
+        } finally {
+            if (browserInterface != null) browserInterface.dispose();
+        }
+    }
+
 
     // This will have the method (sync: account) to do a sync of that account
 

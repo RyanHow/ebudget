@@ -10,8 +10,8 @@ export class CreateAccountTransaction extends DbTransaction {
     name: string;
     accountType: 'Bank' | 'Cash';
     openingBalance: BigJsLibrary.BigJS;
-    bankDetails: {accountNumber: string; bankProviderName: string; openingBankBalance: BigJsLibrary.BigJS};
-
+    bankLinkId: number;
+    bankLinkConfiguration: any;
 
     getTypeId(): string {
         return 'CreateAccountTransaction';
@@ -27,9 +27,8 @@ export class CreateAccountTransaction extends DbTransaction {
         a.name = this.name;
         a.openingBalance = this.openingBalance;
         a.accountType = this.accountType;
-        a.x.accountNumber = this.bankDetails == null ? undefined : this.bankDetails.accountNumber;
-        a.x.bankProviderName = this.bankDetails == null ? undefined : this.bankDetails.bankProviderName;
-        a.x.openingBankBalance = this.bankDetails == null ? undefined : this.bankDetails.openingBankBalance;
+        a.bankLinkId = this.bankLinkId;
+        a.bankLinkConfiguration = this.bankLinkConfiguration;
         a.processors.push(new AccountBalanceProcessor(a));
         table.insert(a);
         tp.mapTransactionAndRecord(this, a);
@@ -44,9 +43,8 @@ export class CreateAccountTransaction extends DbTransaction {
         a.name = this.name;
         a.openingBalance = this.openingBalance;
         a.accountType = this.accountType;
-        a.x.accountNumber = this.bankDetails == null ? undefined : this.bankDetails.accountNumber;
-        a.x.bankProviderName = this.bankDetails == null ? undefined : this.bankDetails.bankProviderName;
-        a.x.openingBankBalance = this.bankDetails == null ? undefined : this.bankDetails.openingBankBalance;
+        a.bankLinkId = this.bankLinkId;
+        a.bankLinkConfiguration = this.bankLinkConfiguration;
 
         table.update(a);
     }

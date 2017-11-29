@@ -9,6 +9,7 @@ export abstract class Record<T> {
     /**
      * Place to store cached values for external processors, purely for performance and ease of lookup.
      * This data could be found elsewhere (directly or by calculation) and shouldn't be used within the records or transactions themselves.
+     * Cheeky Note: I use this also for testing ideas so I can keep eXperimental data separate.
      */
     public x: any = {}; 
 

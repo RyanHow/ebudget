@@ -1,5 +1,7 @@
-import {ProviderInterface, BankAccount, BankAccountTransaction} from '../provider-interface';
+import {ProviderInterface, BankAccount, BankAccountTransaction, ProviderSchema} from '../provider-interface';
 import {HostInterface} from '../host-interface';
+import { BankLink } from "../../data/records/bank-link";
+import { SecureAccessor } from "../../services/configuration-service";
 
 export class MockDataProvider implements ProviderInterface {
 
@@ -28,8 +30,16 @@ export class MockDataProvider implements ProviderInterface {
 
     ];
 
-    getName(): string {
-        return "Mock";
+    getSchema(): ProviderSchema {
+        let s = new ProviderSchema();
+        s.name = "Mock";
+        s.perAccountFields = ["Account Number"];
+        s.secureConfigurationFields = ["CRN", "Password"];
+        return s;
+    }
+
+    configure(bankLink: BankLink, secureAccessor: SecureAccessor): void {
+        
     }
 
     connect(hostInterface: HostInterface): Promise<void> {

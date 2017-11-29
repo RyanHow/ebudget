@@ -17,8 +17,43 @@ export interface BooleanValueAccessor {
     value: boolean;
 }
 
+export class SecureAccessor {
+    constructor(private configuration: Configuration, private scope: string) {
+    }
+    removeScope(): Promise<void> {
+        return this.configuration.removeSecure(this.scope).then(() => undefined);
+    }
+    async removeSecure(key: string): Promise<string> {
+        let scoped = await this.configuration.getSecure(this.scope);
+        if (scoped == null) scoped = {};
+        let originalValue = scoped[key];
+        delete scoped[key];
+        if (JSON.stringify(scoped).length < 7) {
+            await this.removeScope();
+        } else {
+            await this.configuration.setSecure(this.scope, scoped);
+        }
+        return originalValue;
+    }
+    async setSecure(key: string, value: any): Promise<string> {
+        if (value == undefined) return this.removeSecure(key);
+        let scoped = await this.configuration.getSecure(this.scope);
+        if (scoped == null) scoped = {};
+        let originalValue = scoped[key];
+        scoped[key] = value;
+        await this.configuration.setSecure(this.scope, scoped);
+        return originalValue;
+    }
+    async getSecure(key: string): Promise<string> {
+        let scoped = await this.configuration.getSecure(this.scope);
+        if (scoped == null) scoped = {};
+        return scoped[key];
+    }
+}
+
 @Injectable()
 export class Configuration {
+    secureInitialised: boolean;
     private logger: Logger = Logger.get('Configuration');
 
     private configured: boolean = false;
@@ -31,7 +66,7 @@ export class Configuration {
     public cId: string = 'conf';
     public temporary: any = {};
     private secure: SecureStorageObject;
-    private secureCache: any;
+    private inMemoryTestingSecure: any;
 
     private booleanValueAccessor = class implements BooleanValueAccessor {
         constructor(private option: string, private configuration: Configuration) {
@@ -66,39 +101,38 @@ export class Configuration {
         this.persistence.keyStore(this.cId, 'loglevel', value);
     }
 
-    removeSecure(key: string): Promise<string> {
-        let originalValue = this.secureCache[key];
-        delete this.secureCache[key];
-
-        return !this.native || (this.optionBoolean('testing.secure-storage.enabled') && !this.secure) ? Promise.resolve(originalValue) : this.secure.remove(key).catch(reason => {
-            this.logger.info("Unable to update secure storage", reason);
-            this.secureCache[key] = originalValue;
-            throw reason;
-        });
-
+    secureAccessor(scope: string): SecureAccessor {
+        return new SecureAccessor(this, scope);
     }
 
-    setSecure(key: string, value: string): Promise<string> {
+    async removeSecure(key: string): Promise<string> {
+        let secure = await this.getSecureInternal();
+        let originalValue = secure[key];
+        delete secure[key];
+        await this.setSecureInternal(secure);
+
+        return originalValue;
+    }
+
+    async setSecure(key: string, value: any): Promise<String> {
         if (value === undefined) {
-            return this.removeSecure(key);
+            return await this.removeSecure(key);
         }
 
-        let originalValue = this.secureCache[key];
-        this.secureCache[key] = value;
+        let secure = await this.getSecureInternal();
+        let originalValue = secure[key];
+        secure[key] = value;
+        await this.setSecureInternal(secure);
 
-        return (!this.native || this.optionBoolean('testing.secure-storage.enabled')) ? Promise.resolve(originalValue) : this.secure.set('secure', JSON.stringify(this.secureCache)).catch(reason => {
-            this.logger.info("Unable to update secure storage", reason);
-            this.secureCache[key] = originalValue;
-            throw reason;
-        });
+        return originalValue;
     }
 
-    getSecure(key: string): string {
-        return this.secureCache[key];
+    getSecure(key: string): Promise<any> {
+        return this.getSecureInternal().then(secure => secure[key]);
     }
 
     secureAvailable(): boolean {
-        return this.secureCache != null;
+        return this.secureInitialised;
     }
     
     constructor(private persistenceProviderManager: PersistenceProviderManager, private platform: Platform, private device: Device, private secureStorage: SecureStorage) {
@@ -138,23 +172,48 @@ export class Configuration {
 
         this.configured = true;
 
-        return this.secureStorage.create('eBudget').then((secureStorageObject: SecureStorageObject) => {
-            this.secure = secureStorageObject;
-            if (!this.native) {
-                throw new Error("Browser has no implementation of secure storage");
-            }
-            return this.secure.keys();
-        }).then(keys => {
-            if (keys.indexOf('secure') >= 0) return this.secure.get('secure');
-            else return '{}';
-        }).then(secureObjectString => {
-            this.secureCache = JSON.parse(secureObjectString);
-            this.logger.info("Secure storage initialised");
-        }).catch(reason => {
-            this.logger.info("Secure storage unable to be initialised", reason);
-            if (this.optionBoolean('testing.secure-storage.enabled')) this.secureCache = {};
-        });
+        if (this.optionBoolean('testing.secure-storage.enabled')) {
+            this.inMemoryTestingSecure = {};
+            this.secureInitialised = true;
+            return Promise.resolve();
+        } else {
+            return this.secureStorage.create('eBudget').then((secureStorageObject: SecureStorageObject) => {
+                this.secure = secureStorageObject;
+                if (!this.native) {
+                    throw new Error("Browser has no implementation of secure storage");
+                }
+                return this.secure.keys();
+            }).then(keys => {
+                if (keys.indexOf('secure') >= 0) return this.secure.get('secure');
+                else {
+                    return this.secure.set('secure', '{}').then(() => '{}');
+                }
+            }).then(secureObjectString => {
+                JSON.parse(secureObjectString);
+                this.secureInitialised = true;
+                this.logger.info("Secure storage initialised");
+            }).catch(reason => {
+                this.logger.info("Secure storage unable to be initialised", reason);
+            });
+        }
 
+    }
+
+    private getSecureInternal(): Promise<any> {
+        if (this.optionBoolean('testing.secure-storage.enabled')) {
+            return Promise.resolve(this.inMemoryTestingSecure);
+        }
+
+        return this.secure.get('secure').then(secure => JSON.parse(secure));
+    }
+
+    private setSecureInternal(secure: any): Promise<void> {
+        if (this.optionBoolean('testing.secure-storage.enabled')) {
+            this.inMemoryTestingSecure = secure;
+            return Promise.resolve();
+        }
+
+        return this.secure.set('secure', JSON.stringify(secure));
     }
 
     initLogLevel() {

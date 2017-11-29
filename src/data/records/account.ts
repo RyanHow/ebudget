@@ -8,6 +8,9 @@ export class Account extends Record<Account> {
     public balance: BigJsLibrary.BigJS;
     public accountType: 'Bank' | 'Cash';
     public openingBalance: BigJsLibrary.BigJS;
+    public bankLinkId: number;
+    public bankLinkConfiguration: any;
+    
     processors: Processor[] = [];
     
     tableName(): string {
