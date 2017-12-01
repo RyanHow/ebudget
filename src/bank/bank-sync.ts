@@ -12,6 +12,7 @@ import { EngineFactory } from "../engine/engine-factory";
 import { InAppBrowserInterfaceFactory } from "./in-app-browser-interface-factory";
 import { ProviderRequiresBrowser, BrowserInterface } from "./browser-interface";
 import { ProviderSchema, ProviderInterface } from "./provider-interface";
+import { Logger, LoggerAppender } from "../services/logger";
 
 export class BankSyncMonitor {
     error: boolean;
@@ -22,6 +23,9 @@ export class BankSyncMonitor {
     provider: ProviderInterface;
     engine: Engine;
     accounts: Account[];
+
+    logger: Logger;
+    log: string[] = [];
 
     cancel() {
 
@@ -51,6 +55,16 @@ export class BankSync {
     sync(bankLink: BankLink, engine: Engine, accounts?: Account[]): BankSyncMonitor {        
 
         let bankSyncMonitor = new BankSyncMonitor();
+        let logger = Logger.get("BankSync.BankLink." + bankLink.name.split(/[^0-9A-Za-z_]/).join());
+        logger.config.level = Logger.DEBUG;
+        logger.config.addAppender(new class implements LoggerAppender {
+            log(level: number, data: any[]) {
+                if (data != null && data.length == 1) bankSyncMonitor.log.push(Logger.stringValue(data[0]));
+                else bankSyncMonitor.log.push(Logger.stringValue(data));
+            }
+        });
+
+        bankSyncMonitor.logger = logger;
         bankSyncMonitor.bankLink = bankLink;
         bankSyncMonitor.engine = engine;
 
@@ -77,7 +91,9 @@ export class BankSync {
 
         if (providerSchema.singleInstancePerBankLink) {
             if (this.activeSyncs.find(m => m.bankLink.uuid == bankLink.uuid)) {
-                throw new Error("Bank Link " + bankLink.name + " Is already active");
+                bankSyncMonitor.errorMessage = "Bank Link " + bankLink.name + " is already active";
+                bankSyncMonitor.error = true;
+                return bankSyncMonitor;
             }
         }
 
@@ -98,7 +114,7 @@ export class BankSync {
             await this.replication.sync();
 
             if (bankSyncMonitor.providerSchema.requireBrowser) {
-                browserInterface = this.inAppBrowserInterfaceFactory.createBrowser();
+                browserInterface = this.inAppBrowserInterfaceFactory.createBrowser(bankSyncMonitor.logger);
                 (<ProviderRequiresBrowser> <any> bankSyncMonitor.provider).setBrowser(browserInterface);
             }
 
