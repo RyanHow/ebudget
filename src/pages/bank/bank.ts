@@ -39,7 +39,7 @@ export class BankPage {
     // TODO: Does try/catch work on async/await ?
 
     try {
-      await this.bankSync.sync(this.account.x.bankProviderName, this.account, this.engine);
+      //await this.bankSync.sync(this.account.x.bankProviderName, this.account, this.engine);
       this.notifications.notify("Syncing Done");
     } catch (error) {
       this.logger.info("Bank Sync Error", error);
@@ -50,7 +50,7 @@ export class BankPage {
   }
 
   showSyncWindow() {
-    this.standardHostInterface.manualShowBrowser();
+    //this.standardHostInterface.manualShowBrowser();
   }
 
 

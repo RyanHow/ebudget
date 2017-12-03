@@ -1,0 +1,50 @@
+<ion-header>
+    <ion-toolbar>
+    <ion-buttons start>
+        <button ion-button (click)="cancel()">Cancel</button>
+    </ion-buttons>
+
+    <ion-title>{{editing ? "Edit" : "Add"}} Bank Link</ion-title>
+
+    <ion-buttons end>
+        <button ion-button (click)="submit($event)" [disabled]="!form.valid">{{editing ? "Save" : "Create"}}</button>
+    </ion-buttons>
+
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <div responsive-padding>
+        <form #form="ngForm" (submit)="submit($event)">
+
+            <ion-list>
+                <ion-item>
+                    <ion-label>Bank Provider</ion-label>
+                    <ion-select name="bankProviderName" [(ngModel)]="data.provider">
+                        <ion-option value="">&lt;No Provider&gt;</ion-option>
+                        <ion-option *ngFor="let bankProviderName of bankProviderRegistry.getProviderNames()" value="{{bankProviderName}}">{{bankProviderName}}</ion-option>    
+                    </ion-select>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label>Bank Link Name</ion-label>
+                    <ion-input type="text" name="name" [(ngModel)]="data.name"></ion-input>
+                </ion-item>
+
+                <ion-item *ngFor="let setting of getProviderSchema().secureConfigurationFields">
+                    <ion-label>{{setting}}</ion-label>
+                    <ion-input type="text" name="{{setting}}" [(ngModel)]="data.configuration[setting]"></ion-input>
+                </ion-item>
+
+                <ion-item *ngIf="data.bankProviderName && !configuration.secureAvailable()">
+                    Secure storage is not available
+                </ion-item>
+                <ion-item *ngFor="let setting of getProviderSchema().secureConfigurationFields">
+                    <button enabled="configuration.secureAvailable()" ion-button type="button" (click)="securePrompt.show(secureAccessor, setting)">{{(secureAccessor.keys[setting]) ? "Edit Secure " + setting : "Securely Store " + setting}}</button>
+                </ion-item>
+
+
+            </ion-list>
+        </form>
+    </div>
+    <button ion-button *ngIf="editing" color="danger" clear small (click)="deleteBankLinkConfirm()">Delete</button>
+</ion-content>

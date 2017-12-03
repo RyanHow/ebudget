@@ -34,35 +34,20 @@
             <ion-list>
                 <ion-item>
                     <ion-label>Opening Balance</ion-label>
-                    <ion-input currency-field name="openingBalance" [(ngModel)]="data.openingBalance"required></ion-input>
+                    <ion-input currency-field name="initialBalance" [(ngModel)]="data.initialBalance"required></ion-input>
                 </ion-item>
             </ion-list>
             <ion-list *ngIf="data.accountType == 'Bank'">
                 <ion-item>
-                    <ion-label>Bank Provider</ion-label>
-                    <ion-select name="bankProviderName" [(ngModel)]="data.bankProviderName">
+                    <ion-label>Bank Links</ion-label>
+                    <ion-select name="bankLinkId" [(ngModel)]="data.bankLinkId">
                         <ion-option value="">&lt;No Provider&gt;</ion-option>
-                        <ion-option *ngFor="let bankProviderName of bankProviderManager.getProviderNames()" value="{{bankProviderName}}">{{bankProviderName}}</ion-option>    
+                        <ion-option *ngFor="let bankLink of engine.getBankLinks()" value="{{bankLink.id}}">{{bankLink.name}}</ion-option>    
                     </ion-select>
                 </ion-item>
-                <ion-item *ngIf="data.bankProviderName">
-                    <ion-label>Account Number</ion-label>
-                    <ion-input type="text" name="accountNumber" [(ngModel)]="data.accountNumber"></ion-input>
-                </ion-item>
-                <ion-item *ngIf="data.bankProviderName">
-                    <ion-label>Opening Balance</ion-label>
-                    <ion-input currency-field name="openingBankBalance" [(ngModel)]="data.openingBankBalance"></ion-input>
-                </ion-item>
-                <ion-item *ngIf="data.bankProviderName && configuration.secureAvailable() && editing">
-                    <button ion-button type="button" (click)="securePrompt(securePrefix + '-bank-login')">{{(configuration.getSecure(securePrefix + '-bank-login')) ? "Edit Secure Login" : "Securely Store Login"}}</button>
-                </ion-item>
-                <ion-item *ngIf="data.bankProviderName && configuration.secureAvailable() && editing">
-                    <button ion-button type="button" (click)="securePrompt(securePrefix + '-bank-password')">{{(configuration.getSecure(securePrefix + '-bank-password')) ? "Edit Secure Password" : "Securely Store Password"}}</button>
-                </ion-item>
-                <ion-item *ngIf="data.bankProviderName && !configuration.secureAvailable() && editing">
-                    Secure storage is not available
-                </ion-item>
             </ion-list>
+
+            TODO: List of properties for the bank link per account (Copy the loop in bank link modal)
         </form>
     </div>
     <button ion-button *ngIf="editing" color="danger" clear small (click)="deleteAccountConfirm()">Delete</button>

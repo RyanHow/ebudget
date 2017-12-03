@@ -33,7 +33,7 @@ import {Dbms} from '../db/dbms';
 import {PersistenceProviderManager} from '../db/persistence-provider-manager';
 import {EditorProvider} from '../services/editor-provider';
 import {Configuration} from '../services/configuration-service';
-import {BankProviderManager} from '../bank/bank-provider-manager';
+import {BankProviderRegistry} from '../bank/bank-provider-registry';
 import {StandardHostInterface} from '../bank/standard-host-interface';
 import {TransactionSync} from '../bank/transaction-sync';
 import {BankSync} from '../bank/bank-sync';
@@ -63,6 +63,10 @@ import { SecureStorage } from "@ionic-native/secure-storage";
 import { DemoService } from "../demo/demo-service";
 import { DemoSetup } from "../demo/demo-setup";
 import { Autofocus } from "../services/autofocus";
+import { BankLinkPage } from "../pages/bank-link/bank-link";
+import { AddEditBankLinkModal } from "../modals/add-edit-bank-link/add-edit-bank-link";
+import { SecurePrompt } from "../services/secure-prompt";
+import { InAppBrowserInterfaceFactory } from "../bank/in-app-browser-interface-factory";
 
 @NgModule({
   declarations: [
@@ -100,7 +104,10 @@ import { Autofocus } from "../services/autofocus";
     CFormatPipe,
     CuteProgressBar,
     MainMenuIcon,
-    NotificationList
+    NotificationList,
+    BankLinkPage,
+    AddEditBankLinkModal,
+
   ],
   imports: [
     BrowserModule,
@@ -132,12 +139,16 @@ import { Autofocus } from "../services/autofocus";
     AddEditAccountModal,
     AddEditCategorySimpleWeeklyModal,
     ViewBankTransactionModal,
-    CategoryPopover
+    CategoryPopover,
+    BankLinkPage,
+    AddEditBankLinkModal
   ],
   providers: [
   {provide: ErrorHandler, useClass: AppExceptionHandler},
   StandardHostInterface,
-  BankProviderManager,
+  BankProviderRegistry,
+  InAppBrowserInterfaceFactory,
+  SecurePrompt,
   TransactionSync,
   BankSync,
   Device,

@@ -9,7 +9,7 @@ export class CreateAccountTransaction extends DbTransaction {
 
     name: string;
     accountType: 'Bank' | 'Cash';
-    openingBalance: BigJsLibrary.BigJS;
+    initialBalance: BigJsLibrary.BigJS;
     bankLinkId: number;
     bankLinkConfiguration: any;
 
@@ -25,7 +25,7 @@ export class CreateAccountTransaction extends DbTransaction {
         let a = new Account();
         a.id = this.id;
         a.name = this.name;
-        a.openingBalance = this.openingBalance;
+        a.initialBalance = this.initialBalance;
         a.accountType = this.accountType;
         a.bankLinkId = this.bankLinkId;
         a.bankLinkConfiguration = this.bankLinkConfiguration;
@@ -41,7 +41,7 @@ export class CreateAccountTransaction extends DbTransaction {
         let table = tp.table(Account);
         let a = table.by('id', <any> this.id);
         a.name = this.name;
-        a.openingBalance = this.openingBalance;
+        a.initialBalance = this.initialBalance;
         a.accountType = this.accountType;
         a.bankLinkId = this.bankLinkId;
         a.bankLinkConfiguration = this.bankLinkConfiguration;
@@ -56,7 +56,7 @@ export class CreateAccountTransaction extends DbTransaction {
     }
     
     deserialize(field: string, value: any): any {
-        if (field === 'openingBalance' && value != null)
+        if (field === 'initialBalance' && value != null)
             return new Big(value);
         if (field === 'bankDetails' && value != null) {
             if (value.openingBankBalance != null) value.openingBankBalance = new Big(value.openingBankBalance);

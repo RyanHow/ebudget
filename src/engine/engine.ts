@@ -6,6 +6,7 @@ import {Notifications} from '../services/notifications';
 import { Configuration } from '../services/configuration-service';
 import { Transaction } from "../data/records/transaction";
 import { Utils } from "../services/utils";
+import { BankLink } from "../data/records/bank-link";
 
 export class Engine {
 
@@ -87,6 +88,10 @@ export class Engine {
 
     getAccounts(): Account[] {
         return this.db.transactionProcessor.table(Account).chain().simplesort('name').data();
+    }
+
+    getBankLinks(): BankLink[] {
+        return this.db.transactionProcessor.table(BankLink).chain().simplesort('name').data();
     }
 
     getRecordById<T extends Record<any>>(type: {new(): T}, id: any): T {

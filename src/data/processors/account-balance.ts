@@ -36,7 +36,7 @@ export class AccountBalanceProcessor extends Processor {
             accountBalances.set(transaction.accountId || null, categoryTotal.minus(transaction.amount));
 
             return total.minus(transaction.amount);
-        }, this.account.openingBalance || new Big('0'));
+        }, this.account.initialBalance || new Big('0'));
         
         tp.table(Account).update(this.account);
         categoryTable.data.forEach(c => categoryTable.update(c));

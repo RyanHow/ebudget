@@ -26,4 +26,9 @@ export class BankProviderRegistry {
         return Array.from(this.providers.keys());
     }
 
+    getProviderSchema(providerName: string): ProviderSchema {
+        let providerInfo = this.providers.get(providerName);
+        return providerInfo.schema;
+    }
+
 }

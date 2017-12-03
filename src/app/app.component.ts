@@ -12,7 +12,7 @@ import {Replication} from '../services/replication-service';
 import {TransactionSerializer} from '../db/transaction-serializer';
 import {Logger} from '../services/logger';
 import {AppReady} from './app-ready';
-import {BankProviderManager} from '../bank/bank-provider-manager';
+import {BankProviderRegistry} from '../bank/bank-provider-registry';
 
 import {InitBudgetTransaction} from '../data/transactions/init-budget-transaction';
 import {InitCategoryTransaction} from '../data/transactions/init-category-transaction';
@@ -36,6 +36,8 @@ import { Utils } from "../services/utils";
 import { DemoService } from "../demo/demo-service";
 import { Autofocus } from "../services/autofocus";
 import { DemoSetup } from "../demo/demo-setup";
+import { CreateBankLink } from "../data/transactions/create-bank-link";
+import { SetAccountBankLink } from "../data/transactions/set-account-bank-link";
 
 @Component({
   templateUrl: 'app.html'
@@ -47,7 +49,7 @@ export class App {
   ready: boolean;
   @ViewChild(Nav) nav: Nav;
 
-  constructor(platform: Platform, private configuration: Configuration, dbms: Dbms, persistenceProviderManager: PersistenceProviderManager, replication: Replication, private transactionSerializer: TransactionSerializer, private editorProvider: EditorProvider, private appReady: AppReady, private statusBar: StatusBar, private splashScreen: SplashScreen, private bankProviderManager: BankProviderManager, private demoService: DemoService, private autofocus: Autofocus, private demoSetup: DemoSetup) {
+  constructor(platform: Platform, private configuration: Configuration, dbms: Dbms, persistenceProviderManager: PersistenceProviderManager, replication: Replication, private transactionSerializer: TransactionSerializer, private editorProvider: EditorProvider, private appReady: AppReady, private statusBar: StatusBar, private splashScreen: SplashScreen, private bankProviderRegistry: BankProviderRegistry, private demoService: DemoService, private autofocus: Autofocus, private demoSetup: DemoSetup) {
     this.logger.info('Constructing App');
     
     platform.ready().then(() => {
@@ -130,11 +132,13 @@ export class App {
     this.transactionSerializer.registerType(CreateAccountTransaction);
     this.transactionSerializer.registerType(MergeBankTransactions);
     this.transactionSerializer.registerType(CreateTransactionReconciliation);
+    this.transactionSerializer.registerType(CreateBankLink);
+    this.transactionSerializer.registerType(SetAccountBankLink);
   }
 
   registerBankProviders() {
-    this.bankProviderManager.registerProvider(AnzMobileWeb1Provider);
-    this.bankProviderManager.registerProvider(MockDataProvider);
+    this.bankProviderRegistry.registerProvider(AnzMobileWeb1Provider);
+    this.bankProviderRegistry.registerProvider(MockDataProvider);
   }
 
 }

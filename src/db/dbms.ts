@@ -5,6 +5,7 @@ import {PersistenceProviderManager} from './persistence-provider-manager';
 import Loki from 'lokijs';
 import {TransactionSerializer} from './transaction-serializer';
 import { Utils } from "../services/utils";
+import { Configuration } from "../services/configuration-service";
 
 @Injectable()
 export class Dbms {
@@ -15,7 +16,7 @@ export class Dbms {
     private dbMap: Map<string, Db>;
     public initialising: boolean;
         
-    constructor(private transactionSerializer: TransactionSerializer, persistenceProviderManager: PersistenceProviderManager) {
+    constructor(private transactionSerializer: TransactionSerializer, persistenceProviderManager: PersistenceProviderManager, public configuration: Configuration) {
         this.persistenceProvider = persistenceProviderManager.provide();
         this.dbs = [];
         this.dbMap = new Map<string, Db>();

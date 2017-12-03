@@ -15,6 +15,9 @@ import {Http} from '@angular/http';
 import {Account} from '../../data/records/account';
 import {AccountPage} from '../../pages/account/account';
 import {AddEditAccountModal} from '../../modals/add-edit-account/add-edit-account';
+import { BankLink } from "../../data/records/bank-link";
+import { AddEditBankLinkModal } from "../../modals/add-edit-bank-link/add-edit-bank-link";
+import { BankLinkPage } from "../bank-link/bank-link";
 
 @Component({
   templateUrl: 'budget-settings.html'
@@ -59,7 +62,24 @@ export class BudgetSettingsPage {
   openAccount(account: Account) {
     this.nav.push(AccountPage, {accountId: account.id, budgetId: this.db.id});
   }
-  
+
+  addBankLink() {
+    let modal = this.modalController.create(AddEditBankLinkModal, {budgetId: this.db.id});
+
+    modal.onDidDismiss(data => {
+      if (data && data.bankLinkId) {
+        this.nav.push(BankLinkPage, {bankLinkId: data.bankLinktId, budgetId: this.db.id});
+      }
+    });
+
+    modal.present();
+  }
+
+  openBankLink(bankLink: BankLink) {
+    this.nav.push(BankLinkPage, {bankLinkId: bankLink.id, budgetId: this.db.id});
+  }
+
+
   updateBudgetName() {
     if (this.data.budgetName == "") {
       this.data.budgetName = this.initBudgetTransaction.budgetName;

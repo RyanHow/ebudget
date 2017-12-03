@@ -7,7 +7,7 @@ export class Account extends Record<Account> {
     public name: string;
     public balance: BigJsLibrary.BigJS;
     public accountType: 'Bank' | 'Cash';
-    public openingBalance: BigJsLibrary.BigJS;
+    public initialBalance: BigJsLibrary.BigJS;
     public bankLinkId: number;
     public bankLinkConfiguration: any;
     

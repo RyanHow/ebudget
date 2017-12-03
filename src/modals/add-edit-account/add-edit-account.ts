@@ -3,12 +3,13 @@ import {Db} from '../../db/db';
 import {Account} from '../../data/records/account';
 import {Dbms} from '../../db/dbms';
 import {EngineFactory} from '../../engine/engine-factory';
-import {BankProviderManager} from '../../bank/bank-provider-manager';
+import {BankProviderRegistry} from '../../bank/bank-provider-registry';
 import {Engine} from '../../engine/engine';
 import {CreateAccountTransaction} from '../../data/transactions/create-account-transaction';
 import {Component} from '@angular/core';
 import Big from 'big.js';
 import { Configuration } from "../../services/configuration-service";
+import { SetAccountBankLink } from "../../data/transactions/set-account-bank-link";
 
 @Component({
   templateUrl: 'add-edit-account.html'
@@ -17,11 +18,11 @@ export class AddEditAccountModal {
   db: Db;
   engine: Engine;
   editing: boolean;
-  data: {name: string; openingBalance: string; accountType: 'Cash' | 'Bank'; accountNumber: string; bankProviderName: string; openingBankBalance: string};
+  data: {name: string; initialBalance: string; accountType: 'Cash' | 'Bank'; accountNumber: string; bankLinkId: number; bankLinkConfiguration: {}};
   transaction: CreateAccountTransaction;
-  securePrefix: string;
+  bankLinkTransaction: SetAccountBankLink;
   
-  constructor(public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController, private engineFactory: EngineFactory, private appController: App, private bankProviderManager: BankProviderManager, private configuration: Configuration) {    
+  constructor(public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController, private engineFactory: EngineFactory, private appController: App, private bankProviderRegistry: BankProviderRegistry, private configuration: Configuration) {    
     this.db = dbms.getDb(navParams.data.budgetId);
     this.engine = engineFactory.getEngineById(this.db.id);
     this.data = <any>{};
@@ -30,19 +31,20 @@ export class AddEditAccountModal {
       this.editing = true;
       let account = this.engine.getRecordById(Account, navParams.data.accountId);
       this.data.name = account.name;
-      this.data.openingBalance = account.openingBalance == null ? "0" : account.openingBalance.toString();
+      this.data.initialBalance = account.initialBalance == null ? "0" : account.initialBalance.toString();
       this.data.accountType = account.accountType;
       this.transaction = this.db.transactionProcessor.findTransactionsForRecord(account, CreateAccountTransaction)[0];
-      this.data.accountNumber = account.x.accountNumber;
-      this.data.bankProviderName = account.x.bankProviderName;
-      this.data.openingBankBalance = account.x.openingBankBalance == null ? "0" : account.x.openingBankBalance;
-      this.securePrefix = this.engine.db.id + '-' + account.id;
+      this.data.bankLinkId = account.bankLinkId;
+      this.data.bankLinkConfiguration = account.bankLinkConfiguration;
+      this.bankLinkTransaction = this.db.transactionProcessor.findTransactionsForRecord(account, SetAccountBankLink).pop();
     } else {
       this.editing = false;
       this.transaction = new CreateAccountTransaction();
-      this.data.openingBalance = "0";
+      this.data.initialBalance = "0";
       this.data.accountType = 'Bank';
     }
+
+    if (this.data.bankLinkConfiguration == null) this.data.bankLinkConfiguration = {};
     
   }
   
@@ -50,16 +52,27 @@ export class AddEditAccountModal {
     event.preventDefault();
 
     this.transaction.name = this.data.name;
-    this.transaction.openingBalance = new Big(this.data.openingBalance);
+    this.transaction.initialBalance = new Big(this.data.initialBalance);
     this.transaction.accountType = this.data.accountType;
-    this.transaction.bankDetails = <any> {};
-    this.transaction.bankDetails.accountNumber = this.data.accountNumber;
-    this.transaction.bankDetails.bankProviderName = this.data.bankProviderName;
-    this.transaction.bankDetails.openingBankBalance = new Big(this.data.openingBankBalance);
-
 
     this.db.applyTransaction(this.transaction);
     let accountRecord = this.db.transactionProcessor.findRecordsForTransaction(this.transaction, Account)[0];
+
+    if (this.bankLinkTransaction != null && this.data.bankLinkId == null) {
+      this.db.undoTransaction(this.bankLinkTransaction);      
+    } else if (this.data.bankLinkId != null && this.bankLinkTransaction == null) {
+      this.bankLinkTransaction = new SetAccountBankLink();
+      this.bankLinkTransaction.accountId = accountRecord.id;
+      this.bankLinkTransaction.bankLinkId = this.data.bankLinkId;
+      this.bankLinkTransaction.configuration = this.data.bankLinkConfiguration;
+      this.db.applyTransaction(this.bankLinkTransaction);
+    } else if (this.data.bankLinkId != null && this.bankLinkTransaction != null) {
+      this.bankLinkTransaction.accountId = accountRecord.id;
+      this.bankLinkTransaction.bankLinkId = this.data.bankLinkId;
+      this.bankLinkTransaction.configuration = this.data.bankLinkConfiguration;
+      this.db.applyTransaction(this.bankLinkTransaction);
+      
+    }
 
     this.viewCtrl.dismiss({accountId: accountRecord.id});
   }
@@ -100,68 +113,5 @@ export class AddEditAccountModal {
 
   }
 
-  securePrompt(field: string): Promise<void | boolean> {
-
-    if (!this.configuration.secureAvailable()) {
-      return this.alertController.create({
-        title: 'Secure Stoarge',
-        message: "Secure storage is unavailable: TODO: Why",
-        buttons: ['OK']
-      }).present();
-    }
-
-    return new Promise<boolean>((resolve, reject) => {
-
-      let prompt = this.alertController.create({
-        title: 'Secure Stoarge',
-        message: 'Enter secure data for "' + field + '"',
-        inputs: [
-          {
-            name: 'data',
-            placeholder: 'Secure Data',
-            type: 'password'
-          },
-        ],
-        buttons: [
-          {
-            text: 'Cancel',
-            role: 'cancel',
-            handler: data => {
-              resolve(false);
-            }
-          },
-          {
-            // TODO: Only if data already present
-            text: 'Delete',
-            cssClass: 'danger',
-            handler: data => {
-              this.configuration.removeSecure(field).then(() => {
-                resolve(false);
-              }).catch(error => {
-                // TODO: Prompt / log error ?
-                resolve(false);
-              });
-            }
-          },
-          {
-            text: 'Save',
-            handler: data => {
-              this.configuration.setSecure(field, data.data).then(() => {
-                resolve(true);
-              }).catch(error => {
-                // TODO: Prompt / log error ?
-                resolve(false);
-              });
-            }
-          }
-        ]
-      });
-
-      prompt.present();
-
-    });
-
-
-  }
 
 } 

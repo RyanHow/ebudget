@@ -38,11 +38,11 @@ export class MockDataProvider implements ProviderInterface {
         return s;
     }
 
-    configure(bankLink: BankLink, secureAccessor: SecureAccessor): void {
+    configure(bankLink: BankLink, secureAccessor: SecureAccessor, hostInterface: HostInterface): void {
         
     }
 
-    connect(hostInterface: HostInterface): Promise<void> {
+    connect(): Promise<void> {
         return Promise.resolve();
     }
 

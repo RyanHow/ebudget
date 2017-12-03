@@ -4,6 +4,7 @@ import {Account} from '../records/account';
 import {AccountBalanceProcessor} from '../processors/account-balance';
 import Big from 'big.js';
 import { BankLink } from "../records/bank-link";
+import { Logger } from "../../services/logger";
 
 
 export class CreateBankLink extends DbTransaction {
@@ -52,6 +53,11 @@ export class CreateBankLink extends DbTransaction {
         let bl = table.by('id', <any> this.id);
         table.remove(bl);
         // No need to unmap as the transaction mapping in the record
+
+        tp.db.dbms.configuration.secureAccessor("banklink_" + this.uuid).removeScope().catch(reason => {
+            // Just a cleanup step - if it fails, then we can really ignore it - We'll just log an info message
+            Logger.get('CreateBankLink').info('Error in removing the secure scope in undo transaction for CreateBankLink.', reason);
+        });
     }
     
     deserialize(field: string, value: any): any {

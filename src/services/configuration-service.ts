@@ -18,6 +18,8 @@ export interface BooleanValueAccessor {
 }
 
 export class SecureAccessor {
+    public keys: any;
+    
     constructor(private configuration: Configuration, private scope: string) {
     }
     removeScope(): Promise<void> {
@@ -33,6 +35,8 @@ export class SecureAccessor {
         } else {
             await this.configuration.setSecure(this.scope, scoped);
         }
+        this.keys = {};
+        Object.keys(scoped).forEach(k => this.keys[k] = true);
         return originalValue;
     }
     async setSecure(key: string, value: any): Promise<string> {
@@ -42,12 +46,20 @@ export class SecureAccessor {
         let originalValue = scoped[key];
         scoped[key] = value;
         await this.configuration.setSecure(this.scope, scoped);
+        this.keys = {};
+        Object.keys(scoped).forEach(k => this.keys[k] = true);
         return originalValue;
     }
     async getSecure(key: string): Promise<string> {
         let scoped = await this.configuration.getSecure(this.scope);
         if (scoped == null) scoped = {};
         return scoped[key];
+    }
+    async cacheKeys() {
+        let scoped = await this.configuration.getSecure(this.scope);
+        if (scoped == null) scoped = {};
+        this.keys = {};
+        Object.keys(scoped).forEach(k => this.keys[k] = true);
     }
 }
 
@@ -102,7 +114,9 @@ export class Configuration {
     }
 
     secureAccessor(scope: string): SecureAccessor {
-        return new SecureAccessor(this, scope);
+        let secureAccessor = new SecureAccessor(this, scope);
+        secureAccessor.cacheKeys();
+        return secureAccessor;
     }
 
     async removeSecure(key: string): Promise<string> {
@@ -194,6 +208,7 @@ export class Configuration {
                 this.logger.info("Secure storage initialised");
             }).catch(reason => {
                 this.logger.info("Secure storage unable to be initialised", reason);
+                //TODO: Store this reason for when we prompt secure
             });
         }
 

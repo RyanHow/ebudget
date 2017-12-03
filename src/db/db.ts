@@ -34,7 +34,7 @@ export class Db {
         return this.id;
     }
 
-    constructor(public id: string, private dbms: Dbms , private persistenceProvider: DbPersistenceProvider, private loki: Loki, private transactionSerializer: TransactionSerializer) {
+    constructor(public id: string, public dbms: Dbms , private persistenceProvider: DbPersistenceProvider, private loki: Loki, private transactionSerializer: TransactionSerializer) {
         this.active = false;
         this.initialised = false;
         this.transactionProcessor = new TransactionProcessor(this, this.loki);

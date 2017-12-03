@@ -86,7 +86,7 @@ export class BankSync {
         bankSyncMonitor.provider = provider;
         bankSyncMonitor.providerSchema = providerSchema;
 
-        let secureAccessor = this.configuration.secureAccessor("banklink_" + bankLink.id);
+        let secureAccessor = this.configuration.secureAccessor("banklink_" + bankLink.uuid);
         provider.configure(bankLink, secureAccessor, this.standardHostInterface);
 
         if (providerSchema.singleInstancePerBankLink) {
@@ -137,7 +137,7 @@ export class BankSync {
             // TODO differentiate between an error and an exception (unhandled)
             bankSyncMonitor.errorMessage = e + "";
         } finally {
-            if (browserInterface != null) browserInterface.dispose();
+            if (browserInterface != null) browserInterface.close();
         }
     }
 
