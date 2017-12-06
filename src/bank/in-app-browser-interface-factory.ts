@@ -9,9 +9,10 @@ export class InAppBrowserInterfaceFactory {
 
     }
 
-    public createBrowser(logger: Logger): InAppBrowserInterface {
-        let browserObject = this.inAppBrowser.create('about:blank', '_blank', {hidden: 'yes', hardwareback: 'no', zoom: 'no', location: 'yes'});        
+    public async createBrowser(logger: Logger): Promise<InAppBrowserInterface> {
+        let browserObject = this.inAppBrowser.create('about:blank', '_blank', {hidden: 'yes', hardwareback: 'no', zoom: 'no', location: 'yes'});
         let inAppBrowserInterface = new InAppBrowserInterface(browserObject, logger);
+        await inAppBrowserInterface.onLoadStop();
         return inAppBrowserInterface;
     }
     

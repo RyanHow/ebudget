@@ -16,37 +16,41 @@ export abstract class BrowserInterface {
     abstract close();
     abstract isLoading();
 
+    abstract updateVisbility();
+
     interactive: boolean;
     shown: boolean;
     abstract logger: Logger;
 
-    visible(visible?: boolean): boolean {
+    visible(): boolean {
         return this.interactive || this.shown;
     }
 
-    show() {
+    userShow() {
         this.shown = true;
-        this.visible(true);
+        this.updateVisbility();
     }
 
-    hide() {
+    userHide() {
         this.shown = false;        
-        this.visible(this.interactive);
+        this.updateVisbility();
     }
 
     startInteractive() {
         this.interactive = true;        
-        this.visible(true);
+        this.updateVisbility();
     }
 
     endInteractive() {
         this.interactive = false;        
-        this.visible(this.shown);
+        this.updateVisbility();
     }
     
-    navigate(url: string): Promise<any> {
+    navigate(url: string): Promise<void> {
         this.logger.debug("Navigating to " + url);
-        return this.execute("window.location='" + encodeURI(url) + "'").then(() => {return this.onLoadStop()});
+        return this.execute("window.location='" + encodeURI(url) + "'")
+        .then(() => this.onLoadStop())
+        .then(() => this.logger.debug("Navigated to " + url));
 
     }
 

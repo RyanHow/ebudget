@@ -10,5 +10,5 @@
 <ion-content>
   <button ion-item (click)="editAccount()">Edit</button>
   <ion-item>{{account.balance}}</ion-item>
-  <button *ngIf="account.x.accountNumber" ion-item (click)="gotoBank()">Bank Syncing</button>
+  <button *ngIf="account.accountType == 'Bank'" ion-item (click)="gotoBank()">Bank Account</button>
 </ion-content>

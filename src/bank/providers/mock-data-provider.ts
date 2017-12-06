@@ -38,6 +38,13 @@ export class MockDataProvider implements ProviderInterface {
         return s;
     }
 
+    accountMatch(perAccountFieldValues: object, bankAccount: BankAccount): boolean {
+        return true;
+    }
+
+    interrupt() {
+    }
+
     configure(bankLink: BankLink, secureAccessor: SecureAccessor, hostInterface: HostInterface): void {
         
     }

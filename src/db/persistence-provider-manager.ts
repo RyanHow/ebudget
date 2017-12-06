@@ -15,7 +15,6 @@ export class PersistenceProviderManager  {
     private persistenceProvider: DbPersistenceProvider;
  
     constructor(private transactionSerializer: TransactionSerializer, private platform: Platform, private device: Device, private sqlite: SQLite) {
-        
     }
 
     provide(): DbPersistenceProvider {

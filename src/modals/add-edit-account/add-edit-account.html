@@ -40,14 +40,18 @@
             <ion-list *ngIf="data.accountType == 'Bank'">
                 <ion-item>
                     <ion-label>Bank Links</ion-label>
-                    <ion-select name="bankLinkId" [(ngModel)]="data.bankLinkId">
-                        <ion-option value="">&lt;No Provider&gt;</ion-option>
-                        <ion-option *ngFor="let bankLink of engine.getBankLinks()" value="{{bankLink.id}}">{{bankLink.name}}</ion-option>    
+                    <ion-select name="bankLinkId" [(ngModel)]="uiBankLinkId">
+                        <ion-option [value]="-1">&lt;No Provider&gt;</ion-option>
+                        <ion-option *ngFor="let bankLink of engine.getBankLinks()" [value]="bankLink.id">{{bankLink.name}}</ion-option>    
                     </ion-select>
                 </ion-item>
             </ion-list>
 
-            TODO: List of properties for the bank link per account (Copy the loop in bank link modal)
+            <ion-item *ngFor="let setting of getProviderSchema().perAccountFields">
+                <ion-label>{{setting}}</ion-label>
+                <ion-input type="text" name="{{setting}}" [(ngModel)]="data.bankLinkConfiguration[bankLink.provider][setting]"></ion-input>
+            </ion-item>
+
         </form>
     </div>
     <button ion-button *ngIf="editing" color="danger" clear small (click)="deleteAccountConfirm()">Delete</button>

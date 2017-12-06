@@ -8,7 +8,7 @@ import {AppExceptionHandler} from './app-exception-handler';
 import {HomePage} from '../pages/home/home';
 import {BudgetSettingsPage} from '../pages/budget-settings/budget-settings';
 import {AccountPage} from '../pages/account/account';
-import {BankPage} from '../pages/bank/bank';
+import {BankAccountPage} from '../pages/bank-account/bank-account';
 import {BudgetPage} from '../pages/budget/budget';
 import {AboutPage} from '../pages/about/about';
 import {CategoryPage, CategoryPopover} from '../pages/category/category';
@@ -80,7 +80,7 @@ import { InAppBrowserInterfaceFactory } from "../bank/in-app-browser-interface-f
     DevPage,
     AboutPage,
     NotificationsPage,
-    BankPage,
+    BankAccountPage,
     ShareBudgetModal,
     AddBudgetModal,
     AddEditCategoryModal,
@@ -118,7 +118,7 @@ import { InAppBrowserInterfaceFactory } from "../bank/in-app-browser-interface-f
   entryComponents: [
     App,
     HomePage,
-    BankPage,
+    BankAccountPage,
     BudgetSettingsPage,
     BudgetPage,
     AccountPage,

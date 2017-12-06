@@ -6,6 +6,16 @@ export class InAppBrowserInterface extends BrowserInterface {
     loading: boolean;
     logger: Logger;
 
+    updateVisbility() {
+        if (this.visible()) {
+            this.logger.debug("Browser visible");
+            this.inAppBrowserObject.show();
+        } else {
+            this.logger.debug("Browser hidden");
+            this.inAppBrowserObject.hide();
+        }
+    }
+
     onLoadStop(): Promise<void> {
         return new Promise<void>(resolve => {
             let subscription = this.inAppBrowserObject.on('loadstop').subscribe(ev => {
@@ -31,11 +41,11 @@ export class InAppBrowserInterface extends BrowserInterface {
             });
         });        
     }
-    onLoadError(): Promise<void> {
-        return new Promise<void>(resolve => {
+    onLoadError(): Promise<any> {
+        return new Promise<any>(resolve => {
             let subscription = this.inAppBrowserObject.on('loaderror').subscribe(ev => {
                 subscription.unsubscribe();
-                resolve();
+                resolve(ev.message);
             });
         });        
     }
@@ -49,9 +59,11 @@ export class InAppBrowserInterface extends BrowserInterface {
         this.logger = logger;
         inAppBrowserObject.on('loadstart').subscribe(ev => {
             this.loading = true;
+            this.logger.debug("Browser Load Start");
         });
         inAppBrowserObject.on('loadstop').subscribe(ev => {
             this.loading = false;
+            this.logger.debug("Browser Load Stop");
         });
         
         
@@ -73,6 +85,7 @@ export class InAppBrowserInterface extends BrowserInterface {
 
     close() {
         this.inAppBrowserObject.close();
+        this.logger.debug("Closed");
     }
 
     

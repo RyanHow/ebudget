@@ -9,7 +9,7 @@ import {BankSync} from '../../bank/bank-sync';
 import {Notifications} from '../../services/notifications';
 import {Logger} from '../../services/logger';
 import {StandardHostInterface} from '../../bank/standard-host-interface';
-import {BankPage} from '../bank/bank';
+import {BankAccountPage} from '../bank-account/bank-account';
 
 @Component({
   templateUrl: 'account.html'
@@ -19,7 +19,7 @@ export class AccountPage {
   engine: Engine;
   account: Account;
   syncing: boolean;
-  private logger = Logger.get('AccountPage');
+  private logger = Logger.get('BankAccountPage');
 
   constructor(private nav: NavController, private dbms: Dbms, private navParams: NavParams, private engineFactory: EngineFactory, private modalController: ModalController, private bankSync: BankSync, private notifications: Notifications, private standardHostInterface: StandardHostInterface) {
     this.engine = this.engineFactory.getEngineById(navParams.data.budgetId);
@@ -32,7 +32,7 @@ export class AccountPage {
   }
 
   gotoBank() {
-    this.nav.push(BankPage, {budgetId: this.navParams.data.budgetId,  accountId: this.navParams.data.accountId});
+    this.nav.push(BankAccountPage, {budgetId: this.navParams.data.budgetId,  accountId: this.navParams.data.accountId});
   }
 
 }

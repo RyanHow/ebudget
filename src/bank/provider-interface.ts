@@ -30,12 +30,13 @@ export class ProviderSchema {
 
 export interface ProviderInterface {
     getSchema(): ProviderSchema;
-
+    accountMatch(perAccountFieldValues: object, bankAccount: BankAccount): boolean;
+    
     configure(bankLink: BankLink, secure: SecureAccessor, hostInterface: HostInterface): void;
 
     connect(): Promise<void>;
-    isConnected(): boolean;
     getAccounts(): Promise<BankAccount[]>;
     getTransactions(account: BankAccount): Promise<BankAccountTransaction[]>;
     close(): Promise<void>;
+    interrupt();
 }

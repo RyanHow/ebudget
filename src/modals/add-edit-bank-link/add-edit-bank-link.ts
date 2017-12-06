@@ -19,6 +19,7 @@ import { BankProviderRegistry } from "../../bank/bank-provider-registry";
   templateUrl: 'add-edit-bank-link.html'
 })
 export class AddEditBankLinkModal {
+  emptyproviderSchema = new ProviderSchema();
   db: Db;
   engine: Engine;
   editing: boolean;
@@ -46,12 +47,14 @@ export class AddEditBankLinkModal {
       this.data.configuration = {};
     }
 
-    this.secureAccessor = configuration.secureAccessor("banklink_" + this.transaction.uuid);
+    if (configuration.secureAvailable()) {
+      this.secureAccessor = configuration.secureAccessor("banklink_" + this.transaction.uuid);
+    }
     
   }
 
   getProviderSchema(): ProviderSchema {
-    return this.data.provider == null ? new ProviderSchema() : this.bankProviderRegistry.getProviderSchema(this.data.provider);
+    return this.data.provider == null ? this.emptyproviderSchema : this.bankProviderRegistry.getProviderSchema(this.data.provider);
   }
   
   submit(event: Event) {
@@ -68,7 +71,7 @@ export class AddEditBankLinkModal {
   }
   
   cancel() {
-    if (!this.editing && this.configuration.secureAvailable()) this.secureAccessor.removeScope();
+    if (!this.editing && this.secureAccessor) this.secureAccessor.removeScope();
     this.viewCtrl.dismiss();    
   }
   

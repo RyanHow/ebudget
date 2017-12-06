@@ -191,7 +191,7 @@ export class Configuration {
             this.secureInitialised = true;
             return Promise.resolve();
         } else {
-            return this.secureStorage.create('eBudget').then((secureStorageObject: SecureStorageObject) => {
+            return this.secureStorage.create('eBudget').then(secureStorageObject => {
                 this.secure = secureStorageObject;
                 if (!this.native) {
                     throw new Error("Browser has no implementation of secure storage");

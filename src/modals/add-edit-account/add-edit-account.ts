@@ -10,15 +10,19 @@ import {Component} from '@angular/core';
 import Big from 'big.js';
 import { Configuration } from "../../services/configuration-service";
 import { SetAccountBankLink } from "../../data/transactions/set-account-bank-link";
+import { ProviderSchema } from "../../bank/provider-interface";
+import { BankLink } from "../../data/records/bank-link";
 
 @Component({
   templateUrl: 'add-edit-account.html'
 })
 export class AddEditAccountModal {
+  emptyProviderSchema = new ProviderSchema();
   db: Db;
   engine: Engine;
   editing: boolean;
   data: {name: string; initialBalance: string; accountType: 'Cash' | 'Bank'; accountNumber: string; bankLinkId: number; bankLinkConfiguration: {}};
+  private _bankLink: BankLink;
   transaction: CreateAccountTransaction;
   bankLinkTransaction: SetAccountBankLink;
   
@@ -26,6 +30,7 @@ export class AddEditAccountModal {
     this.db = dbms.getDb(navParams.data.budgetId);
     this.engine = engineFactory.getEngineById(this.db.id);
     this.data = <any>{};
+    this.data.bankLinkConfiguration = {};
 
     if (navParams.data.accountId) {
       this.editing = true;
@@ -35,7 +40,7 @@ export class AddEditAccountModal {
       this.data.accountType = account.accountType;
       this.transaction = this.db.transactionProcessor.findTransactionsForRecord(account, CreateAccountTransaction)[0];
       this.data.bankLinkId = account.bankLinkId;
-      this.data.bankLinkConfiguration = account.bankLinkConfiguration;
+      if (this.bankLink != null) this.data.bankLinkConfiguration[this.bankLink.provider] = account.bankLinkConfiguration;
       this.bankLinkTransaction = this.db.transactionProcessor.findTransactionsForRecord(account, SetAccountBankLink).pop();
     } else {
       this.editing = false;
@@ -43,9 +48,31 @@ export class AddEditAccountModal {
       this.data.initialBalance = "0";
       this.data.accountType = 'Bank';
     }
-
-    if (this.data.bankLinkConfiguration == null) this.data.bankLinkConfiguration = {};
     
+  }
+
+  get uiBankLinkId(): any {
+    return this.data.bankLinkId == null ? -1 : this.data.bankLinkId;
+  }
+
+  set uiBankLinkId(bankLinkId) {
+    this.data.bankLinkId = bankLinkId === -1 ? undefined : bankLinkId;
+  }
+
+  get bankLink(): BankLink {
+    if (this.data.bankLinkId == null || this.data.accountType != 'Bank') {
+      this._bankLink = null;
+      return null;
+    }
+    if (this._bankLink == null || this.data.bankLinkId != this._bankLink.id) {
+      this._bankLink = this.engine.getRecordById(BankLink, this.data.bankLinkId);
+      if (this.data.bankLinkConfiguration[this._bankLink.provider] === undefined) this.data.bankLinkConfiguration[this._bankLink.provider] = {};
+    }
+    return this._bankLink;
+  }
+
+  getProviderSchema(): ProviderSchema {
+    return this.bankLink == null ? this.emptyProviderSchema : this.bankProviderRegistry.getProviderSchema(this.bankLink.provider);
   }
   
   submit(event: Event) {
@@ -58,18 +85,18 @@ export class AddEditAccountModal {
     this.db.applyTransaction(this.transaction);
     let accountRecord = this.db.transactionProcessor.findRecordsForTransaction(this.transaction, Account)[0];
 
-    if (this.bankLinkTransaction != null && this.data.bankLinkId == null) {
+    if (this.bankLinkTransaction != null && this.bankLink == null) {
       this.db.undoTransaction(this.bankLinkTransaction);      
-    } else if (this.data.bankLinkId != null && this.bankLinkTransaction == null) {
+    } else if (this.bankLink != null && this.bankLinkTransaction == null) {
       this.bankLinkTransaction = new SetAccountBankLink();
       this.bankLinkTransaction.accountId = accountRecord.id;
       this.bankLinkTransaction.bankLinkId = this.data.bankLinkId;
-      this.bankLinkTransaction.configuration = this.data.bankLinkConfiguration;
+      this.bankLinkTransaction.configuration = this.data.bankLinkConfiguration[this.bankLink.provider];
       this.db.applyTransaction(this.bankLinkTransaction);
-    } else if (this.data.bankLinkId != null && this.bankLinkTransaction != null) {
+    } else if (this.bankLink != null && this.bankLinkTransaction != null) {
       this.bankLinkTransaction.accountId = accountRecord.id;
       this.bankLinkTransaction.bankLinkId = this.data.bankLinkId;
-      this.bankLinkTransaction.configuration = this.data.bankLinkConfiguration;
+      this.bankLinkTransaction.configuration = this.data.bankLinkConfiguration[this.bankLink.provider];
       this.db.applyTransaction(this.bankLinkTransaction);
       
     }

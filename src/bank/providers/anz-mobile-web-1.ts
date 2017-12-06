@@ -20,6 +20,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface, ProviderRequire
 
     connected: boolean;
     hostInterface: HostInterface;
+    interruptFlag: boolean;
 
     getSchema(): ProviderSchema {
         let s = new ProviderSchema();
@@ -28,6 +29,14 @@ export class AnzMobileWeb1Provider implements ProviderInterface, ProviderRequire
         s.secureConfigurationFields = ["CRN", "Password"];
         s.requireBrowser = true;
         return s;
+    }
+
+    accountMatch(perAccountFieldValues: object, bankAccount: BankAccount): boolean {
+        return perAccountFieldValues["Account Number"] === bankAccount.accountNumber;
+    }
+
+    interrupt() {
+        this.interruptFlag = true;
     }
 
     configure(bankLink: BankLink, secureAccessor: SecureAccessor, hostInterface: HostInterface): void {
@@ -89,6 +98,9 @@ export class AnzMobileWeb1Provider implements ProviderInterface, ProviderRequire
 
             let checker = setInterval(() => {
                 this.browser.execute("var ele = document.getElementsByTagName('H1')[0]; ele ? ele.textContent.trim().toLowerCase() : '';").then(val => {                        
+                    if (this.interruptFlag) {
+                        clearInterval(checker);
+                    }
                     if (val == 'your accounts') {
                         // TODO: And the browser has stopped loading check (maybe record a browser "idle" ?), and wait for some idle time?, also check on browser finished loading... (the interval will get ajax calls..., not sure if they are triggered by cordova...)
                         // So make a function to encapsulate that logic...
@@ -139,15 +151,15 @@ export class AnzMobileWeb1Provider implements ProviderInterface, ProviderRequire
         // TODO: state tracking... At the moment, always click "home", then nav to account (document.getElementById(accountName).click())
         
         // TODO: these shoudl be in a 
-        this.browser.execute("document.querySelector('li.menuLiClass:nth-child(1) > a').click();");
+        await this.browser.execute("document.querySelector('li.menuLiClass:nth-child(1) > a').click();");
         await this.browser.onLoadStop();
 
-        this.browser.execute("document.querySelector('#" + account.accountName.split(' ').join('') + " > a').click();");
+        await this.browser.execute("document.querySelector('#" + account.accountName.split(' ').join('') + " > a').click();");
         await this.browser.onLoadStop();
 
         // TODO: Sometimes this fires too soon ?
-        this.browser.execute("document.querySelector('.transactionAuthSection > a:nth-child(1)').click();");
-        await this.browser.onLoadStop();
+        //await this.browser.execute("document.querySelector('.transactionAuthSection > a:nth-child(1)').click();");
+        //await this.browser.onLoadStop();
 
 
         return this.browser.execute('document.getElementsByClassName("tabsContainerAcctTranAuth")[0].innerHTML').then((val) => {
@@ -235,7 +247,7 @@ export class AnzMobileWeb1Provider implements ProviderInterface, ProviderRequire
         // TODO: Logout (if possible) and close the browser object
         // TODO: Host needs to close any open browser objects here and log it if was left dangling
         // TODO: Note: logging out successfully should remove the window listener
-        this.browser.execute("document.querySelector('.button-logout').click();");
+        await this.browser.execute("document.querySelector('.button-logout').click();");
         await this.browser.onLoadStop();
         this.connected = false;
         // TODO: If Not logged out, then force quit below...

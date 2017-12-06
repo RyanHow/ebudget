@@ -10,12 +10,13 @@ import {Logger} from '../../services/logger';
 import {StandardHostInterface} from '../../bank/standard-host-interface';
 import { BankTransaction } from '../../data/records/bank-transaction';
 import { ViewBankTransactionModal } from "../../modals/view-bank-transaction/view-bank-transaction";
+import { BankLinkPage } from "../bank-link/bank-link";
 
 
 @Component({
-  templateUrl: 'bank.html'
+  templateUrl: 'bank-account.html'
 })
-export class BankPage {
+export class BankAccountPage {
   
   engine: Engine;
   account: Account;
@@ -32,28 +33,13 @@ export class BankPage {
     this.transactionView = <any> {data: function() {return []; }};
   }
   
-
-  async syncBank() {
-    this.syncing = true;
-
-    // TODO: Does try/catch work on async/await ?
-
-    try {
-      //await this.bankSync.sync(this.account.x.bankProviderName, this.account, this.engine);
-      this.notifications.notify("Syncing Done");
-    } catch (error) {
-      this.logger.info("Bank Sync Error", error);
-      this.notifications.notify("Error syncing: " + error);
-    } finally {
-      this.syncing = false;
-    }
+  goBankLink() {
+    this.nav.push(BankLinkPage, {budgetId: this.engine.db.id, bankLinkId: this.account.bankLinkId});
   }
 
-  showSyncWindow() {
-    //this.standardHostInterface.manualShowBrowser();
+  isSyncing(): boolean {
+    return false;
   }
-
-
 
   ionViewWillEnter() {
     this.transactionView = this.bankTransactionTable.addDynamicView('accountBankTransactions_' + this.account.id)

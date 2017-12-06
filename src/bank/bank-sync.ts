@@ -41,8 +41,7 @@ export class BankSyncMonitor {
 @Injectable()
 export class BankSync {
 
-    // TODO: Do this by UUID for cross budget
-    activeSyncs: BankSyncMonitor[];
+    activeSyncs: BankSyncMonitor[] = [];
 
 
     constructor(private standardHostInterface: StandardHostInterface, private transactionSync: TransactionSync, private bankProviderRegistry: BankProviderRegistry, private replication: Replication, private configuration: Configuration, private dbms: Dbms, private engineFactory: EngineFactory, private inAppBrowserInterfaceFactory: InAppBrowserInterfaceFactory) {
@@ -99,45 +98,92 @@ export class BankSync {
 
         this.activeSyncs.push(bankSyncMonitor);
 
-        this.doSync(bankSyncMonitor).then(() => {
-            this.activeSyncs.splice(this.activeSyncs.indexOf(bankSyncMonitor), 1);      
-        });
+        this.doSync(bankSyncMonitor);
 
         return bankSyncMonitor;
+    }
+
+    private archiveSync(bankSyncMonitor: BankSyncMonitor) {
+        this.activeSyncs.splice(this.activeSyncs.indexOf(bankSyncMonitor), 1);      
+        // TODO: Move to sync history...
     }
 
 
     private async doSync(bankSyncMonitor: BankSyncMonitor) {
         let browserInterface: BrowserInterface;
+        let autoClosing = false;
 
         try {
             await this.replication.sync();
 
             if (bankSyncMonitor.providerSchema.requireBrowser) {
-                browserInterface = this.inAppBrowserInterfaceFactory.createBrowser(bankSyncMonitor.logger);
+                bankSyncMonitor.logger.debug("Creating Browser");
+                browserInterface = await this.inAppBrowserInterfaceFactory.createBrowser(bankSyncMonitor.logger);
+                bankSyncMonitor.logger.debug("Created Browser");
                 (<ProviderRequiresBrowser> <any> bankSyncMonitor.provider).setBrowser(browserInterface);
+
+                browserInterface.onLoadError().then(reason => {
+                    bankSyncMonitor.logger.info("Browser Load Error", reason);
+                    bankSyncMonitor.error = true;
+                    bankSyncMonitor.errorMessage = "Communications Error";
+                    if (browserInterface != null) browserInterface.close();
+                    bankSyncMonitor.provider.interrupt();
+                    this.archiveSync(bankSyncMonitor);
+                });
+                browserInterface.onClose().then(() => {                    
+                    bankSyncMonitor.logger.info("Browser Closed");
+                    if (!autoClosing) {
+                        bankSyncMonitor.cancelled = true;
+                        bankSyncMonitor.provider.interrupt();
+                        this.archiveSync(bankSyncMonitor);
+                    }
+                });
+
             }
+
+            bankSyncMonitor.logger.debug("Connecting...");
 
             await bankSyncMonitor.provider.connect();
 
+            bankSyncMonitor.logger.debug("Connected. Getting Accounts.");
+
             let bankAccounts = await bankSyncMonitor.provider.getAccounts();
 
+            bankSyncMonitor.logger.debug("Fetched Accounts " + bankAccounts.map(b => b.accountNumber).join(", "));
+            
             for (let account of bankSyncMonitor.accounts) {
-                let bankAccount = bankAccounts.find(b => account.x.accountNumber == b.accountNumber);
+                let bankAccount = bankAccounts.find(b => bankSyncMonitor.provider.accountMatch(account.bankLinkConfiguration, b));
+                if (bankAccount == null) {
+                    bankSyncMonitor.logger.info("No Matching Bank Account found for Account " + account.name);
+                    bankSyncMonitor.error = true;
+                    bankSyncMonitor.errorMessage = "No Matching Bank Account found for Account";
+                    continue;
+                }
+                bankSyncMonitor.logger.debug("Fetching Transactions for Account " + bankAccount.accountNumber);
                 let transactions = await bankSyncMonitor.provider.getTransactions(bankAccount);
+                bankSyncMonitor.logger.debug("Merging Transactions");
                 this.transactionSync.merge(bankSyncMonitor.engine, account, bankAccount, transactions);
             }
-            // TODO: Multiple accounts
+
+            bankSyncMonitor.logger.debug("Closing Connection");
+            
+            autoClosing = true;
 
             await bankSyncMonitor.provider.close();
 
+            bankSyncMonitor.logger.debug("Complete");
+            
             bankSyncMonitor.complete = true;
         } catch (e) {
             bankSyncMonitor.error = true;
             // TODO differentiate between an error and an exception (unhandled)
             bankSyncMonitor.errorMessage = e + "";
+            bankSyncMonitor.logger.info("Bank sync aborted due to error", e);
+            bankSyncMonitor.provider.interrupt();
         } finally {
+            autoClosing = true;
             if (browserInterface != null) browserInterface.close();
+            this.archiveSync(bankSyncMonitor);
         }
     }
 

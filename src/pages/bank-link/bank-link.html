@@ -9,4 +9,14 @@
 
 <ion-content>
   <button ion-item (click)="editBankLink()">Edit</button>
+  <button ion-item (click)="syncAllAccounts()">Sync All Accounts</button>
+  <ion-item *ngIf="getCurrentBankSync()">
+    <h2>Current Sync Log</h2>
+    <p *ngFor="let l of getCurrentBankSync().log">{{l}}</p>
+  </ion-item>
+
+  <ion-item>A list of the accounts that this bank link is linked too and will sync for</ion-item>
+  <ion-item>Sync history - short list of sync history, can click to go to. Older ones are only stored in localstorage and show limited log data. Recent ones are cached in memory with all the data (like the current sync)</ion-item>
+  <button ion-item (click)="goSyncHistory()">Sync History - Go to page which shows all the recorded sync history (from this device) - filter to this bank link (page is generic and will show all usually)</button>
+
 </ion-content>
