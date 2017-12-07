@@ -57,10 +57,11 @@ export class TransactionProcessor {
     }
 
     findAllRecordsForTransaction<T extends Record<any>>(transaction: DbTransaction): Array<Record<any>> {
-        return transaction.records;
+        return transaction.records == null ? [] : transaction.records;
     }
 
     findRecordsForTransaction<T extends Record<any>>(transaction: DbTransaction, type: {new(): T}): Array<T> {
+        if (transaction.records == null) return [];
         return <T[]> transaction.records.filter((r) => r instanceof type);
     }
 
