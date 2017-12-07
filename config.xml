@@ -98,7 +98,6 @@
     </feature>
     <icon src="resources/android/icon/drawable-xhdpi-icon.png" />
     <allow-navigation href="http://192.168.2.62:8100" />
-    <allow-navigation href="http://:8100" />
     <allow-navigation href="http://192.168.2.100:8100" />
     <engine name="ios" spec="^4.5.4" />
     <engine name="android" spec="^6.4.0" />
