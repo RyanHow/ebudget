@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.ebudgetapp.live" version="0.0.119" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.ebudgetapp.live" version="0.0.120" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>eBudget</name>
     <description>eBudget Live Budgeting</description>
     <author email="ryan@bitworks.com.au" href="http://www.bitworks.com.au/">BitWorks</author>
-    <content original-src="index.html" src="http://192.168.2.100:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-navigation href="http://ionic.local/*" />
     <allow-navigation href="http://192.168.2.182:8100" />
