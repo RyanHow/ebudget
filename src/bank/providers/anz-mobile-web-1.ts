@@ -154,6 +154,8 @@ export class AnzMobileWeb1Provider implements ProviderInterface, ProviderRequire
         await this.browser.execute("document.querySelector('li.menuLiClass:nth-child(1) > a').click();");
         await this.browser.onLoadStop();
 
+        await this.browser.sleep(1000);
+
         await this.browser.execute("document.querySelector('#" + account.accountName.split(' ').join('') + " > a').click();");
         await this.browser.onLoadStop();
 

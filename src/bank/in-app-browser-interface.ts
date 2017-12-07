@@ -70,7 +70,8 @@ export class InAppBrowserInterface extends BrowserInterface {
     }
 
     execute(script: string): Promise<any> {
-        let wrappedCode = "try {" + script + "}catch(err){'Error: ' + JSON.stringify(err)}";
+        this.logger.debug('Executing Script: ' + script);
+        let wrappedCode = "try {" + script + "}catch(err){'Error: ' + err + ' ' + JSON.stringify(err, Object.getOwnPropertyNames(err))}";
         return this.inAppBrowserObject.executeScript({code: wrappedCode}).then((result) => {
             if ((<string> result[0] + '').startsWith('Error: ')) {
                 this.logger.info('Error in executed script', script, result[0]);
