@@ -15,6 +15,9 @@ import {SettingsPage} from '../../pages/settings/settings';
 import {AboutPage} from '../../pages/about/about';
 import {NotificationsPage} from '../../pages/notifications/notifications';
 import {ShareBudgetModal} from '../../modals/share-budget/share-budget';
+import { BankSync, BankSyncMonitor } from "../../bank/bank-sync";
+import { EngineFactory } from "../../engine/engine-factory";
+import { Engine } from "../../engine/engine";
 
 @Component({
   selector: 'main-menu-content',
@@ -33,7 +36,7 @@ export class MainMenuContent {
 
   private syncing: boolean;
 
-  constructor(private dbms: Dbms, private app: App, private configuration: Configuration, private replication: Replication, private modalController: ModalController, private alertController: AlertController, private toastCtrl: ToastController, private notifications: Notifications, private applicationRef: ApplicationRef) {
+  constructor(private dbms: Dbms, private app: App, private configuration: Configuration, private replication: Replication, private modalController: ModalController, private alertController: AlertController, private toastCtrl: ToastController, private notifications: Notifications, private applicationRef: ApplicationRef, private bankSync: BankSync, private engineFactory: EngineFactory) {
     this.dbms = dbms;
     this.budgets = dbms.dbs;
     this.app = app;
@@ -65,7 +68,13 @@ export class MainMenuContent {
     this.nav.setRoot(BudgetPage, {'budget': budget});
   }
 
+  engine(): Engine {
+    return this.engineFactory.getEngine(this.lastOpenedBudget());
+  }
+
   lastOpenedBudget(): Db {
+    // TODO: Cache the budget - or just have a "currentBudget" in the configuration or app or something....
+
     let budgetId = this.configuration.lastOpenedBudget();
     if (!budgetId) return;
     let budget = this.dbms.getDb(budgetId);
@@ -155,5 +164,38 @@ export class MainMenuContent {
   goNotifications() {
     this.nav.setRoot(NotificationsPage);
   }
+
+  isCurrentValidAutomaticBankLinks() {
+    // TODO
+    // And need a "cheap" way to get this value - perhaps update it off transactions. Basically we want a few criteria - a bank link is set up, it is linked to an account and all credentials are in there so it is automatic...
+    // Note: Maybe not the automatic thing, coz we will have a prompting mechanism...
+    // Really we can just getAccounts() and find bankLinkId != null
+    // But also if it is valid for this particular "device" (and the user of the device)
+
+    return true;
+
+  }
+
+  runBankLinks() {
+
+    // TODO: Combine the notifications / status for these to running and complete and complete / with errors
+
+
+    this.engine().getBankLinks().forEach(bl => {
+      let monitor = new BankSyncMonitor();
+      monitor.on('error-state-change').subscribe(() => {
+        if (!monitor.running) this.notifications.notify('Bank Sync ' + monitor.bankLink.name + ' Failed with Error ' + monitor.errorMessage);
+      });
+      monitor.on('complete-state-change').subscribe(() => {
+        this.notifications.notify('Bank Sync ' + monitor.bankLink.name + ' Complete' + (monitor.errorMessage ? ' With Errors ' + monitor.errorMessage : ''));
+      });
+      monitor.on('cancelled-state-change').subscribe(() => {
+        this.notifications.notify('Bank Sync ' + monitor.bankLink.name + ' Cancelled');        
+      });
+      this.bankSync.sync(bl, this.engine(), undefined, monitor);
+    });
+  }
+
+
 
 }

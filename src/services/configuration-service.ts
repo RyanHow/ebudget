@@ -18,7 +18,7 @@ export interface BooleanValueAccessor {
 }
 
 export class SecureAccessor {
-    public keys: any;
+    public keys: any = {};
     
     constructor(private configuration: Configuration, private scope: string) {
     }

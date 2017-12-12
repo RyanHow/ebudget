@@ -3,6 +3,9 @@
     <ion-item detail-none [menuClose]="syncing ? true : null" (click)="!syncing && shareBudget()">Share Budget...
         <button ion-button *ngIf="shared" [disabled]="syncing" item-right outline (click)="sync($event);$event.stopPropagation();">Sync Now</button>
     </ion-item>
+    <button *ngIf="isCurrentValidAutomaticBankLinks()" ion-item detail-none (click)="runBankLinks()">Sync Bank Accounts 
+        <ion-spinner *ngIf="bankSync.activeSyncs.length" name="bubbles" style="position:absolute; top:0; bottom:0; margin-top:auto; margin-bottom:auto;"></ion-spinner>
+    </button>
     <button ion-item menuClose (click)="goBudgetSettings()">Budget Settings</button>
 </ion-item-group>
 <ion-item-group *ngIf="notifications.notifications.length">
