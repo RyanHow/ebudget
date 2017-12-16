@@ -14,6 +14,7 @@ import { Utils } from "../../services/utils";
 import { SecurePrompt } from "../../services/secure-prompt";
 import { ProviderSchema } from "../../bank/provider-interface";
 import { BankProviderRegistry } from "../../bank/bank-provider-registry";
+import { BankLinkLocal } from "../../bank/bank-link-local";
 
 @Component({
   templateUrl: 'add-edit-bank-link.html'
@@ -23,11 +24,11 @@ export class AddEditBankLinkModal {
   db: Db;
   engine: Engine;
   editing: boolean;
-  data: {name: string; provider: string; configuration: {}};
+  data: {name: string; provider: string; configuration: {}; autosync: boolean};
   transaction: CreateBankLink;
   secureAccessor: SecureAccessor;
   
-  constructor(public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController, private engineFactory: EngineFactory, private appController: App, private bankProviderRegistry: BankProviderRegistry, private configuration: Configuration, private securePrompt: SecurePrompt) {    
+  constructor(public viewCtrl: ViewController, private navParams: NavParams, private dbms: Dbms, private nav: NavController, private alertController: AlertController, private engineFactory: EngineFactory, private appController: App, private bankProviderRegistry: BankProviderRegistry, private configuration: Configuration, private securePrompt: SecurePrompt, private bankLinkLocal: BankLinkLocal) {    
     this.db = dbms.getDb(navParams.data.budgetId);
     this.engine = engineFactory.getEngineById(this.db.id);
     this.data = <any>{};
@@ -38,6 +39,7 @@ export class AddEditBankLinkModal {
       this.data.name = bankLink.name;
       this.data.provider = bankLink.provider;
       this.data.configuration = bankLink.configuration;
+      this.data.autosync = this.bankLinkLocal.getInfo(bankLink.uuid).autosync;
       this.transaction = this.db.transactionProcessor.findTransactionsForRecord(bankLink, CreateBankLink)[0];
 
     } else {
@@ -66,6 +68,11 @@ export class AddEditBankLinkModal {
 
     this.db.applyTransaction(this.transaction);
     let bankLinkRecord = this.db.transactionProcessor.findRecordsForTransaction(this.transaction, BankLink)[0];
+
+    this.bankLinkLocal.updateInfo(this.transaction.uuid, info => {
+      info.autosync = this.data.autosync;
+      info.errorCount = 0;
+    });
 
     this.viewCtrl.dismiss({accountId: bankLinkRecord.id});
   }

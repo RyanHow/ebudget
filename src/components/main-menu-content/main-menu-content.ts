@@ -18,6 +18,7 @@ import {ShareBudgetModal} from '../../modals/share-budget/share-budget';
 import { BankSync, BankSyncMonitor } from "../../bank/bank-sync";
 import { EngineFactory } from "../../engine/engine-factory";
 import { Engine } from "../../engine/engine";
+import { BankSyncUtils } from "../../bank/bank-sync-utils";
 
 @Component({
   selector: 'main-menu-content',
@@ -182,16 +183,7 @@ export class MainMenuContent {
 
 
     this.engine().getBankLinks().forEach(bl => {
-      let monitor = new BankSyncMonitor();
-      monitor.on('error-state-change').subscribe(() => {
-        if (!monitor.running) this.notifications.notify('Bank Sync ' + monitor.bankLink.name + ' Failed with Error ' + monitor.errorMessage);
-      });
-      monitor.on('complete-state-change').subscribe(() => {
-        this.notifications.notify('Bank Sync ' + monitor.bankLink.name + ' Complete' + (monitor.errorMessage ? ' With Errors ' + monitor.errorMessage : ''));
-      });
-      monitor.on('cancelled-state-change').subscribe(() => {
-        this.notifications.notify('Bank Sync ' + monitor.bankLink.name + ' Cancelled');        
-      });
+      let monitor = BankSyncUtils.createMonitorWithNotifications(this.notifications);
       this.bankSync.sync(bl, this.engine(), undefined, monitor);
     });
   }

@@ -17,10 +17,15 @@ import { Observable } from "rxjs/Observable";
 import { Subscription } from "rxjs/Subscription";
 import { Observer } from "rxjs/Observer";
 import "rxjs/add/operator/filter";
+import "rxjs/add/operator/share";
+import { BankLinkLocal } from "./bank-link-local";
+import { Utils } from "../services/utils";
+
+type SyncEventType = 'complete-state-change' | 'error-state-change' | 'running-state-change' | 'cancelling-state-change' | 'cancelled-state-change';
 
 export class SyncEvent {
     event: string;
-    constructor(event: 'complete-state-change' | 'error-state-change' | 'running-state-change' | 'cancelling-state-change' | 'cancelled-state-change') {
+    constructor(event: SyncEventType) {
         this.event = event;
     }
 }
@@ -30,7 +35,7 @@ export class BankSyncMonitor {
     source: Observable<SyncEvent>;
 
     constructor() {
-        this.source = new Observable<SyncEvent>(observer => {this.observer = observer;});
+        this.source = new Observable<SyncEvent>(observer => {this.observer = observer;}).share();
     }
 
     error(message: string) {
@@ -71,11 +76,17 @@ export class BankSyncMonitor {
     get running() {return this._running;}
     set running(value: boolean) {this._running = value; if (this.observer) this.observer.next(new SyncEvent('running-state-change'));}
     get complete() {return this._complete;}
-    set complete(value: boolean) {this._complete = value; if (this.observer) this.observer.next(new SyncEvent('complete-state-change'));}
+    set complete(value: boolean) {
+        this._complete = value;
+        if (this.observer) {
+            this.logger.debug("Firing Complete");
+            this.observer.next(new SyncEvent('complete-state-change'));
+        }
+    }
     get cancelled() {return this._cancelled;}
     set cancelled(value: boolean) {this._cancelled = value; if (this.observer) this.observer.next(new SyncEvent('cancelled-state-change'));}
 
-    on(event: string): Observable<SyncEvent> {
+    on(event: SyncEventType): Observable<SyncEvent> {
         return this.source.filter(ev => ev.event == event);
     }
     
@@ -87,12 +98,9 @@ export class BankSync {
     activeSyncs: BankSyncMonitor[] = [];
 
 
-    constructor(private standardHostInterface: StandardHostInterface, private transactionSync: TransactionSync, private bankProviderRegistry: BankProviderRegistry, private replication: Replication, private configuration: Configuration, private dbms: Dbms, private engineFactory: EngineFactory, private inAppBrowserInterfaceFactory: InAppBrowserInterfaceFactory) {
+    constructor(private standardHostInterface: StandardHostInterface, private transactionSync: TransactionSync, private bankProviderRegistry: BankProviderRegistry, private replication: Replication, private configuration: Configuration, private dbms: Dbms, private engineFactory: EngineFactory, private inAppBrowserInterfaceFactory: InAppBrowserInterfaceFactory, private bankLinkLocal: BankLinkLocal) {
 
     }
-
-    // TODO: Sync should return a handle to the sync process, which can then be awaited, cancelled, have events watched on it, etc, accounts can also be multiple (for instance if we have the 1 budget, we can sync multiple accounts from the same provider at the same time)
-    //
 
     sync(bankLink: BankLink, engine: Engine, accounts?: Account[], bankSyncMonitor = new BankSyncMonitor()): BankSyncMonitor {        
 
@@ -149,7 +157,7 @@ export class BankSync {
 
     private archiveSync(bankSyncMonitor: BankSyncMonitor) {
         this.activeSyncs.splice(this.activeSyncs.indexOf(bankSyncMonitor), 1);      
-        // TODO: Move to sync history...
+        // TODO: Move to sync history... AND write into local persistence!?
     }
 
 
@@ -221,11 +229,17 @@ export class BankSync {
             // TODO differentiate between an error and an exception (unhandled)
             bankSyncMonitor.logger.info("Bank sync aborted due to error", e);
             bankSyncMonitor.provider.interrupt();
+            this.bankLinkLocal.updateInfo(bankSyncMonitor.bankLink.uuid, info => {
+                info.errorCount++;
+            });
         } finally {
             autoClosing = true;
             bankSyncMonitor.running = false;
             if (browserInterface != null) browserInterface.close();
             this.archiveSync(bankSyncMonitor);
+            this.bankLinkLocal.updateInfo(bankSyncMonitor.bankLink.uuid, info => {
+                info.lastSync = Date.now();
+            });
         }
     }
 

@@ -29,6 +29,11 @@
                     <ion-input type="text" name="name" [(ngModel)]="data.name"></ion-input>
                 </ion-item>
 
+                <ion-item>
+                    <ion-label>Auto Sync</ion-label>
+                    <ion-toggle name="autosync" [(ngModel)]="data.autosync"></ion-toggle>
+                </ion-item>
+
                 <ion-item *ngFor="let setting of getProviderSchema().configurationFields">
                     <ion-label>{{setting}}</ion-label>
                     <ion-input type="text" name="{{setting}}" [(ngModel)]="data.configuration[setting]"></ion-input>

@@ -67,6 +67,8 @@ import { BankLinkPage } from "../pages/bank-link/bank-link";
 import { AddEditBankLinkModal } from "../modals/add-edit-bank-link/add-edit-bank-link";
 import { SecurePrompt } from "../services/secure-prompt";
 import { InAppBrowserInterfaceFactory } from "../bank/in-app-browser-interface-factory";
+import { BankLinkLocal } from "../bank/bank-link-local";
+import { BankAutoSync } from "../bank/bank-auto-sync";
 
 @NgModule({
   declarations: [
@@ -145,6 +147,8 @@ import { InAppBrowserInterfaceFactory } from "../bank/in-app-browser-interface-f
   ],
   providers: [
   {provide: ErrorHandler, useClass: AppExceptionHandler},
+  BankAutoSync,
+  BankLinkLocal,
   StandardHostInterface,
   BankProviderRegistry,
   InAppBrowserInterfaceFactory,
@@ -175,5 +179,5 @@ import { InAppBrowserInterfaceFactory } from "../bank/in-app-browser-interface-f
   Autofocus]
 })
 export class AppModule {
-  constructor(updatedCheck: UpdatedCheck, updateCheck: UpdateCheck) {}
+  constructor(updatedCheck: UpdatedCheck, updateCheck: UpdateCheck, bankAutoSync: BankAutoSync) {}
 }
