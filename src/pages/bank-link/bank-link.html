@@ -11,8 +11,8 @@
   <button ion-item (click)="editBankLink()">Edit</button>
   <button ion-item (click)="syncAllAccounts()">Sync All Accounts</button>
   <button ion-item *ngIf="getCurrentBankSync()" (click)="showBrowser()">Show Browser</button>  
-  <button ion-item *ngIf="getCurrentBankSync()" (click)="showBrowser()">Cancel</button>  
-  <ion-item *ngIf="getCurrentBankSync()">    
+  <button ion-item *ngIf="getCurrentBankSync()" (click)="cancel()">Cancel</button>  
+  <ion-item *ngIf="getCurrentBankSync()">
     <h2>Current Sync Log</h2>
     <p *ngFor="let l of getCurrentBankSync().log">{{l}}</p>
   </ion-item>

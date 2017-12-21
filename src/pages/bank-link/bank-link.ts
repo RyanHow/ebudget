@@ -5,13 +5,14 @@ import {Engine} from '../../engine/engine';
 import {EngineFactory} from '../../engine/engine-factory';
 import {Account} from '../../data/records/account';
 import {AddEditAccountModal} from '../../modals/add-edit-account/add-edit-account';
-import {BankSync, BankSyncMonitor} from '../../bank/bank-sync';
+import {BankSync} from '../../bank/bank-sync';
 import {Notifications} from '../../services/notifications';
 import {Logger} from '../../services/logger';
 import {StandardHostInterface} from '../../bank/standard-host-interface';
 import { BankLink } from "../../data/records/bank-link";
 import { AddEditBankLinkModal } from "../../modals/add-edit-bank-link/add-edit-bank-link";
 import { ProviderRequiresBrowser } from "../../bank/browser-interface";
+import { BankSyncMonitor } from "../../bank/bank-sync-monitor";
 
 @Component({
   templateUrl: 'bank-link.html'
@@ -35,13 +36,13 @@ export class BankLinkPage {
 
   syncAllAccounts() {
     let initiatedBankSyncMonitor = this.bankSync.sync(this.bankLink, this.engine);
-    if (initiatedBankSyncMonitor.error) {
-      this.alertController.create({message: initiatedBankSyncMonitor.errorMessage}).present();
+    if (initiatedBankSyncMonitor.errors) {
+      this.alertController.create({title: "Unable To Run Bank Sync", message: initiatedBankSyncMonitor.errorMessage}).present();
     }
   }
 
   getCurrentBankSync(): BankSyncMonitor {
-    return this.bankSync.activeSyncs.find(b => b.bankLink.uuid == this.bankLink.uuid);
+    return this.bankSync.activeSyncs.find(b => b.bankLink.uuid === this.bankLink.uuid);
   }
 
   showBrowser() {

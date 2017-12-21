@@ -31,9 +31,17 @@
 
                 <ion-item>
                     <ion-label>Auto Sync</ion-label>
-                    <ion-toggle name="autosync" [(ngModel)]="data.autosync"></ion-toggle>
+                    <ion-toggle name="autoSync" [(ngModel)]="data.autoSync"></ion-toggle>
                 </ion-item>
 
+                <ion-item *ngIf="data.autoSync && pausedAutoSync">
+                    <ion-label>
+                        Pause Auto Sync
+                        <p>Auto Sync disabled due to errors</p>
+                    </ion-label>
+                    <ion-toggle name="pausedAutoSync" [(ngModel)]="data.pausedAutoSync"></ion-toggle>
+                </ion-item>
+    
                 <ion-item *ngFor="let setting of getProviderSchema().configurationFields">
                     <ion-label>{{setting}}</ion-label>
                     <ion-input type="text" name="{{setting}}" [(ngModel)]="data.configuration[setting]"></ion-input>

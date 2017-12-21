@@ -22,6 +22,7 @@ export abstract class BrowserInterface {
     interactive: boolean;
     shown: boolean;
     abstract logger: Logger;
+    closed: boolean;
 
     visible(): boolean {
         return this.interactive || this.shown;

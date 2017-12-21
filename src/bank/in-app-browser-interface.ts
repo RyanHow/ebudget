@@ -2,7 +2,7 @@ import { BrowserInterface } from "./browser-interface";
 import { InAppBrowserObject } from "@ionic-native/in-app-browser";
 import { Logger } from "../services/logger";
 import { Notifications } from "../services/notifications";
-import { BankSyncMonitor } from "./bank-sync";
+import { BankSyncMonitor } from "./bank-sync-monitor";
 
 export class InAppBrowserInterface extends BrowserInterface {
     loading: boolean;
@@ -79,9 +79,10 @@ export class InAppBrowserInterface extends BrowserInterface {
         return this.loading;
     }
 
-    constructor(private inAppBrowserObject: InAppBrowserObject, logger: Logger) {
+    constructor(private inAppBrowserObject: InAppBrowserObject, logger: Logger, notifications: Notifications, backgroundMode: boolean) {
         super();
         this.logger = logger;
+        this.notifications = notifications;
         inAppBrowserObject.on('loadstart').subscribe(ev => {
             this.loading = true;
             this.logger.debug("Browser Load Start");
@@ -113,6 +114,7 @@ export class InAppBrowserInterface extends BrowserInterface {
         this.notifications.remove({category: 'bank-sync.' + this.monitor.bankLink.uuid + '.interactive'});
         this.inAppBrowserObject.close();
         this.logger.debug("Closed");
+        this.closed = true;
     }
 
     

@@ -20,77 +20,8 @@ import "rxjs/add/operator/filter";
 import "rxjs/add/operator/share";
 import { BankLinkLocal } from "./bank-link-local";
 import { Utils } from "../services/utils";
+import { BankSyncMonitor } from "./bank-sync-monitor";
 
-type SyncEventType = 'complete-state-change' | 'error-state-change' | 'running-state-change' | 'cancelling-state-change' | 'cancelled-state-change';
-
-export class SyncEvent {
-    event: string;
-    constructor(event: SyncEventType) {
-        this.event = event;
-    }
-}
-
-export class BankSyncMonitor {
-    observer: Observer<SyncEvent>;
-    source: Observable<SyncEvent>;
-
-    constructor() {
-        this.source = new Observable<SyncEvent>(observer => {this.observer = observer;}).share();
-    }
-
-    error(message: string) {
-        if (!this.errors) {
-            this.errors = true;
-            this.errorMessage = message;
-        } else {
-            this.errorMessage += '\n' + message;
-        }
-        this.observer.next(new SyncEvent('error-state-change'));
-    }
-
-    bankLink: BankLink;
-    providerSchema: ProviderSchema;
-    provider: ProviderInterface;
-    engine: Engine;
-    accounts: Account[];
-
-    logger: Logger;
-    log: string[] = [];
-
-    cancel() {
-        if (!this.cancelling) {
-            this.cancelling = true;
-            this.provider.interrupt();
-        }
-    }
-
-    public errorMessage: string;
-    public errors: boolean;
-    private _running: boolean;
-    private _complete: boolean;
-    private _cancelling: boolean;
-    private _cancelled: boolean;
-
-    get cancelling() {return this._cancelling;}
-    set cancelling(value: boolean) {this._cancelling = value; if (this.observer) this.observer.next(new SyncEvent('cancelling-state-change'));}
-    get running() {return this._running;}
-    set running(value: boolean) {this._running = value; if (this.observer) this.observer.next(new SyncEvent('running-state-change'));}
-    get complete() {return this._complete;}
-    set complete(value: boolean) {
-        this._complete = value;
-        if (this.observer) {
-            this.logger.debug("Firing Complete");
-            this.observer.next(new SyncEvent('complete-state-change'));
-        }
-    }
-    get cancelled() {return this._cancelled;}
-    set cancelled(value: boolean) {this._cancelled = value; if (this.observer) this.observer.next(new SyncEvent('cancelled-state-change'));}
-
-    on(event: SyncEventType): Observable<SyncEvent> {
-        return this.source.filter(ev => ev.event == event);
-    }
-    
-}
 
 @Injectable()
 export class BankSync {
@@ -102,7 +33,7 @@ export class BankSync {
 
     }
 
-    sync(bankLink: BankLink, engine: Engine, accounts?: Account[], bankSyncMonitor = new BankSyncMonitor()): BankSyncMonitor {        
+    sync(bankLink: BankLink, engine: Engine, accounts?: Account[], bankSyncMonitor = new BankSyncMonitor(), backgroundMode: boolean = false): BankSyncMonitor {        
 
         if (bankSyncMonitor.logger == null) {
             let logger = Logger.get("BankSync.BankLink." + bankLink.name.split(/[^0-9A-Za-z_]/).join());
@@ -117,6 +48,7 @@ export class BankSync {
             bankSyncMonitor.logger = logger;
         }
 
+        bankSyncMonitor.backgroundMode = backgroundMode;
         bankSyncMonitor.bankLink = bankLink;
         bankSyncMonitor.engine = engine;
 
@@ -148,6 +80,7 @@ export class BankSync {
         }
 
         this.activeSyncs.push(bankSyncMonitor);
+        bankSyncMonitor.startTime = Date.now();
         bankSyncMonitor.running = true;
 
         this.doSync(bankSyncMonitor);
@@ -165,21 +98,30 @@ export class BankSync {
         let browserInterface: BrowserInterface;
         let autoClosing = false;
 
+        bankSyncMonitor.on('cancelled-state-change').subscribe(() => {
+            this.bankLinkLocal.updateInfo(bankSyncMonitor.bankLink.uuid, info => {
+                info.cancelledCount++;
+            });
+        });
+
         try {
             await this.replication.sync();
 
             if (bankSyncMonitor.providerSchema.requireBrowser) {
                 bankSyncMonitor.logger.debug("Creating Browser");
-                browserInterface = await this.inAppBrowserInterfaceFactory.createBrowser(bankSyncMonitor.logger);
+                browserInterface = await this.inAppBrowserInterfaceFactory.createBrowser(bankSyncMonitor.logger, bankSyncMonitor.backgroundMode);
                 bankSyncMonitor.logger.debug("Created Browser");
                 (<ProviderRequiresBrowser> <any> bankSyncMonitor.provider).setBrowser(browserInterface);
 
                 browserInterface.onLoadError().then(reason => {
                     bankSyncMonitor.logger.info("Browser Load Error", reason);
                     bankSyncMonitor.error("Communications Error");
-                    if (browserInterface != null) browserInterface.close();
+                    browserInterface.close();
                     bankSyncMonitor.provider.interrupt();
                     this.archiveSync(bankSyncMonitor);
+                    this.bankLinkLocal.updateInfo(bankSyncMonitor.bankLink.uuid, info => {
+                        info.errorCount++;
+                    });
                 });
                 browserInterface.onClose().then(() => {                    
                     bankSyncMonitor.logger.info("Browser Closed");
@@ -195,11 +137,13 @@ export class BankSync {
             bankSyncMonitor.logger.debug("Connecting...");
 
             await bankSyncMonitor.provider.connect();
+            if (bankSyncMonitor.cancelled) return;
 
             bankSyncMonitor.logger.debug("Connected. Getting Accounts.");
 
             let bankAccounts = await bankSyncMonitor.provider.getAccounts();
-
+            if (bankSyncMonitor.cancelled) return;
+            
             bankSyncMonitor.logger.debug("Fetched Accounts " + bankAccounts.map(b => b.accountNumber).join(", "));
             
             for (let account of bankSyncMonitor.accounts) {
@@ -211,6 +155,7 @@ export class BankSync {
                 }
                 bankSyncMonitor.logger.debug("Fetching Transactions for Account " + bankAccount.accountNumber);
                 let transactions = await bankSyncMonitor.provider.getTransactions(bankAccount);
+                if (bankSyncMonitor.cancelled) return;
                 bankSyncMonitor.logger.debug("Merging Transactions");
                 this.transactionSync.merge(bankSyncMonitor.engine, account, bankAccount, transactions);
             }
@@ -224,6 +169,13 @@ export class BankSync {
             bankSyncMonitor.logger.debug("Complete");
             
             bankSyncMonitor.complete = true;
+
+            this.bankLinkLocal.updateInfo(bankSyncMonitor.bankLink.uuid, info => {
+                info.errorCount = 0;
+                info.cancelledCount = 0;
+                info.lastSync = Date.now();
+            });
+
         } catch (e) {
             bankSyncMonitor.error(e + "");
             // TODO differentiate between an error and an exception (unhandled)
@@ -233,13 +185,12 @@ export class BankSync {
                 info.errorCount++;
             });
         } finally {
-            autoClosing = true;
             bankSyncMonitor.running = false;
-            if (browserInterface != null) browserInterface.close();
+            if (browserInterface != null && !browserInterface.closed) {
+                autoClosing = true;
+                browserInterface.close();
+            }
             this.archiveSync(bankSyncMonitor);
-            this.bankLinkLocal.updateInfo(bankSyncMonitor.bankLink.uuid, info => {
-                info.lastSync = Date.now();
-            });
         }
     }
 

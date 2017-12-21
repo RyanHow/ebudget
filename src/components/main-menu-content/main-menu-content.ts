@@ -15,7 +15,8 @@ import {SettingsPage} from '../../pages/settings/settings';
 import {AboutPage} from '../../pages/about/about';
 import {NotificationsPage} from '../../pages/notifications/notifications';
 import {ShareBudgetModal} from '../../modals/share-budget/share-budget';
-import { BankSync, BankSyncMonitor } from "../../bank/bank-sync";
+import { BankSync } from "../../bank/bank-sync";
+import { BankSyncMonitor } from "../../bank/bank-sync-monitor";
 import { EngineFactory } from "../../engine/engine-factory";
 import { Engine } from "../../engine/engine";
 import { BankSyncUtils } from "../../bank/bank-sync-utils";
@@ -184,7 +185,7 @@ export class MainMenuContent {
 
     this.engine().getBankLinks().forEach(bl => {
       let monitor = BankSyncUtils.createMonitorWithNotifications(this.notifications);
-      this.bankSync.sync(bl, this.engine(), undefined, monitor);
+      this.bankSync.sync(bl, this.engine(), undefined, monitor, true);
     });
   }
 

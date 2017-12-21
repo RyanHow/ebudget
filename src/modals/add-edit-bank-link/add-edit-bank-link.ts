@@ -24,7 +24,8 @@ export class AddEditBankLinkModal {
   db: Db;
   engine: Engine;
   editing: boolean;
-  data: {name: string; provider: string; configuration: {}; autosync: boolean};
+  pausedAutoSync: boolean;
+  data: {name: string; provider: string; configuration: {}; autoSync: boolean; pausedAutoSync: boolean};
   transaction: CreateBankLink;
   secureAccessor: SecureAccessor;
   
@@ -39,7 +40,9 @@ export class AddEditBankLinkModal {
       this.data.name = bankLink.name;
       this.data.provider = bankLink.provider;
       this.data.configuration = bankLink.configuration;
-      this.data.autosync = this.bankLinkLocal.getInfo(bankLink.uuid).autosync;
+      this.data.autoSync = this.bankLinkLocal.getInfo(bankLink.uuid).autoSync;
+      this.pausedAutoSync = this.bankLinkLocal.getInfo(bankLink.uuid).pauseAutoSync;
+      this.data.pausedAutoSync = this.bankLinkLocal.getInfo(bankLink.uuid).pauseAutoSync;
       this.transaction = this.db.transactionProcessor.findTransactionsForRecord(bankLink, CreateBankLink)[0];
 
     } else {
@@ -70,8 +73,11 @@ export class AddEditBankLinkModal {
     let bankLinkRecord = this.db.transactionProcessor.findRecordsForTransaction(this.transaction, BankLink)[0];
 
     this.bankLinkLocal.updateInfo(this.transaction.uuid, info => {
-      info.autosync = this.data.autosync;
-      info.errorCount = 0;
+      info.autoSync = this.data.autoSync;
+      if (this.pausedAutoSync && !this.data.pausedAutoSync) {
+        info.cancelledCount = 0;
+        info.errorCount = 0;
+      }
     });
 
     this.viewCtrl.dismiss({accountId: bankLinkRecord.id});

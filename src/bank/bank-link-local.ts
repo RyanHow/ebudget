@@ -3,9 +3,11 @@ import { PersistenceProviderManager } from "../db/persistence-provider-manager";
 import { DbPersistenceProvider } from "../db/db-persistence-provider";
 
 export class BankLinkLocalInfo {
-    autosync: boolean;
+    autoSync: boolean;
     lastSync: number;
     errorCount: number;
+    cancelledCount: number;
+    pauseAutoSync: boolean;
 }
 
 
@@ -25,8 +27,9 @@ export class BankLinkLocal {
     }
 
     private saveInfo(bankLinkUuid: string, info: BankLinkLocalInfo) {
-        if (info.errorCount > 0) info.autosync = false; // TODO: Notify / make this configurable
-
+        if (info.errorCount > 0 || info.cancelledCount > 1) info.pauseAutoSync = true; // TODO: Notify / make this configurable
+        else info.pauseAutoSync = false;
+        
         this.persistence.keyStore('bl_' + bankLinkUuid, 'info', JSON.stringify(info));
     }
 
