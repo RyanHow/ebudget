@@ -49,6 +49,10 @@ export class AnzMobileWeb1Provider implements ProviderInterface, ProviderRequire
         this.browser = browser;
     }
 
+    getBrowser(): BrowserInterface {
+        return this.browser;
+    }
+
     async connect(): Promise<void> {
 
         await this.browser.navigate('https://www.anz.com/INETBANK/bankmain.asp');

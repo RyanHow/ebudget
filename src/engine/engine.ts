@@ -32,8 +32,7 @@ export class Engine {
 
                 // TODO: Move this out of the engine and into another listener
                 if (message && configuration.option('experimental.transaction.notifications')) {
-                    notifications.notify(message, true, dbEvent.data.transaction && dbEvent.db.transactionIdLocalGen() === dbEvent.db.extractTransactionLocalGenId(dbEvent.data.transaction.id), false);
-
+                    notifications.show({message: message, popup: false, silent: dbEvent.data.transaction && dbEvent.db.transactionIdLocalGen() === dbEvent.db.extractTransactionLocalGenId(dbEvent.data.transaction.id), important: false, category: 'transactions.' + this.db.id});
                 }
             }
         });

@@ -1,12 +1,37 @@
 import { BrowserInterface } from "./browser-interface";
 import { InAppBrowserObject } from "@ionic-native/in-app-browser";
 import { Logger } from "../services/logger";
+import { Notifications } from "../services/notifications";
+import { BankSyncMonitor } from "./bank-sync";
 
 export class InAppBrowserInterface extends BrowserInterface {
     loading: boolean;
     logger: Logger;
+    notifications: Notifications;
+    backgroundMode: boolean;
+    monitor: BankSyncMonitor;
+
+    startInteractive() {
+        if (this.backgroundMode && !this.interactive) {
+            this.notifications.show({
+                message: 'The Bank Sync for ' + this.monitor.bankLink.name + ' requires your input to continue',
+                important: true,
+                popup: true,
+                category: 'bank-sync.' + this.monitor.bankLink.uuid + '.interactive',
+                clickAction: {type: 'custom', action: () => this.confirmInteractive()}
+            });
+        } else {
+            super.startInteractive();
+        }
+    }
+
+    confirmInteractive() {
+        super.startInteractive();
+        this.notifications.remove({category: 'bank-sync.' + this.monitor.bankLink.uuid + '.interactive'});
+    }
 
     updateVisbility() {
+
         if (this.visible()) {
             this.logger.debug("Browser visible");
             this.inAppBrowserObject.show();
@@ -85,6 +110,7 @@ export class InAppBrowserInterface extends BrowserInterface {
     }
 
     close() {
+        this.notifications.remove({category: 'bank-sync.' + this.monitor.bankLink.uuid + '.interactive'});
         this.inAppBrowserObject.close();
         this.logger.debug("Closed");
     }

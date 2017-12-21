@@ -2,6 +2,7 @@ import { Logger } from "../services/logger";
 
 export interface ProviderRequiresBrowser {
     setBrowser(browser: BrowserInterface);
+    getBrowser(): BrowserInterface;
 }
 
 export abstract class BrowserInterface {

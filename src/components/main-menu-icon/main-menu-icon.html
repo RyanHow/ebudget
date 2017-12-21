@@ -1,2 +1,2 @@
-<ion-icon [color]="notifications.acknowledged ? '' : notifications.important ? 'danger' : 'primary'" name="menu"></ion-icon>
-
+<ion-icon name="menu"></ion-icon>
+<ion-badge *ngIf="!notifications.acknowledged" [color]="notifications.important ? 'danger' : 'primary'">!</ion-badge>

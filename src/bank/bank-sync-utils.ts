@@ -9,13 +9,13 @@ export class BankSyncUtils {
 
     static notificationsOnMonitor(notifications: Notifications, monitor: BankSyncMonitor): BankSyncMonitor {
         monitor.on('error-state-change').subscribe(() => {
-            if (!monitor.running) notifications.notify('Bank Sync ' + monitor.bankLink.name + ' Failed with Error ' + monitor.errorMessage);
+            if (!monitor.running) notifications.show({message: 'Bank Sync ' + monitor.bankLink.name + ' Failed with Error ' + monitor.errorMessage, category: 'bank-sync.' + monitor.bankLink.uuid});
         });
         monitor.on('complete-state-change').subscribe(() => {
-            notifications.notify('Bank Sync ' + monitor.bankLink.name + ' Complete' + (monitor.errorMessage ? ' With Errors ' + monitor.errorMessage : ''));
+            notifications.show({message: 'Bank Sync ' + monitor.bankLink.name + ' Complete' + (monitor.errorMessage ? ' With Errors ' + monitor.errorMessage : ''), category: 'bank-sync.' + monitor.bankLink.uuid});
         });
         monitor.on('cancelled-state-change').subscribe(() => {
-            notifications.notify('Bank Sync ' + monitor.bankLink.name + ' Cancelled');        
+            notifications.show({message: 'Bank Sync ' + monitor.bankLink.name + ' Cancelled', category: 'bank-sync.' + monitor.bankLink.uuid});        
         });
         return monitor;
 

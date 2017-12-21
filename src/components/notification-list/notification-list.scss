@@ -1,5 +1,11 @@
 notification-list {
-    .unread {
+    .notification-unread {
         font-weight: bold;
+    }
+
+    .notification-important {
+        color: red;
+        // TODO: put an important icon / flag on it instead
+
     }
 }

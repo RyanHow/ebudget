@@ -21,7 +21,7 @@ export class UpdatedCheck {
                 configuration.option('latest-version', BuildInfo.version);
                 let message = "Updated to version " + BuildInfo.version;
                 this.logger.info(message);
-                notifications.notify(message, true);
+                notifications.show({message: message, popup: true, silent: true, category: 'app-updated'});
             }
         });
     }

@@ -69,6 +69,7 @@ import { SecurePrompt } from "../services/secure-prompt";
 import { InAppBrowserInterfaceFactory } from "../bank/in-app-browser-interface-factory";
 import { BankLinkLocal } from "../bank/bank-link-local";
 import { BankAutoSync } from "../bank/bank-auto-sync";
+import { Status } from "../components/status/status";
 
 @NgModule({
   declarations: [
@@ -96,6 +97,7 @@ import { BankAutoSync } from "../bank/bank-auto-sync";
     AddEditCategorySimpleWeeklyModal,
     ViewBankTransactionModal,
     CurrencyField,
+    Status,
     NoFocusDirective,
     ErrorLabel,
     ReplicationErrorDisplay,

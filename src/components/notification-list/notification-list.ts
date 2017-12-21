@@ -14,12 +14,23 @@ export class NotificationList {
   @Input()
   new: boolean;
 
+  notifications: Array<Notification>;
+
   constructor(public notificationService: Notifications) {
     
   }
 
-  get notifications(): Array<Notification> {
-    return this.new ? this.notificationService.newNotifications : this.notificationService.notifications;
+  ngOnInit() {
+    this.notifications = this.new ? this.notificationService.newNotifications : this.notificationService.notifications;
   }
+
+  notificationClicked(notification: Notification) {
+    if (notification.clickAction) {
+      if (notification.clickAction.type === 'custom') {
+        notification.clickAction.action();
+      }
+    }
+  }
+
 
 }

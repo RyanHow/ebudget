@@ -60,7 +60,7 @@ export class UpdateCheck {
             window.addEventListener('serviceworkerinstalled', (ev) => {
                 let message = "Offline support has been installed. You can now use the app offline.";
                 this.logger.info(message);
-                this.notifications.notify(message, true);
+                this.notifications.show({message: message, popup: true, silent: true, category: 'update-check'});
                 applicationRef.tick();
             });
 
@@ -101,7 +101,7 @@ export class UpdateCheck {
             this.updatedServiceWorkerVersion = (<any>window).updatedServiceWorkerVersion;
             let message = "An update has been downloaded (" + this.updatedServiceWorkerVersion + ") and will be installed next time the app is opened.";
             this.logger.info(message);
-            this.notifications.notify(message, true);
+            this.notifications.show({message: message, popup: true, silent: true, category: 'update-check'});
             this.serviceWorkerUpdateNotified = true;
             return true;
         }
@@ -116,7 +116,7 @@ export class UpdateCheck {
                     let message = "Offline support has been removed. It will be re-enabled after the app has been restarted.";
                     this.serviceWorkerUnregistered = true;
                     this.logger.info(message);
-                    this.notifications.notify(message, true);
+                    this.notifications.show({message: message, popup: true, silent: true, category: 'update-check'});
                 }
                 return result;
             });
@@ -148,7 +148,7 @@ export class UpdateCheck {
                     if (!this.isServiceWorkerAvailable() && !this.configuration.native) {
                         let message = "An update is available (" + this.webVersion + "). Refresh to update.";                    
                         this.logger.info(message);
-                        this.notifications.notify(message, true);
+                        this.notifications.show({message: message, popup: true, silent: true, category: 'update-check'});
                     }
                 }
             } catch (err) {

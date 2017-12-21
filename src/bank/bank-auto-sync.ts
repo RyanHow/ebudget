@@ -45,6 +45,9 @@ export class BankAutoSync {
             if (info.autosync && timeDiffHours > 12) {
                 this.log.info("Auto syncing bank link " + bankLink.name);
                 let monitor = BankSyncUtils.createMonitorWithNotifications(this.notifications);
+                monitor.on('running-state-change').subscribe(() => {
+                    this.notifications.show({message: 'Syncing Bank Link ' + monitor.bankLink.name, category: 'bank-sync.' + monitor.bankLink.uuid});
+                });
                 this.bankSync.sync(bankLink, engine, undefined, monitor);
             }
         });
