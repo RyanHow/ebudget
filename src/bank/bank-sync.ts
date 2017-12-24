@@ -89,7 +89,9 @@ export class BankSync {
     }
 
     private archiveSync(bankSyncMonitor: BankSyncMonitor) {
-        this.activeSyncs.splice(this.activeSyncs.indexOf(bankSyncMonitor), 1);      
+        let index = this.activeSyncs.indexOf(bankSyncMonitor);
+        if (index == -1) return; // Already archived, or not current anyway...
+        this.activeSyncs.splice(index, 1);
         // TODO: Move to sync history... AND write into local persistence!?
     }
 
@@ -104,12 +106,13 @@ export class BankSync {
             });
         });
 
+
         try {
             await this.replication.sync();
 
             if (bankSyncMonitor.providerSchema.requireBrowser) {
                 bankSyncMonitor.logger.debug("Creating Browser");
-                browserInterface = await this.inAppBrowserInterfaceFactory.createBrowser(bankSyncMonitor.logger, bankSyncMonitor.backgroundMode);
+                browserInterface = await this.inAppBrowserInterfaceFactory.createBrowser(bankSyncMonitor.logger, bankSyncMonitor.backgroundMode, bankSyncMonitor);
                 bankSyncMonitor.logger.debug("Created Browser");
                 (<ProviderRequiresBrowser> <any> bankSyncMonitor.provider).setBrowser(browserInterface);
 
@@ -125,24 +128,32 @@ export class BankSync {
                 });
                 browserInterface.onClose().then(() => {                    
                     bankSyncMonitor.logger.info("Browser Closed");
+                    // it is possible the final block is never run in our try/final, but this browser close will be run in that case, so we use the auto closing flag to coordinate.
                     if (!autoClosing) {
                         bankSyncMonitor.cancelled = true;
+                        bankSyncMonitor.running = false;
                         bankSyncMonitor.provider.interrupt();
                         this.archiveSync(bankSyncMonitor);
                     }
                 });
-
+                // Not so sure this should be here, we interrupt the provider elsewhere
+                bankSyncMonitor.on('cancelling-state-change').subscribe(() => {
+                    if (bankSyncMonitor.cancelling) {
+                        browserInterface.close();
+                    }
+                });
+        
             }
 
             bankSyncMonitor.logger.debug("Connecting...");
 
             await bankSyncMonitor.provider.connect();
-            if (bankSyncMonitor.cancelled) return;
+            if (bankSyncMonitor.cancelled || bankSyncMonitor.cancelling) return;
 
             bankSyncMonitor.logger.debug("Connected. Getting Accounts.");
 
             let bankAccounts = await bankSyncMonitor.provider.getAccounts();
-            if (bankSyncMonitor.cancelled) return;
+            if (bankSyncMonitor.cancelled || bankSyncMonitor.cancelling) return;
             
             bankSyncMonitor.logger.debug("Fetched Accounts " + bankAccounts.map(b => b.accountNumber).join(", "));
             
@@ -155,7 +166,7 @@ export class BankSync {
                 }
                 bankSyncMonitor.logger.debug("Fetching Transactions for Account " + bankAccount.accountNumber);
                 let transactions = await bankSyncMonitor.provider.getTransactions(bankAccount);
-                if (bankSyncMonitor.cancelled) return;
+                if (bankSyncMonitor.cancelled || bankSyncMonitor.cancelling) return;
                 bankSyncMonitor.logger.debug("Merging Transactions");
                 this.transactionSync.merge(bankSyncMonitor.engine, account, bankAccount, transactions);
             }
@@ -190,6 +201,7 @@ export class BankSync {
                 autoClosing = true;
                 browserInterface.close();
             }
+            if (bankSyncMonitor.cancelling) bankSyncMonitor.cancelled = true;
             this.archiveSync(bankSyncMonitor);
         }
     }

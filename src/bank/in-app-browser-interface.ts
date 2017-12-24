@@ -79,10 +79,11 @@ export class InAppBrowserInterface extends BrowserInterface {
         return this.loading;
     }
 
-    constructor(private inAppBrowserObject: InAppBrowserObject, logger: Logger, notifications: Notifications, backgroundMode: boolean) {
+    constructor(private inAppBrowserObject: InAppBrowserObject, logger: Logger, notifications: Notifications, backgroundMode: boolean, monitor: BankSyncMonitor) {
         super();
         this.logger = logger;
         this.notifications = notifications;
+        this.monitor = monitor;
         inAppBrowserObject.on('loadstart').subscribe(ev => {
             this.loading = true;
             this.logger.debug("Browser Load Start");

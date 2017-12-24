@@ -42,11 +42,11 @@ export class BankAutoSync {
         bankLinks.forEach(bankLink => {
             let info = this.bankLinkLocal.getInfo(bankLink.uuid);
             let timeDiffHours = info.lastSync == null ? Date.now() : (Date.now() - info.lastSync) / (1000 * 60 * 60);
-            if (info.autoSync && !info.pauseAutoSync && timeDiffHours > 12) {
+            if (info.autoSync && !info.pauseAutoSync && timeDiffHours > 12 && this.bankSync.activeSyncs.find(m => m.bankLink.uuid === bankLink.uuid) === undefined) {
                 this.log.info("Auto syncing bank link " + bankLink.name);
                 let monitor = BankSyncUtils.createMonitorWithNotifications(this.notifications);
                 monitor.on('running-state-change').subscribe(() => {
-                    this.notifications.show({message: 'Syncing Bank Link ' + monitor.bankLink.name, category: 'bank-sync.' + monitor.bankLink.uuid});
+                    if (monitor.running) this.notifications.show({message: 'Syncing Bank Link ' + monitor.bankLink.name, category: 'bank-sync.' + monitor.bankLink.uuid});
                 });
                 this.bankSync.sync(bankLink, engine, undefined, monitor, true);
             }
