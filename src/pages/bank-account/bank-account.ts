@@ -23,14 +23,18 @@ export class BankAccountPage {
   syncing: boolean;
   bankTransactionTable: LokiCollection<BankTransaction>;
   transactionView: LokiDynamicView<BankTransaction>;
-
+  transactionViewData: BankTransaction[] = [];
+  transactionViewDummyData = [];
+  transactionViewArrayData: BankTransaction[] = [];
+  transactionViewArrayDataBlank: BankTransaction = new BankTransaction();
+  
   private logger = Logger.get('BankPage');
 
   constructor(private nav: NavController, private dbms: Dbms, private navParams: NavParams, private engineFactory: EngineFactory, private modalController: ModalController, private bankSync: BankSync, private notifications: Notifications, private standardHostInterface: StandardHostInterface) {
     this.engine = this.engineFactory.getEngineById(navParams.data.budgetId);
     this.account = this.engine.getRecordById(Account, navParams.data.accountId);
     this.bankTransactionTable = this.engine.db.transactionProcessor.table(BankTransaction);
-    this.transactionView = <any> {data: function() {return []; }};
+    this.transactionView = <any> {data: function() {return this.transactionViewDummyData; }};
   }
   
   goBankLink() {
@@ -41,10 +45,16 @@ export class BankAccountPage {
     return false;
   }
 
+  refreshData() {
+    this.transactionViewData = this.transactionView.data();
+    this.transactionViewDummyData.push(new BankTransaction());
+  }
+
   ionViewWillEnter() {
     this.transactionView = this.bankTransactionTable.addDynamicView('accountBankTransactions_' + this.account.id)
     .applyFind({'accountId': this.account.id})
     .applySortCriteria([['date', true], ['id', false]]);
+    this.transactionViewData = this.transactionView.data();
 
     this.logger.debug('WIll Enter Dynamic Views ' + this.bankTransactionTable.DynamicViews.length);
 
@@ -58,8 +68,15 @@ export class BankAccountPage {
   ionViewDidLeave() {
     this.bankTransactionTable.removeDynamicView(this.transactionView.name);
     this.logger.debug('Did Leave Dynamic Views ' + this.bankTransactionTable.DynamicViews.length);
-    this.transactionView = <any> {data: function() {return []; }};
+    this.transactionView = <any> {data: function() {return this.transactionViewDummyData; }};
+    this.transactionViewData = [];
+  }
 
+  transactionViewArray() {
+    this.transactionViewArrayData.length = 0;
+    this.transactionViewArrayData.push(... this.transactionViewDummyData);
+    this.transactionViewArrayData.push(... this.transactionView.data());
+    return this.transactionViewArrayData;
   }
 
   openTransaction(t: BankTransaction) {
@@ -67,5 +84,9 @@ export class BankAccountPage {
     modal.present();
   }
 
+  transactionListDateHeader(record, recordIndex, records) {
+    if (recordIndex === 0 || record.date !== records[recordIndex-1].date) return record;
+    return null;
+  }
 
 }

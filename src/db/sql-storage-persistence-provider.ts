@@ -92,6 +92,7 @@ export class SqlStoragePersistenceProvider implements DbPersistenceProvider  {
             return transactions;
         }).catch(err => {
             this.logger.error('Error getting db transactions', err);
+            return [];
         });
     }
     

@@ -8,32 +8,36 @@
 </ion-header>
 
 <ion-content class="bank-account-page">
-
-  <ion-item>Account Number {{account.x.accountNumber}}</ion-item>
-  <ion-item>Balance {{account.x.bankBalance}}</ion-item>
-  <ion-item>Available Balance {{account.x.bankAvailableBalance}}</ion-item>
-  <ion-item>Processed Balance {{account.x.bankProcessedBalance}}</ion-item>
-  <ion-item>Calculated Balance {{account.x.calculatedBankBalance}}</ion-item>
-  <ion-item>Available Calculated Balance {{account.x.calculatedBankAvailableBalance}}</ion-item>
-  <ion-item>Processed Calculated Balance {{account.x.calculatedBankProcessedBalance}}</ion-item>
-  <ion-item>Last Updated {{account.x.bankBalanceTimestamp}}</ion-item>
-  <ion-item *ngIf="account.x.bankBalance && account.x.calculatedBankBalance">Difference {{account.x.bankBalance.minus(account.x.calculatedBankBalance)}}</ion-item>
-  <ion-item *ngIf="account.x.bankAvailableBalance && account.x.calculatedBankAvailableBalance">Available Difference {{account.x.bankAvailableBalance.minus(account.x.calculatedBankAvailableBalance)}}</ion-item>
-  <ion-item *ngIf="account.x.bankProcessedBalance && account.x.calculatedBankProcessedBalance">Processed Difference {{account.x.bankProcessedBalance.minus(account.x.calculatedBankProcessedBalance)}}</ion-item>
-  <button *ngIf="account.bankLinkId" ion-item (click)="goBankLink()">Go To Bank Link</button>
-  <ion-item>TODO If account is syncing</ion-item>
-  <ion-item>TODO Sync ONLY this account for the bank link</ion-item>
   
-  <ion-list>
-    <ng-container *ngFor="let t of transactionView.data(); let i = index;">
-      <ion-item-divider *ngIf="i === 0 || t.date !== transactionView.data()[i-1].date" color="light">{{t.date | dFormat}}</ion-item-divider>
-      <button ion-item (click)="openTransaction(t)">
-        <div item-left [class.unreconciled-marker]="!t.x.reconciled"></div>
-        <p style="white-space:normal">{{t.flagRemoved ? 'Removed: ' : ''}}{{t.description}}</p>
-        <ion-note *ngIf="t.status !== 'processed'">{{t.status}}</ion-note>
-        <currency-display item-right highlightPositive showPositive [value]="t.amount"></currency-display>
-      </button>
-    </ng-container>
+  <ion-list [virtualScroll]="transactionViewArray()" [headerFn]="transactionListDateHeader" approxHeaderHeight="44px" approxItemHeight="65px">
+
+    <div *virtualHeader="let t1; let i = index;" style="width: 100%">
+      <ng-container *ngIf="i === 0">
+        <ion-item>Account Number {{account.x.accountNumber}}</ion-item>
+        <ion-item>Balance {{account.x.bankBalance}}</ion-item>
+        <ion-item>Available Balance {{account.x.bankAvailableBalance}}</ion-item>
+        <ion-item>Processed Balance {{account.x.bankProcessedBalance}}</ion-item>
+        <ion-item>Calculated Balance {{account.x.calculatedBankBalance}}</ion-item>
+        <ion-item>Available Calculated Balance {{account.x.calculatedBankAvailableBalance}}</ion-item>
+        <ion-item>Processed Calculated Balance {{account.x.calculatedBankProcessedBalance}}</ion-item>
+        <ion-item>Last Updated {{account.x.bankBalanceTimestamp}}</ion-item>
+        <ion-item *ngIf="account.x.bankBalance && account.x.calculatedBankBalance">Difference {{account.x.bankBalance.minus(account.x.calculatedBankBalance)}}</ion-item>
+        <ion-item *ngIf="account.x.bankAvailableBalance && account.x.calculatedBankAvailableBalance">Available Difference {{account.x.bankAvailableBalance.minus(account.x.calculatedBankAvailableBalance)}}</ion-item>
+        <ion-item *ngIf="account.x.bankProcessedBalance && account.x.calculatedBankProcessedBalance">Processed Difference {{account.x.bankProcessedBalance.minus(account.x.calculatedBankProcessedBalance)}}</ion-item>
+        <button *ngIf="account.bankLinkId" ion-item (click)="goBankLink()">Go To Bank Link</button>
+        <ion-item>TODO If account is syncing</ion-item>
+        <ion-item>TODO Sync ONLY this account for the bank link</ion-item>
+        <button ion-item (click)="refreshData()">Refresh/Mod Data</button>      
+      </ng-container>
+      <ion-item-divider  color="light">{{t1.date | dFormat}}</ion-item-divider>
+    </div>
+
+    <button ion-item (click)="openTransaction(t)" *virtualItem="let t" >
+      <div item-left [class.unreconciled-marker]="!t.x.reconciled"></div>
+      <p style="white-space:normal">{{t.flagRemoved ? 'Removed: ' : ''}}{{t.description}}</p>
+      <ion-note *ngIf="t.status !== 'processed'">{{t.status}}</ion-note>
+      <currency-display item-right highlightPositive showPositive [value]="t.amount"></currency-display>
+    </button>
   </ion-list>
 
 </ion-content>

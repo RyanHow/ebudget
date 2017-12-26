@@ -26,20 +26,21 @@
             <ion-label>Balance</ion-label>
             <currency-display item-right showPositive [value]="t.balance"></currency-display>
         </ion-item>
+        <!-- TODO: Virtual Scroll fixes -->
 
-        <div padding>
-            <button ion-item (click)="createTransaction()">
-                (Create Transaction)
-            </button>
+        <button ion-item (click)="createTransaction()">
+            (Create Transaction)
+        </button>
 
-            <button ion-item [class.selected]="isSelected(t)" *ngFor="let t of unreconciliedAndThisReconciledTransactions()" (click)="toggleSelected(t)">
+        <ion-list [virtualScroll]="unreconciliedAndThisReconciledTransactions()" approxItemHeight="44px" bufferRatio="20">
+            <button ion-item [class.selected]="isSelected(t)" *virtualItem="let t" (click)="toggleSelected(t)">
                 {{t.description}}
                 <currency-display item-right [value]="reconcileAmount(t)"></currency-display>
             </button>
+        </ion-list>
 
-            Total: <currency-display [value]="reconciledTotal()"></currency-display>
+        Total: <currency-display [value]="reconciledTotal()"></currency-display>
             
-        </div>
     </div>
     <button ion-button type="button" color="danger" clear small (click)="deleteBankTransactionConfirm()">Delete</button>
 </ion-content>
