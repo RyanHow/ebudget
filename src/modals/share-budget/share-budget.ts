@@ -173,7 +173,7 @@ export class ShareBudgetModal {
   }
   
   shareOptions() {
-   let actionSheet = this.actionSheetCtrl.create({
+    let actionSheet = this.actionSheetCtrl.create({
       title: 'Share',
       buttons: [
         {
@@ -185,24 +185,7 @@ export class ShareBudgetModal {
           text: 'Copy',
           cssClass: 'share-copy',
           handler: () => {
-            if (this.configuration.native) {
-              this.nativeClipboard.copy(this.budget.id).then(() => {
-                this.toastCtrl.create({
-                      message: 'Copied!\nOpen another application and paste the share code',
-                      duration: 10000,
-                      showCloseButton: true,
-                      position: 'bottom'
-                    }).present();
-                }, reason => {
-                this.toastCtrl.create({
-                      message: 'Uh oh!\nThe code couldn\'t be copied (' + reason + '). You\'ll need to highlight the code and press Ctrl-C to copy.',
-                      duration: 10000,
-                      showCloseButton: true,
-                      position: 'bottom'
-                    }).present();
-              });
-
-            }
+            // Note: Handler code is attached by JS clipboard handler below
           }
         }, {
           text: 'Cancel',
@@ -211,20 +194,34 @@ export class ShareBudgetModal {
       ]
     });
     actionSheet.present().then(() => {
-
-      if (!this.configuration.native) {
-          let cb = new Clipboard('.share-copy', {text: () => this.budget.id });
-          cb.on('success', () => {
+      let cb = new Clipboard('.share-copy', {text: () => this.budget.id });
+      cb.on('success', () => {
+        this.toastCtrl.create({
+              message: 'Copied!\nOpen another application and paste the share code',
+              duration: 10000,
+              showCloseButton: true,
+              position: 'bottom'
+            }).present();
+      });
+      cb.on('error', () => {
+        if (!this.configuration.native) {
+          this.toastCtrl.create({
+            message: 'Uh oh!\nThe code couldn\'t be copied. You\'ll need to highlight the code and press Ctrl-C to copy.',
+            duration: 10000,
+            showCloseButton: true,
+            position: 'bottom'
+          }).present();
+        } else {
+          this.nativeClipboard.copy(this.budget.id).then(() => {
             this.toastCtrl.create({
                   message: 'Copied!\nOpen another application and paste the share code',
                   duration: 10000,
                   showCloseButton: true,
                   position: 'bottom'
                 }).present();
-          });
-          cb.on('error', () => {
+            }, reason => {
             this.toastCtrl.create({
-                  message: 'Uh oh!\nThe code couldn\'t be copied. You\'ll need to highlight the code and press Ctrl-C to copy.',
+                  message: 'Uh oh!\nThe code couldn\'t be copied (' + reason + '). You\'ll need to highlight the code and press Ctrl-C to copy.',
                   duration: 10000,
                   showCloseButton: true,
                   position: 'bottom'
@@ -232,6 +229,7 @@ export class ShareBudgetModal {
           });
         }
       });
+    });
   }
 
 } 
