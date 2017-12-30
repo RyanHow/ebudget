@@ -7,7 +7,7 @@ import {InitSimpleTransaction} from '../../data/transactions/init-simple-transac
 import {Configuration} from '../../services/configuration-service';
 import {Component} from '@angular/core';
 import {Utils} from '../../services/utils';
-import Big from 'big.js';
+import { Big } from 'big.js';
 
 @Component({
   templateUrl: 'add-edit-transaction.html'

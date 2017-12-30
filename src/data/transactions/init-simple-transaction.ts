@@ -1,14 +1,14 @@
 import {DbTransaction, TransactionStringEnv} from '../../db/transaction';
 import {Transaction as TransactionRecord} from '../records/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
-import Big from 'big.js';
+import { Big } from 'big.js';
 
 
 export class InitSimpleTransaction extends DbTransaction {
 
     description: string;
     date: string;
-    amount: BigJsLibrary.BigJS;
+    amount: Big;
     categoryId: number;
 
     getTypeId(): string {

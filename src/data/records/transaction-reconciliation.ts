@@ -1,11 +1,12 @@
 import {Record} from '../../db/record';
+import { Big } from "big.js";
 
 export class TransactionReconciliation extends Record<TransactionReconciliation> {
     
     public id: number;
     public transactionId: number;
     public bankTransactionId: number;
-    public amount: BigJsLibrary.BigJS;
+    public amount: Big;
     public transactionAmountOverride: boolean;
 
     tableName(): string {

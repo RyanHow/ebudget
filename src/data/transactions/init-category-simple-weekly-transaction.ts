@@ -3,7 +3,7 @@ import {TransactionProcessor} from '../../db/transaction-processor';
 import {Category} from '../records/category';
 import {CategorySimpleWeeklyProcessor} from '../processors/category-simple-weekly-processor';
 import {Logger} from '../../services/logger';
-import Big from 'big.js';
+import { Big } from 'big.js';
 
 export class InitCategorySimpleWeeklyTransaction extends DbTransaction {
 
@@ -11,8 +11,8 @@ export class InitCategorySimpleWeeklyTransaction extends DbTransaction {
 
     categoryId: number;
     balanceDate: string;
-    balance: BigJsLibrary.BigJS;
-    weeklyAmount: BigJsLibrary.BigJS;
+    balance: Big;
+    weeklyAmount: Big;
 
     getTypeId(): string {
         return 'InitCategorySimpleWeeklyTransaction';

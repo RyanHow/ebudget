@@ -2,7 +2,7 @@ import {DbTransaction, TransactionStringEnv} from '../../db/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
 import {Account} from '../records/account';
 import {AccountBalanceProcessor} from '../processors/account-balance';
-import Big from 'big.js';
+import { Big } from 'big.js';
 
 
 export class SetAccountBankLink extends DbTransaction {

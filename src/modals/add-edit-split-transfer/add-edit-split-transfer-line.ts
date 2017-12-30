@@ -2,7 +2,7 @@ import {NavController, ViewController, NavParams, AlertController, Alert} from '
 import {Dbms} from '../../db/dbms';
 import {Configuration} from '../../services/configuration-service';
 import {Component} from '@angular/core';
-import Big from 'big.js';
+import { Big } from 'big.js';
 import {AddEditSplitTransferModal} from './add-edit-split-transfer';
 import {Engine} from '../../engine/engine';
 

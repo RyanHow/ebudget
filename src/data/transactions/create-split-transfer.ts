@@ -1,7 +1,7 @@
 import {DbTransaction, TransactionStringEnv} from '../../db/transaction';
 import {Transaction as TransactionRecord} from '../records/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
-import Big from 'big.js';
+import { Big } from 'big.js';
 
 
 export class CreateSplitTransfer extends DbTransaction {
@@ -12,7 +12,7 @@ export class CreateSplitTransfer extends DbTransaction {
     accountId?: number;
     accountId2?: number;
     amounts: Array<{
-        amount: BigJsLibrary.BigJS;
+        amount: Big;
         categoryId: number;
     }>;
 

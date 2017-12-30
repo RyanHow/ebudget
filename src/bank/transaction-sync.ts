@@ -4,14 +4,14 @@ import {Logger} from '../services/logger';
 import {BankTransaction} from '../data/records/bank-transaction';
 import {Account} from '../data/records/account';
 import {MergeBankTransactions} from '../data/transactions/merge-bank-transactions';
-import Big from 'big.js';
+import { Big } from 'big.js';
 import {Engine} from '../engine/engine';
 import {Utils} from '../services/utils';
 
 class AccountTransactionProcessing extends BankAccountTransaction {
     originalIndex: number;
-    amountBig: BigJsLibrary.BigJS;
-    balanceBig: BigJsLibrary.BigJS;
+    amountBig: Big;
+    balanceBig: Big;
     balanceCheck: boolean;
     matched: boolean;
     matchedAccountTransaction: BankTransaction;

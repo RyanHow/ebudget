@@ -8,7 +8,7 @@ import {EngineFactory} from '../../engine/engine-factory';
 import {InitCategoryTransferTransaction} from '../../data/transactions/init-category-transfer-transaction';
 import {Component} from '@angular/core';
 import {Utils} from '../../services/utils';
-import Big from 'big.js';
+import { Big } from 'big.js';
 
 @Component({
   templateUrl: 'add-edit-transfer.html'

@@ -1,13 +1,14 @@
 import {Record} from '../../db/record';
 import {Processor} from '../../engine/processor';
+import { Big } from "big.js";
 
 export class Account extends Record<Account> {
     
     public id: number;
     public name: string;
-    public balance: BigJsLibrary.BigJS;
+    public balance: Big;
     public accountType: 'Bank' | 'Cash';
-    public initialBalance: BigJsLibrary.BigJS;
+    public initialBalance: Big;
     public bankLinkId: number;
     public bankLinkConfiguration: any;
     

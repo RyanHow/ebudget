@@ -1,6 +1,6 @@
 import {DbTransaction, TransactionStringEnv} from '../../db/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
-import Big from 'big.js';
+import { Big } from 'big.js';
 import { TransactionReconciliation } from "../records/transaction-reconciliation";
 import { Transaction } from "../records/transaction";
 import { BankTransaction } from "../records/bank-transaction";
@@ -8,7 +8,7 @@ import { BankTransaction } from "../records/bank-transaction";
 
 export class CreateTransactionReconciliation extends DbTransaction {
 
-    amount: BigJsLibrary.BigJS;
+    amount: Big;
     transactionId: number;
     bankTransactionId: number;
     transactionAmountOverride: boolean;

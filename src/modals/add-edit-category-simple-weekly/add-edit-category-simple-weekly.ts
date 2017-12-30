@@ -6,7 +6,7 @@ import {Dbms} from '../../db/dbms';
 import {InitCategorySimpleWeeklyTransaction} from '../../data/transactions/init-category-simple-weekly-transaction';
 import {Component} from '@angular/core';
 import {Utils} from '../../services/utils';
-import Big from 'big.js';
+import { Big } from 'big.js';
 
 @Component({
   templateUrl: 'add-edit-category-simple-weekly.html'

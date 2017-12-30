@@ -2,14 +2,14 @@ import {DbTransaction, TransactionStringEnv} from '../../db/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
 import {Account} from '../records/account';
 import {AccountBalanceProcessor} from '../processors/account-balance';
-import Big from 'big.js';
+import { Big } from 'big.js';
 
 
 export class CreateAccountTransaction extends DbTransaction {
 
     name: string;
     accountType: 'Bank' | 'Cash';
-    initialBalance: BigJsLibrary.BigJS;
+    initialBalance: Big;
     bankLinkId: number;
     bankLinkConfiguration: any;
 

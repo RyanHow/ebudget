@@ -1,7 +1,7 @@
 import {DbTransaction, TransactionStringEnv} from '../../db/transaction';
 import {Transaction as TransactionRecord} from '../records/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
-import Big from 'big.js';
+import { Big } from 'big.js';
 
 
 export class CreateSplitTransaction extends DbTransaction {
@@ -10,7 +10,7 @@ export class CreateSplitTransaction extends DbTransaction {
     status?: 'realised' | 'anticipated';
     date: string;
     amounts: Array<{
-        amount: BigJsLibrary.BigJS;
+        amount: Big;
         categoryId: number;
         accountId?: number;
         status?: 'realised' | 'anticipated';

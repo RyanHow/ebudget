@@ -3,19 +3,19 @@ import {BankTransaction} from '../records/bank-transaction';
 import {Account} from '../records/account';
 import {TransactionProcessor} from '../../db/transaction-processor';
 import {Logger} from '../../services/logger';
-import Big from 'big.js';
+import { Big } from 'big.js';
 
 
 export class MergeBankTransactions extends DbTransaction {
 
 
-    inserts: {date: string; status: string; description: string; amount: BigJsLibrary.BigJS, balance: BigJsLibrary.BigJS, balanceSequence: number}[];
-    upgrades: {bankTransactionId: number, date: string; status: string; description: string; amount: BigJsLibrary.BigJS, balance: BigJsLibrary.BigJS, balanceSequence: number}[];
+    inserts: {date: string; status: string; description: string; amount: Big, balance: Big, balanceSequence: number}[];
+    upgrades: {bankTransactionId: number, date: string; status: string; description: string; amount: Big, balance: Big, balanceSequence: number}[];
     flags: {bankTransactionId: number, flag: string; set: boolean}[];
     accountId: number;
     checksum: string;
-    accountBalance: BigJsLibrary.BigJS;
-    accountAvailableBalance: BigJsLibrary.BigJS;
+    accountBalance: Big;
+    accountAvailableBalance: Big;
     timestamp: string; 
 
     getTypeId(): string {

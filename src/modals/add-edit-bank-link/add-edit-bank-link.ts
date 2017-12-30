@@ -6,7 +6,7 @@ import {EngineFactory} from '../../engine/engine-factory';
 import {Engine} from '../../engine/engine';
 import {CreateAccountTransaction} from '../../data/transactions/create-account-transaction';
 import {Component} from '@angular/core';
-import Big from 'big.js';
+import { Big } from 'big.js';
 import { Configuration, SecureAccessor } from "../../services/configuration-service";
 import { BankLink } from "../../data/records/bank-link";
 import { CreateBankLink } from "../../data/transactions/create-bank-link";

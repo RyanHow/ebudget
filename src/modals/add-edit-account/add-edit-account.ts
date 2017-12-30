@@ -7,7 +7,7 @@ import {BankProviderRegistry} from '../../bank/bank-provider-registry';
 import {Engine} from '../../engine/engine';
 import {CreateAccountTransaction} from '../../data/transactions/create-account-transaction';
 import {Component} from '@angular/core';
-import Big from 'big.js';
+import { Big } from 'big.js';
 import { Configuration } from "../../services/configuration-service";
 import { SetAccountBankLink } from "../../data/transactions/set-account-bank-link";
 import { ProviderSchema } from "../../bank/provider-interface";

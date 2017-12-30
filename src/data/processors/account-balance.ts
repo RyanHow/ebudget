@@ -4,7 +4,7 @@ import {TransactionProcessor} from '../../db/transaction-processor';
 import {Account} from '../records/account';
 import {Category} from '../records/category';
 import {Transaction} from '../records/transaction';
-import Big from 'big.js';
+import { Big } from 'big.js';
 import { Utils } from "../../services/utils";
 
 export class AccountBalanceProcessor extends Processor {
@@ -25,7 +25,7 @@ export class AccountBalanceProcessor extends Processor {
         let categoryTable = tp.table(Category);
         categoryTable.data.forEach(c => {
             categoriesMap.set(c.id, c);
-            if (!c.x.accountBalances) c.x.accountBalances = new Map<number, BigJsLibrary.BigJS>();
+            if (!c.x.accountBalances) c.x.accountBalances = new Map<number, Big>();
             c.x.accountBalances.clear();
         });
         let accountTransactions = <Transaction[]> <any> tp.table(Transaction).find({'accountId': this.account.id});

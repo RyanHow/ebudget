@@ -2,7 +2,7 @@ import {NavController, ViewController, NavParams, AlertController, Alert} from '
 import {Dbms} from '../../db/dbms';
 import {Configuration} from '../../services/configuration-service';
 import {Component} from '@angular/core';
-import Big from 'big.js';
+import { Big } from 'big.js';
 import {AddEditSplitTransactionModal} from './add-edit-split-transaction';
 import { Engine } from '../../engine/engine';
 import { BankTransaction } from "../../data/records/bank-transaction";

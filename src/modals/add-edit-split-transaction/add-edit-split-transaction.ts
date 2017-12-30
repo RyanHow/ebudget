@@ -7,7 +7,7 @@ import {CreateSplitTransaction} from '../../data/transactions/create-split-trans
 import {Configuration} from '../../services/configuration-service';
 import {Component} from '@angular/core';
 import {Utils} from '../../services/utils';
-import Big from 'big.js';
+import { Big } from 'big.js';
 import {AddEditSplitTransactionLineModal} from './add-edit-split-transaction-line';
 
 @Component({
@@ -99,14 +99,14 @@ export class AddEditSplitTransactionModal {
     modal.present();
   }
 
-  totalAmount(): BigJsLibrary.BigJS  {
+  totalAmount(): Big  {
     return this.data.lines.map(line => line.amount).reduce(
       (total, amount) => new Big((amount || '0').replace(',', '')).plus(total),
       new Big('0')
     ).abs();
   }
 
-  amountRemaining(): BigJsLibrary.BigJS {
+  amountRemaining(): Big {
     return new Big((this.data.amount || '0').replace(',', '')).minus(this.totalAmount());
   }
 
@@ -188,7 +188,7 @@ export class AddEditSplitTransactionModal {
   }
 
 
-  reconciledTotal(): BigJsLibrary.BigJS {
+  reconciledTotal(): Big {
     return new Big('0');
   }
 

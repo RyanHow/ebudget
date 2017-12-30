@@ -3,15 +3,15 @@ import moment from 'moment';
 import {TransactionProcessor} from '../../db/transaction-processor';
 import {Category} from '../records/category';
 import {Transaction} from '../records/transaction';
-import Big from 'big.js';
+import { Big } from 'big.js';
 import { Utils } from "../../services/utils";
 
 export class CategorySimpleWeeklyProcessor extends Processor {
     
     category: Category;
     balanceDate: string;
-    weeklyAmount: BigJsLibrary.BigJS;
-    balance: BigJsLibrary.BigJS;
+    weeklyAmount: Big;
+    balance: Big;
     transactionId: number;
     
     getTypeId(): String {

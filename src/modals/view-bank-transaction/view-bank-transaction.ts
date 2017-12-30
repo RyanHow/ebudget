@@ -8,7 +8,7 @@ import { Transaction } from "../../data/records/transaction";
 import { TransactionReconciliation } from "../../data/records/transaction-reconciliation";
 import { EngineFactory } from "../../engine/engine-factory";
 import { Engine } from "../../engine/engine";
-import Big from 'big.js';
+import { Big } from 'big.js';
 import { CreateTransactionReconciliation } from "../../data/transactions/create-transaction-reconciliation";
 import { AddEditSplitTransactionModal } from "../add-edit-split-transaction/add-edit-split-transaction";
 
@@ -20,7 +20,7 @@ export class ViewBankTransactionModal {
   engine: Engine;
   budget: Db;
   t: BankTransaction;
-  selectedTransactions: Map<Transaction, TransactionReconciliation | {amount: BigJsLibrary.BigJS, transactionAmountOverride?: boolean}>
+  selectedTransactions: Map<Transaction, TransactionReconciliation | {amount: Big, transactionAmountOverride?: boolean}>
   initialSelectedTransactions: Map<Transaction, TransactionReconciliation>
   transactionsUnreconciledCached: Transaction[];
   forceRefresh: boolean;
@@ -114,7 +114,7 @@ export class ViewBankTransactionModal {
     return this.selectedTransactions.has(transaction);
   }
 
-  reconcileAmount(transaction: Transaction): BigJsLibrary.BigJS {
+  reconcileAmount(transaction: Transaction): Big {
 
     if (this.selectedTransactions.has(transaction)) {
       // TODO: The case where an item is partially reconciled and there is some remaining, but it is selected
@@ -133,11 +133,11 @@ export class ViewBankTransactionModal {
     }
   }
 
-  reconciledTotal(): BigJsLibrary.BigJS {
+  reconciledTotal(): Big {
     return Array.from(this.selectedTransactions.values()).reduce((tot, o) => tot.plus(o.amount), new Big('0'));
   }
 
-  reconciledRemaining(): BigJsLibrary.BigJS {
+  reconciledRemaining(): Big {
     return this.t.amount.minus(this.reconciledTotal());
   }
 
