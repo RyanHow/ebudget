@@ -4,12 +4,15 @@
       <main-menu-icon></main-menu-icon>
     </button>
     <ion-title>{{account.name}}</ion-title>
+    <ion-buttons end>
+        <button ion-button icon-only (click)="toggleMultiSelect()"><ion-icon name="more"></ion-icon></button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 <ion-content class="bank-account-page">
   
-  <ion-list [virtualScroll]="transactionViewArray()" [headerFn]="transactionListDateHeader" approxHeaderHeight="44px" approxItemHeight="65px">
+  <ion-list class="reconciliation-list" [virtualScroll]="transactionViewArray()" [headerFn]="transactionListDateHeader" approxHeaderHeight="44px" approxItemHeight="65px">
 
     <div *virtualHeader="let t1; let i = index;" style="width: 100%">
       <ng-container *ngIf="i === 0">
@@ -27,17 +30,41 @@
         <button *ngIf="account.bankLinkId" ion-item (click)="goBankLink()">Go To Bank Link</button>
         <ion-item>TODO If account is syncing</ion-item>
         <ion-item>TODO Sync ONLY this account for the bank link</ion-item>
-        <button ion-item (click)="refreshData()">Refresh/Mod Data</button>      
+        <button ion-item detail-none (click)="refreshData()">Refresh/Mod Data</button>      
       </ng-container>
       <ion-item-divider  color="light">{{t1.date | dFormat}}</ion-item-divider>
     </div>
 
-    <button ion-item (click)="openTransaction(t)" *virtualItem="let t" >
-      <div item-left [class.unreconciled-marker]="!t.x.reconciled"></div>
-      <p style="white-space:normal">{{t.flagRemoved ? 'Removed: ' : ''}}{{t.description}}</p>
-      <ion-note *ngIf="t.status !== 'processed'">{{t.status}}</ion-note>
-      <currency-display item-right highlightPositive showPositive [value]="t.amount"></currency-display>
-    </button>
+    <ion-item-sliding *virtualItem="let t">
+      <button ion-item detail-none (click)="openTransaction(t)">
+        <ion-checkbox [(ngModel)]="selected[t.id]" item-left *ngIf="multiSelectEnabled"></ion-checkbox>
+        <div item-left class="reconciliation-marker" [class.unreconciled-marker]="!t.x.reconciled"></div>
+        <div item-content class="transaction-content">
+          <p class="transaction-description">{{t.flagRemoved ? 'Removed: ' : ''}}{{t.description}}</p>
+          <ion-note *ngIf="t.status !== 'processed'">{{t.status}}</ion-note>
+        </div>
+        <currency-display item-right highlightPositive showPositive [value]="t.amount"></currency-display>
+      </button>
+      <ion-item-options side="left" *ngIf="!multiSelectEnabled">
+        <button ion-button (click)="favorite(item)">Favorite</button>
+        <button ion-button color="danger" (click)="share(item)">Share</button>
+      </ion-item-options>
+  
+      <ion-item-options side="right" *ngIf="!multiSelectEnabled">
+        <button ion-button (click)="unread(item)">Unread</button>
+      </ion-item-options>
+    </ion-item-sliding>
   </ion-list>
 
 </ion-content>
+
+<ion-footer *ngIf="multiSelectEnabled">
+  <ion-toolbar>
+    <ion-buttons class="buttons-bar">          
+      <button ion-button icon-only (click)="selectAll()" *ngIf="!allSelected()"><ion-icon ios="ios-checkmark-circle" md="md-checkmark"></ion-icon></button>
+      <button ion-button icon-only (click)="unselectAll()" *ngIf="allSelected()"><ion-icon ios="ios-checkmark-circle-outline" md="md-checkmark-outline"></ion-icon></button>
+      <button ion-button icon-only (click)="deleteSelected()" [disabled]="!anySelected()"><ion-icon name="trash"></ion-icon></button>
+      <button ion-button icon-only (click)="ignoreSelected()" [disabled]="!anySelected()"><ion-icon name="archive"></ion-icon></button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

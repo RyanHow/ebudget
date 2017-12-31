@@ -11,6 +11,7 @@ import {StandardHostInterface} from '../../bank/standard-host-interface';
 import { BankTransaction } from '../../data/records/bank-transaction';
 import { ViewBankTransactionModal } from "../../modals/view-bank-transaction/view-bank-transaction";
 import { BankLinkPage } from "../bank-link/bank-link";
+import { Configuration } from "../../services/configuration-service";
 
 
 @Component({
@@ -27,14 +28,19 @@ export class BankAccountPage {
   transactionViewDummyData = [];
   transactionViewArrayData: BankTransaction[] = [];
   transactionViewArrayDataBlank: BankTransaction = new BankTransaction();
+  multiSelectEnabled: boolean;
+  selected: {};
   
   private logger = Logger.get('BankPage');
 
-  constructor(private nav: NavController, private dbms: Dbms, private navParams: NavParams, private engineFactory: EngineFactory, private modalController: ModalController, private bankSync: BankSync, private notifications: Notifications, private standardHostInterface: StandardHostInterface) {
+  constructor(private nav: NavController, private dbms: Dbms, private navParams: NavParams, private engineFactory: EngineFactory, private modalController: ModalController, private bankSync: BankSync, private notifications: Notifications, private standardHostInterface: StandardHostInterface, private configuration: Configuration) {
     this.engine = this.engineFactory.getEngineById(navParams.data.budgetId);
     this.account = this.engine.getRecordById(Account, navParams.data.accountId);
     this.bankTransactionTable = this.engine.db.transactionProcessor.table(BankTransaction);
     this.transactionView = <any> {data: function() {return this.transactionViewDummyData; }};
+    this.multiSelectEnabled = false;
+    this.selected = {};
+    // TODO: If ! touch enabled then start in multiselect mode?
   }
   
   goBankLink() {
@@ -72,11 +78,15 @@ export class BankAccountPage {
     this.transactionViewData = [];
   }
 
-  transactionViewArray() {
+  transactionViewArray(): BankTransaction[] {
     this.transactionViewArrayData.length = 0;
     this.transactionViewArrayData.push(... this.transactionViewDummyData);
     this.transactionViewArrayData.push(... this.transactionView.data());
     return this.transactionViewArrayData;
+  }
+
+  unreconciledTransactions(): BankTransaction[] {
+    return this.transactionView.data().filter(t => !t.x.reconciled)
   }
 
   openTransaction(t: BankTransaction) {
@@ -87,6 +97,27 @@ export class BankAccountPage {
   transactionListDateHeader(record, recordIndex, records) {
     if (recordIndex === 0 || record.date !== records[recordIndex-1].date) return record;
     return null;
+  }
+
+  toggleMultiSelect() {
+    this.multiSelectEnabled = !this.multiSelectEnabled;
+  }
+
+  selectAll() {
+    this.unselectAll();
+    this.unreconciledTransactions().forEach(t => this.selected[t.id] = true);
+  }
+
+  unselectAll() {
+    Object.keys(this.selected).forEach(key => this.selected[key] = false);
+  }
+
+  allSelected() {
+    return this.unreconciledTransactions().every(t => this.selected[t.id] === true);
+  }
+
+  anySelected() {
+    return this.unreconciledTransactions().some(t => this.selected[t.id] === true);    
   }
 
 }

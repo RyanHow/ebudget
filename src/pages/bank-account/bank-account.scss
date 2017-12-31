@@ -1,9 +1,34 @@
 .bank-account-page {
 
-    .unreconciled-marker {
+    .reconciliation-marker {
         width: 8px;
         height: 8px;
+    }
+    .unreconciled-marker {
         border-radius: 4px;
         background-color: #0099ff;
     }
+
+    .reconciliation-list .checkbox-md {
+        margin-right: 9px;
+    }
+
+    .transaction-description {
+        display: -webkit-box;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        height: 2.4em;
+    }
+
+    .transaction-content {
+        width: 100%;
+    }
+
+}
+
+.buttons-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
 }
