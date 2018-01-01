@@ -77,14 +77,26 @@
         <icon height="159" src="resources\wp8\icon\Background.png" width="159" />
         <splash height="1280" src="resources\wp8\splash\SplashScreenImage.png" width="768" />
     </platform>
-    <preference name="ScrollEnabled" value="false" />
+    <preference name="webviewbounce" value="false" />
+    <preference name="UIWebViewBounce" value="false" />
+    <preference name="DisallowOverscroll" value="true" />
     <preference name="android-minSdkVersion" value="16" />
+    <preference name="FullScreen" value="false" />
     <preference name="BackupWebStorage" value="none" />
     <preference name="SplashMaintainAspectRatio" value="true" />
     <preference name="FadeSplashScreenDuration" value="300" />
     <preference name="SplashShowOnlyFirstTime" value="false" />
     <preference name="SplashScreen" value="screen" />
-    <preference name="SplashScreenDelay" value="3000" />
+    <preference name="SplashScreenDelay" value="10000" />
+    <preference name="KeyboardDisplayRequiresUserAction" value="false" />
+    <preference name="Orientation" value="portrait" />
+    <preference name="CordovaWebViewEngine" value="CDVWKWebViewEngine" />
+    <feature name="CDVWKWebViewEngine">
+        <param name="ios-package" value="CDVWKWebViewEngine" />
+    </feature>
+    <feature name="StatusBar">
+        <param name="ios-package" onload="true" value="CDVStatusBar" />
+    </feature>
     <icon src="resources/android/icon/drawable-xhdpi-icon.png" />
     <allow-navigation href="http://192.168.2.62:8100" />
     <allow-navigation href="http://192.168.2.100:8100" />
@@ -92,6 +104,7 @@
     <plugin name="cordova-plugin-device" spec="^1.1.7" />
     <plugin name="cordova-plugin-inappbrowser" spec="^1.7.2" />
     <plugin name="cordova-plugin-splashscreen" spec="^4.1.0" />
+    <plugin name="cordova-plugin-statusbar" spec="^2.3.0" />
     <plugin name="cordova-plugin-whitelist" spec="^1.3.3" />
     <plugin name="cordova-sqlite-storage" spec="^2.1.2" />
     <plugin name="ionic-plugin-keyboard" spec="^2.2.1" />

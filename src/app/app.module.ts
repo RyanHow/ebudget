@@ -116,7 +116,7 @@ import { Status } from "../components/status/status";
   imports: [
     BrowserModule,
     HttpModule,
-    IonicModule.forRoot(App)
+    IonicModule.forRoot(App, { swipeBackEnabled: false })
   ],
   bootstrap: [IonicApp],
   entryComponents: [
