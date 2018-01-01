@@ -13,16 +13,40 @@
         margin-right: 9px;
     }
 
-    .transaction-description {
+    
+    .transaction-description-wrapper {
+        display: flex;
+        align-items: center;
+
+        /*
         display: -webkit-box;
-        overflow: hidden;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
-        height: 2.4em;
+        */
+    }
+
+    .transaction-description {
+        overflow: hidden;
+        max-height: 2.4em;
+    }
+
+    .transaction-item ion-label {
+        display: none;
     }
 
     .transaction-content {
         width: 100%;
+    }
+
+    .transaction-ignored {
+        .reconciliation-marker {
+            visibility: hidden;
+        }
+
+        .transaction-content {
+        }
+
+        opacity: 0.5;        
     }
 
 }

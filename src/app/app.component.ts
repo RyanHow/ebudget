@@ -38,6 +38,7 @@ import { Autofocus } from "../services/autofocus";
 import { DemoSetup } from "../demo/demo-setup";
 import { CreateBankLink } from "../data/transactions/create-bank-link";
 import { SetAccountBankLink } from "../data/transactions/set-account-bank-link";
+import { BankTransactionIgnore } from "../data/transactions/bank-transaction-ignore";
 
 @Component({
   templateUrl: 'app.html'
@@ -134,6 +135,7 @@ export class App {
     this.transactionSerializer.registerType(CreateTransactionReconciliation);
     this.transactionSerializer.registerType(CreateBankLink);
     this.transactionSerializer.registerType(SetAccountBankLink);
+    this.transactionSerializer.registerType(BankTransactionIgnore);
   }
 
   registerBankProviders() {

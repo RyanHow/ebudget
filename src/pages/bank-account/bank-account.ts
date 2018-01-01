@@ -1,4 +1,4 @@
-import {NavController, NavParams, ModalController} from 'ionic-angular';
+import {NavController, NavParams, ModalController, AlertController} from 'ionic-angular';
 import {Component} from '@angular/core';
 import {Dbms} from '../../db/dbms';
 import {Engine} from '../../engine/engine';
@@ -12,6 +12,7 @@ import { BankTransaction } from '../../data/records/bank-transaction';
 import { ViewBankTransactionModal } from "../../modals/view-bank-transaction/view-bank-transaction";
 import { BankLinkPage } from "../bank-link/bank-link";
 import { Configuration } from "../../services/configuration-service";
+import { BankTransactionIgnore } from "../../data/transactions/bank-transaction-ignore";
 
 
 @Component({
@@ -33,7 +34,7 @@ export class BankAccountPage {
   
   private logger = Logger.get('BankPage');
 
-  constructor(private nav: NavController, private dbms: Dbms, private navParams: NavParams, private engineFactory: EngineFactory, private modalController: ModalController, private bankSync: BankSync, private notifications: Notifications, private standardHostInterface: StandardHostInterface, private configuration: Configuration) {
+  constructor(private nav: NavController, private dbms: Dbms, private navParams: NavParams, private engineFactory: EngineFactory, private modalController: ModalController, private bankSync: BankSync, private notifications: Notifications, private standardHostInterface: StandardHostInterface, private configuration: Configuration, private alertController: AlertController) {
     this.engine = this.engineFactory.getEngineById(navParams.data.budgetId);
     this.account = this.engine.getRecordById(Account, navParams.data.accountId);
     this.bankTransactionTable = this.engine.db.transactionProcessor.table(BankTransaction);
@@ -119,5 +120,41 @@ export class BankAccountPage {
   anySelected() {
     return this.unreconciledTransactions().some(t => this.selected[t.id] === true);    
   }
+
+  ignoreItem(t: BankTransaction) {
+    let bti = new BankTransactionIgnore();
+    bti.bankTransactionId = t.id;
+    this.engine.db.applyTransaction(bti);
+  }
+
+  unignoreItem(t: BankTransaction) {
+    this.engine.db.transactionProcessor.findTransactionsForRecord(t, BankTransactionIgnore).forEach(bti => {
+      this.engine.db.deleteTransaction(bti);
+    });
+
+  }
+
+  deleteItem(t: BankTransaction) {
+    this.alertController.create({
+      message: 'Deleting is not yet implemented',
+      buttons: ['OK']
+    }).present();
+  }
+
+  deleteSelected() {
+    this.alertController.create({
+      message: 'Deleting is not yet implemented',
+      buttons: ['OK']
+    }).present();
+  }
+
+  ignoreSelected() {
+
+  }
+
+  unignoreSelected() {
+
+  }
+
 
 }
