@@ -5,7 +5,8 @@ var data = {
     to: 'ryan@bitworks.com.au',
     subject: 'New Android Build',
     text: 'New Android build attached',
-    attachment: "platforms/android/build/outputs/apk/debug/android-debug.apk"
+    //attachment: "platforms/android/build/outputs/apk/debug/android-debug.apk"
+    attachment: "platforms/android/build/outputs/apk/android-debug.apk"
 };
 
 console.log('Emailing android-debug.apk...');
