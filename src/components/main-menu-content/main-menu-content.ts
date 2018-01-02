@@ -31,7 +31,8 @@ export class MainMenuContent {
   @Input()
   menu: Menu;
   @Input()
-  nav: Nav;
+  public nav: Nav;
+  
   budgets: Db[];
   window: Window = window;
   markReadTimeout: number;

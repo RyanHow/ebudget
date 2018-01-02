@@ -14,7 +14,7 @@
         <button ion-button item-right outline [disabled]="!notifications.newNotifications.length" (click)="notifications.clear(3)" (press)="notifications.clear()">Clear</button><button ion-button item-right outline menuClose (click)="goNotifications()">Show All</button>
     </ion-item-divider>
     <ion-item *ngIf="!notifications.newNotifications.length"><ion-note>No New Notifications</ion-note></ion-item>
-    <notification-list *ngIf="notifications.newNotifications.length" new="true" limit="3"></notification-list>
+    <notification-list *ngIf="notifications.newNotifications.length" new="true" limit="3" [nav]="nav"></notification-list>
 </ion-item-group>
 <ion-item-group>
     <ion-item-divider light>

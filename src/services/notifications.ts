@@ -3,6 +3,8 @@ import {ToastController, Toast} from 'ionic-angular';
 import {Logger} from './logger';
 import {CurrencyFormatter} from './currency-formatter';
 
+type ClickActionType = 'custom' | 'page-nav';
+
 export class Notification {
     message: string;
     important?: boolean
@@ -16,7 +18,7 @@ export class Notification {
     read?: boolean;
     acknowledged?: boolean;
 
-    clickAction?: {type: 'custom'; action: any};
+    clickAction?: {type: ClickActionType; data: any};
 }
 
 

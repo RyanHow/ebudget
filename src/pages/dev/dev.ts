@@ -90,7 +90,7 @@ export class DevPage {
   }
 
   generateImportantNotification() {
-    this.notifications.show({message: "Notification at " + Date.now(), important: true, clickAction: {type: 'custom', action: () => alert('click!')}, category: 'dev.important'});
+    this.notifications.show({message: "Notification at " + Date.now(), important: true, clickAction: {type: 'custom', data: () => alert('click!')}, category: 'dev.important'});
   }
 
   removeImportantNotification() {

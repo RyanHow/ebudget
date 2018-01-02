@@ -4,6 +4,7 @@ import { Configuration } from "./configuration-service";
 import { EngineFactory } from "../engine/engine-factory";
 import { Dbms } from "../db/dbms";
 import { Engine } from "../engine/engine";
+import { BankAccountPage } from "../pages/bank-account/bank-account";
 
 @Injectable()
 export class ReconciliationStatus {
@@ -29,7 +30,18 @@ export class ReconciliationStatus {
     }
 
     notifyReconciliationChange(engine: Engine): any {
-        this.notifications.show({message: engine.bankTransactionUnreconciledDynamicView.data().length + ' bank transactions to reconcile', category: 'reconciliation-status', budgetId: engine.db.id});                
+
+        // TODO: Going to have to group and remember these by account!
+        // Or set up and manage a few views with where clauses and monitor each one, I wonder how good our "rebuild" is.
+        let accountId = engine.bankTransactionUnreconciledDynamicView.data().length > 0 ? engine.bankTransactionUnreconciledDynamicView.data()[0].accountId : null;
+        let clickAction = accountId != null ? {type: 'page-nav', data: {page: BankAccountPage, params: {budgetId: engine.db.id, accountId: accountId}}} : undefined;
+
+        this.notifications.show({
+            message: engine.bankTransactionUnreconciledDynamicView.data().length + ' bank transactions to reconcile',
+            category: 'reconciliation-status',
+            budgetId: engine.db.id,
+            clickAction: <any> clickAction
+        });
     }
 
 }

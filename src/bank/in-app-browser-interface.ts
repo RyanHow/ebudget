@@ -18,7 +18,7 @@ export class InAppBrowserInterface extends BrowserInterface {
                 important: true,
                 popup: true,
                 category: 'bank-sync.' + this.monitor.bankLink.uuid + '.interactive',
-                clickAction: {type: 'custom', action: () => this.confirmInteractive()}
+                clickAction: {type: 'custom', data: () => this.confirmInteractive()}
             });
         } else {
             super.startInteractive();
