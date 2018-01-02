@@ -4,6 +4,7 @@ import { Big } from 'big.js';
 import { TransactionReconciliation } from "../records/transaction-reconciliation";
 import { Transaction } from "../records/transaction";
 import { BankTransaction } from "../records/bank-transaction";
+import { Logger } from "../../services/logger";
 
 
 export class CreateTransactionReconciliation extends DbTransaction {
@@ -32,11 +33,21 @@ export class CreateTransactionReconciliation extends DbTransaction {
 
         let transactionTable = tp.table(Transaction);
         let transaction = transactionTable.by('id', <any> this.transactionId);
+        if (transaction == null) {
+            Logger.get('create-transaction-reconciliation').info('Trying to reconcile against deleted transaction. Skipping.');
+            return;
+        }
+
         if (!transaction.x.reconciliationRecords) transaction.x.reconciliationRecords = []; 
         transaction.x.reconciliationRecords.push(t);
 
         let bankTransactionTable = tp.table(BankTransaction);
         let bankTransaction = bankTransactionTable.by('id', <any> this.bankTransactionId);
+        if (bankTransaction == null) {
+            Logger.get('create-transaction-reconciliation').info('Trying to reconcile against deleted bank transaction. Skipping.');
+            return;
+        }
+            
         if (!bankTransaction.x.reconciliationRecords) bankTransaction.x.reconciliationRecords = []; 
         bankTransaction.x.reconciliationRecords.push(t);
         this.updateBankTransactionReconciliationFlags(bankTransaction);
