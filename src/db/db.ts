@@ -5,9 +5,13 @@ import {TransactionProcessor} from './transaction-processor';
 import {TransactionSerializer} from './transaction-serializer';
 import {Logger} from '../services/logger';
 import {ChunkedTask} from '../services/chunked-task';
+import { Observable } from "rxjs/Observable";
+import { Subscriber } from "rxjs/Subscriber";
+
+type DbEventType = 'transaction-applied' | 'transaction-undone' | 'db-activated' | 'db-deleted' | 'transaction-batch-start' | 'transaction-batch-end';
 
 export interface DbEvent {
-    eventName: 'transaction-applied' | 'transaction-undone' | 'db-activated' | 'db-deleted' | 'transaction-batch-start' | 'transaction-batch-end';
+    eventName: DbEventType;
     data?: {transaction?: DbTransaction, update?: boolean, originalTransaction?: DbTransaction};
     db?: Db;
 }
@@ -17,6 +21,10 @@ export interface DbEventListener {
 }
 
 export class Db {
+    private dbTransactionEventsObserver: Subscriber<DbEvent>;
+    private dbTransactionEventsObservable: Observable<DbEvent>;
+    private dbEventsObservable: Observable<DbEvent>;
+    private dbEventsObserver: Subscriber<DbEvent>;
 
     private logger: Logger = Logger.get('Db');
 
@@ -42,6 +50,10 @@ export class Db {
         this.transactions = this.loki.addCollection<DbTransaction>('transactions_' + this.id);
         this.transactions.ensureUniqueIndex('id');
         this.eventListeners = [];
+
+        this.dbEventsObservable = new Observable<DbEvent>(observer => this.dbEventsObserver = observer).share();
+        this.dbTransactionEventsObservable = new Observable<DbEvent>(observer => this.dbTransactionEventsObserver = observer).share();
+        
     }
 
     init(): Promise<void> {
@@ -267,6 +279,11 @@ export class Db {
     addEventListener(listener: DbEventListener) {
         this.eventListeners.push(listener);
     }
+
+    on(event: DbEventType): Observable<DbEvent> {
+        if (event === 'db-activated' || event === 'db-deleted') return this.dbEventsObservable.filter(dbEvent => dbEvent.eventName === event);
+        return this.dbTransactionEventsObservable.filter(dbEvent => dbEvent.eventName === event);
+    }
     
     deleteInternal() {
         this.fireEvent({eventName: 'db-deleted'});
@@ -278,6 +295,8 @@ export class Db {
 
         this.logger.debug(() => dbEvent);
         this.eventListeners.forEach((listener) => {listener(dbEvent)});
+        if (this.dbEventsObserver && dbEvent.eventName === 'db-activated' || dbEvent.eventName === 'db-deleted') this.dbEventsObserver.next(dbEvent);
+        else if (this.dbTransactionEventsObserver) this.dbTransactionEventsObserver.next(dbEvent);
     }
 
 

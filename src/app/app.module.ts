@@ -70,6 +70,7 @@ import { InAppBrowserInterfaceFactory } from "../bank/in-app-browser-interface-f
 import { BankLinkLocal } from "../bank/bank-link-local";
 import { BankAutoSync } from "../bank/bank-auto-sync";
 import { Status } from "../components/status/status";
+import { ReconciliationStatus } from "../services/reconciliation-status";
 
 @NgModule({
   declarations: [
@@ -110,8 +111,7 @@ import { Status } from "../components/status/status";
     MainMenuIcon,
     NotificationList,
     BankLinkPage,
-    AddEditBankLinkModal,
-
+    AddEditBankLinkModal
   ],
   imports: [
     BrowserModule,
@@ -178,8 +178,9 @@ import { Status } from "../components/status/status";
   Replication,
   DemoService,
   DemoSetup,
-  Autofocus]
+  Autofocus,
+  ReconciliationStatus]
 })
 export class AppModule {
-  constructor(updatedCheck: UpdatedCheck, updateCheck: UpdateCheck, bankAutoSync: BankAutoSync) {}
+  constructor(updatedCheck: UpdatedCheck, updateCheck: UpdateCheck, bankAutoSync: BankAutoSync, reconciliationStatus: ReconciliationStatus) {}
 }

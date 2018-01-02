@@ -7,11 +7,13 @@ import { Configuration } from '../services/configuration-service';
 import { Transaction } from "../data/records/transaction";
 import { Utils } from "../services/utils";
 import { BankLink } from "../data/records/bank-link";
+import { BankTransaction } from "../data/records/bank-transaction";
 
 export class Engine {
 
     categorySortedAlphabeticalDynamicView: LokiDynamicView<Category>;
     transactionUnreconciledDynamicView: LokiDynamicView<Transaction>;
+    bankTransactionUnreconciledDynamicView: LokiDynamicView<BankTransaction>;
     currentDate: string;
 
     constructor(public db: Db, notifications: Notifications, configuration: Configuration) {
@@ -43,6 +45,10 @@ export class Engine {
         this.transactionUnreconciledDynamicView = this.db.transactionProcessor.table(Transaction).addDynamicView("TransactionUnreconciled");
         this.transactionUnreconciledDynamicView.applyWhere(t => !t.x.reconciled);
         this.transactionUnreconciledDynamicView.applySimpleSort('date', true);
+
+        this.bankTransactionUnreconciledDynamicView = this.db.transactionProcessor.table(BankTransaction).addDynamicView("BankTransactionUnreconciled");
+        this.bankTransactionUnreconciledDynamicView.applyWhere(t => !t.x.reconciled && !t.x.ignored);
+        this.bankTransactionUnreconciledDynamicView.applySimpleSort('date', true);
 
         this.initMidnightWatch();
     }

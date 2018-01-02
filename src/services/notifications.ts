@@ -10,6 +10,8 @@ export class Notification {
     popup?: boolean;
     silent?: boolean;
 
+    budgetId?: string;
+
     popupDone?: boolean;
     read?: boolean;
     acknowledged?: boolean;

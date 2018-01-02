@@ -6,9 +6,13 @@ import Loki from 'lokijs';
 import {TransactionSerializer} from './transaction-serializer';
 import { Utils } from "../services/utils";
 import { Configuration } from "../services/configuration-service";
+import { Observable } from "rxjs/Observable";
+import { Subscriber } from "rxjs/Subscriber";
 
 @Injectable()
 export class Dbms {
+    private _dbInitialisedObservable: Observable<Db>;
+    private dbInitialisedObserver: Subscriber<Db>;
     
     private loki: Loki;
     private persistenceProvider: DbPersistenceProvider;
@@ -20,7 +24,7 @@ export class Dbms {
         this.persistenceProvider = persistenceProviderManager.provide();
         this.dbs = [];
         this.dbMap = new Map<string, Db>();
-
+        this._dbInitialisedObservable = new Observable<Db>(observer => this.dbInitialisedObserver = observer).share();
     }
     
     init(): Promise<void> {
@@ -46,6 +50,10 @@ export class Dbms {
     getDb(id: string): Db {
         return this.dbMap.get(id);
     }
+
+    dbInitialisedObservable(): Observable<Db> {
+        return this._dbInitialisedObservable;
+    }
     
     createDb(id?: string): Promise<Db> {
         
@@ -58,10 +66,16 @@ export class Dbms {
 
         if (!this.initialising) {
             return this.persistenceProvider.addDb(id).then(() => {
-                return db.init().then(() => db);
+                return db.init().then(() => {
+                    this.dbInitialisedObserver.next(db);
+                    return db;
+                });
             });
         } else {
-            return db.init().then(() => db);
+            return db.init().then(() => {
+                this.dbInitialisedObserver.next(db);
+                return db;
+            });
         }
 
     }
