@@ -35,9 +35,9 @@
       <ion-item-divider  color="light">{{t1.date | dFormat}}</ion-item-divider>
     </div>
 
-    <ion-item-sliding *virtualItem="let t" (ionSwipe)="!t.x.ignored ? ignoreItem(t) : unignoreItem(t)" class="transaction-item">
-      <button ion-item detail-none (click)="openTransaction(t)" [class.transaction-ignored]="t.x.ignored">
-        <ion-checkbox [(ngModel)]="selected[t.id]" item-left *ngIf="multiSelectEnabled"></ion-checkbox>
+    <ion-item-sliding *virtualItem="let t" class="transaction-item">
+      <button ion-item detail-none (click)="t.x.ignored ? null : openTransaction(t)" [disabled]="(multiSelectEnabled && t.x.reconciled) || (!multiSelectEnabled && t.x.ignored)" [class.transaction-ignored]="t.x.ignored">
+        <ion-checkbox [(ngModel)]="selected[t.id]" item-left *ngIf="multiSelectEnabled" [disabled]="t.x.reconciled"></ion-checkbox>
         <div item-left class="reconciliation-marker" [class.unreconciled-marker]="!t.x.reconciled" [class.reconciled-marker]="t.x.reconciled"></div>
         <div item-content class="transaction-content">
           <div class="transaction-description-wrapper">
@@ -48,7 +48,7 @@
         <currency-display item-right highlightPositive showPositive [value]="t.amount"></currency-display>
       </button>
       <ion-item-options side="left" *ngIf="!t.x.reconciled && !multiSelectEnabled">
-        <button ion-button expandable (click)="!t.x.ignored ? ignoreItem(t) : unignoreItem(t)"><ion-icon *ngIf="!t.x.ignored" name="eye-off"></ion-icon><ion-icon *ngIf="t.x.ignored" name="eye"></ion-icon></button>
+        <button ion-button (click)="!t.x.ignored ? ignoreItem(t) : unignoreItem(t)"><ion-icon *ngIf="!t.x.ignored" name="eye-off"></ion-icon><ion-icon *ngIf="t.x.ignored" name="eye"></ion-icon></button>
       </ion-item-options>
   
       <ion-item-options side="right" *ngIf="!t.x.reconciled && !multiSelectEnabled">
@@ -62,8 +62,8 @@
 <ion-footer *ngIf="multiSelectEnabled">
   <ion-toolbar>
     <ion-buttons class="buttons-bar">          
-      <button ion-button icon-only (click)="selectAll()" *ngIf="!allSelected()"><ion-icon ios="ios-checkmark-circle" md="md-checkmark"></ion-icon></button>
-      <button ion-button icon-only (click)="unselectAll()" *ngIf="allSelected()"><ion-icon ios="ios-checkmark-circle-outline" md="md-checkmark-outline"></ion-icon></button>
+      <button ion-button icon-only (click)="selectAll()" *ngIf="!allSelected()"><ion-icon ios="ios-checkmark-circle" md="md-checkbox"></ion-icon></button>
+      <button ion-button icon-only (click)="unselectAll()" *ngIf="allSelected()"><ion-icon ios="ios-checkmark-circle-outline" md="md-checkbox-outline"></ion-icon></button>
       <button ion-button icon-only (click)="deleteSelected()" [disabled]="!anySelected()"><ion-icon name="trash"></ion-icon></button>
       <button ion-button icon-only (click)="ignoreSelected()" [disabled]="!anySelected()"><ion-icon name="eye-off"></ion-icon></button>
       <button ion-button icon-only (click)="unignoreSelected()" [disabled]="!anySelected()"><ion-icon name="eye"></ion-icon></button>

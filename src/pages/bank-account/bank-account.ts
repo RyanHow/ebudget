@@ -149,11 +149,15 @@ export class BankAccountPage {
   }
 
   ignoreSelected() {
-
+    this.unreconciledTransactions()
+      .filter(t => this.selected[t.id] === true && !t.x.reconciled && !t.x.ignored)
+      .forEach(t => this.ignoreItem(t));
   }
 
   unignoreSelected() {
-
+    this.unreconciledTransactions()
+      .filter(t => this.selected[t.id] === true && !t.x.reconciled && t.x.ignored)
+      .forEach(t => this.unignoreItem(t));
   }
 
 

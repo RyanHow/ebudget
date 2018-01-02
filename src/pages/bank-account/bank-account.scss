@@ -39,14 +39,19 @@
     }
 
     .transaction-ignored {
+    
+        text-decoration: line-through;
+
         .reconciliation-marker {
             visibility: hidden;
         }
 
-        .transaction-content {
+        &:not([disabled]) {
+            .transaction-content, currency-display {
+                opacity: 0.5;        
+            }
         }
 
-        opacity: 0.5;        
     }
 
 }
