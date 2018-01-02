@@ -1,3 +1,4 @@
+cd ..
 xcopy /Y src\index_pwa.html www
 xcopy /Y src\favicon.ico www
 xcopy /Y src\assets\icon\* www
