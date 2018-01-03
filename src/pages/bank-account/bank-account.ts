@@ -13,6 +13,7 @@ import { ViewBankTransactionModal } from "../../modals/view-bank-transaction/vie
 import { BankLinkPage } from "../bank-link/bank-link";
 import { Configuration } from "../../services/configuration-service";
 import { BankTransactionIgnore } from "../../data/transactions/bank-transaction-ignore";
+import { BankTransactionDelete } from "../../data/transactions/bank-transaction-delete";
 
 
 @Component({
@@ -136,15 +137,35 @@ export class BankAccountPage {
 
   deleteItem(t: BankTransaction) {
     this.alertController.create({
-      message: 'Deleting is not yet implemented',
-      buttons: ['OK']
+      message: 'Deleting this bank transaction is irreversable. You only want to do this in the event of an error, otherwise "ignore" the transaction.',
+      buttons: [
+        'Cancel',
+        {
+          text: 'Delete',
+          cssClass: 'danger',
+          handler: () => this.doDeleteItem(t)
+        }
+      ]
     }).present();
+  }
+
+  doDeleteItem(t: BankTransaction) {
+    let btd = new BankTransactionDelete();
+    btd.bankTransactionId = t.id;
+    this.engine.db.applyTransaction(btd);
   }
 
   deleteSelected() {
     this.alertController.create({
-      message: 'Deleting is not yet implemented',
-      buttons: ['OK']
+      message: 'Deleting bank transactions is irreversable. You only want to do this in the event of an error, otherwise "ignore" the transaction.',
+      buttons: [
+        'Cancel',
+        {
+          text: 'Delete',
+          cssClass: 'danger',
+          handler: () =>  this.unreconciledTransactions().filter(t => this.selected[t.id] === true && !t.x.reconciled).forEach(t => this.doDeleteItem(t))
+        }
+      ]
     }).present();
   }
 

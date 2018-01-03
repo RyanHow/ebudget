@@ -39,6 +39,7 @@ import { DemoSetup } from "../demo/demo-setup";
 import { CreateBankLink } from "../data/transactions/create-bank-link";
 import { SetAccountBankLink } from "../data/transactions/set-account-bank-link";
 import { BankTransactionIgnore } from "../data/transactions/bank-transaction-ignore";
+import { BankTransactionDelete } from "../data/transactions/bank-transaction-delete";
 
 @Component({
   templateUrl: 'app.html'
@@ -136,6 +137,7 @@ export class App {
     this.transactionSerializer.registerType(CreateBankLink);
     this.transactionSerializer.registerType(SetAccountBankLink);
     this.transactionSerializer.registerType(BankTransactionIgnore);
+    this.transactionSerializer.registerType(BankTransactionDelete);
   }
 
   registerBankProviders() {
