@@ -35,7 +35,7 @@
       <ion-item-divider  color="light">{{t1.date | dFormat}}</ion-item-divider>
     </div>
 
-    <ion-item-sliding *virtualItem="let t" class="transaction-item">
+    <ion-item-sliding #slidingItem *virtualItem="let t" class="transaction-item">
       <button ion-item detail-none (click)="t.x.ignored ? null : openTransaction(t)" [disabled]="(multiSelectEnabled && t.x.reconciled) || (!multiSelectEnabled && t.x.ignored)" [class.transaction-ignored]="t.x.ignored">
         <ion-checkbox [(ngModel)]="selected[t.id]" item-left *ngIf="multiSelectEnabled" [disabled]="t.x.reconciled"></ion-checkbox>
         <div item-left class="reconciliation-marker" [class.unreconciled-marker]="!t.x.reconciled" [class.reconciled-marker]="t.x.reconciled"></div>
@@ -48,7 +48,7 @@
         <currency-display item-right highlightPositive showPositive [value]="t.amount"></currency-display>
       </button>
       <ion-item-options side="left" *ngIf="!t.x.reconciled && !multiSelectEnabled">
-        <button ion-button (click)="!t.x.ignored ? ignoreItem(t) : unignoreItem(t)"><ion-icon *ngIf="!t.x.ignored" name="eye-off"></ion-icon><ion-icon *ngIf="t.x.ignored" name="eye"></ion-icon></button>
+        <button ion-button (click)="!t.x.ignored ? ignoreItem(t, slidingItem) : unignoreItem(t, slidingItem)"><ion-icon *ngIf="!t.x.ignored" name="eye-off"></ion-icon><ion-icon *ngIf="t.x.ignored" name="eye"></ion-icon></button>
       </ion-item-options>
   
       <ion-item-options side="right" *ngIf="!t.x.reconciled && !multiSelectEnabled">

@@ -1,6 +1,7 @@
 import {DbTransaction, TransactionStringEnv} from '../../db/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
 import { BankTransaction } from "../records/bank-transaction";
+import { Logger } from "../../services/logger";
 
 export class BankTransactionIgnore extends DbTransaction {
 
@@ -18,6 +19,8 @@ export class BankTransactionIgnore extends DbTransaction {
             bankTransaction.x.ignored = true;
             bankTransactionTable.update(bankTransaction);
             tp.mapTransactionAndRecord(this, bankTransaction);
+        } else {
+            Logger.get('bank-transaction-ignore').info('Trying to ignore a non existant bank transaction... Skipping.');            
         }
 
     }
@@ -34,6 +37,8 @@ export class BankTransactionIgnore extends DbTransaction {
             //delete bankTransaction.x.ignored; Keep the property so we can bind to it
             bankTransactionTable.update(bankTransaction);
             tp.unmapTransactionAndRecord(this, bankTransaction);
+        } else {
+            Logger.get('bank-transaction-ignore').info('Trying to unignore a non existant bank transaction... Skipping.');            
         }
     }
 

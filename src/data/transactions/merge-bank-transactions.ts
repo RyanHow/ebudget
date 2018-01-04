@@ -97,16 +97,42 @@ export class MergeBankTransactions extends DbTransaction {
     }
 
     validateChecksum(tp: TransactionProcessor): boolean {
-        if (!this.checksum) return true;
+        if (!this.checksum || this.checksum.indexOf('_') > 0) return true;
         
-        let allData = tp.table(BankTransaction).chain().find({'accountId': <any> this.accountId}).data().filter(t => t.id < this.id * 100000);
-        let checksum = allData.filter(t => t.status === 'processed').length + "_" + allData.filter(t => t.status === 'authorised').length + "_" + allData.filter(t => t.status === 'recent').length;
+        // TODO: Make this more efficient than filtering all transactions... every time ?!?
+        let bankMergeTransactionsHistory = tp.db.sortedTransactions.data().filter(t => t.typeId === this.typeId && (<MergeBankTransactions> t).accountId === this.accountId && t.id < this.id);
+        let checksum = '0';
+        bankMergeTransactionsHistory.forEach(t => {
+            checksum = this.hashCode(t.id + checksum) + '';
+        });
+
         return this.checksum === checksum;
+
+        //let allData = tp.table(BankTransaction).chain().find({'accountId': <any> this.accountId}).data().filter(t => t.id < this.id * 100000);
+        //let checksum = allData.filter(t => t.status === 'processed').length + "_" + allData.filter(t => t.status === 'authorised').length + "_" + allData.filter(t => t.status === 'recent').length;
+        //return this.checksum === checksum;
+    }
+
+    hashCode(str): number {
+        var hash = 0;
+        for (var i = 0; i < str.length; i++) {
+            hash = ~~(((hash << 5) - hash) + str.charCodeAt(i));
+        }
+        return hash;
     }
 
     generateChecksum(tp: TransactionProcessor) {
-        let allData = tp.table(BankTransaction).chain().find({'accountId': <any> this.accountId}).data();
-        this.checksum = allData.filter(t => t.status === 'processed').length + "_" + allData.filter(t => t.status === 'authorised').length + "_" + allData.filter(t => t.status === 'recent').length;
+        let bankMergeTransactionsHistory = tp.db.sortedTransactions.data().filter(t => t.typeId === this.typeId && (<MergeBankTransactions> t).accountId === this.accountId);
+
+        let checksum = '0';
+        bankMergeTransactionsHistory.forEach(t => {
+            checksum = this.hashCode(t.id + checksum) + '';
+        });
+
+        this.checksum = checksum;
+
+        //let allData = tp.table(BankTransaction).chain().find({'accountId': <any> this.accountId}).data();
+        //this.checksum = allData.filter(t => t.status === 'processed').length + "_" + allData.filter(t => t.status === 'authorised').length + "_" + allData.filter(t => t.status === 'recent').length;
     }
 
     update(tp: TransactionProcessor) {

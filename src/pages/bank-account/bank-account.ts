@@ -1,4 +1,4 @@
-import {NavController, NavParams, ModalController, AlertController} from 'ionic-angular';
+import {NavController, NavParams, ModalController, AlertController, ItemSliding} from 'ionic-angular';
 import {Component} from '@angular/core';
 import {Dbms} from '../../db/dbms';
 import {Engine} from '../../engine/engine';
@@ -122,17 +122,18 @@ export class BankAccountPage {
     return this.unreconciledTransactions().some(t => this.selected[t.id] === true);    
   }
 
-  ignoreItem(t: BankTransaction) {
+  ignoreItem(t: BankTransaction, itemSliding?: ItemSliding) {
     let bti = new BankTransactionIgnore();
     bti.bankTransactionId = t.id;
     this.engine.db.applyTransaction(bti);
+    if (itemSliding)  itemSliding.close();
   }
 
-  unignoreItem(t: BankTransaction) {
+  unignoreItem(t: BankTransaction, itemSliding?: ItemSliding) {
     this.engine.db.transactionProcessor.findTransactionsForRecord(t, BankTransactionIgnore).forEach(bti => {
       this.engine.db.deleteTransaction(bti);
     });
-
+    if (itemSliding) itemSliding.close();
   }
 
   deleteItem(t: BankTransaction) {
