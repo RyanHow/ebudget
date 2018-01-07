@@ -4,12 +4,12 @@
     "display": "fullscreen",
     "icons": [
         {
-            "src": "/android-chrome-192x192.png?v=RyM9K0XY54",
+            "src": "/android-chrome-192x192.png?v=pgqo394kx5",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/android-chrome-512x512.png?v=RyM9K0XY54",
+            "src": "/android-chrome-512x512.png?v=pgqo394kx5",
             "sizes": "512x512",
             "type": "image/png"
         }
