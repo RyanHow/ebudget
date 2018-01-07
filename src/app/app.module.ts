@@ -71,6 +71,7 @@ import { BankLinkLocal } from "../bank/bank-link-local";
 import { BankAutoSync } from "../bank/bank-auto-sync";
 import { Status } from "../components/status/status";
 import { ReconciliationStatus } from "../services/reconciliation-status";
+import { AddEditSplitTransactionModal2, TransactionTypePopover } from "../modals/add-edit-split-transaction/add-edit-split-transaction-2";
 
 @NgModule({
   declarations: [
@@ -90,6 +91,7 @@ import { ReconciliationStatus } from "../services/reconciliation-status";
     AddEditCategoryModal,
     AddEditTransactionModal,
     AddEditSplitTransactionModal,
+    AddEditSplitTransactionModal2,
     AddEditSplitTransactionLineModal,
     AddEditSplitTransferModal,
     AddEditSplitTransferLineModal,
@@ -106,6 +108,7 @@ import { ReconciliationStatus } from "../services/reconciliation-status";
     DFormatPipe,
     MainMenuContent,
     CategoryPopover,
+    TransactionTypePopover,
     CFormatPipe,
     CuteProgressBar,
     MainMenuIcon,
@@ -136,6 +139,7 @@ import { ReconciliationStatus } from "../services/reconciliation-status";
     AddEditCategoryModal,
     AddEditTransactionModal,
     AddEditSplitTransactionModal,
+    AddEditSplitTransactionModal2,
     AddEditSplitTransactionLineModal,
     AddEditSplitTransferModal,
     AddEditSplitTransferLineModal,
@@ -144,6 +148,7 @@ import { ReconciliationStatus } from "../services/reconciliation-status";
     AddEditCategorySimpleWeeklyModal,
     ViewBankTransactionModal,
     CategoryPopover,
+    TransactionTypePopover,
     BankLinkPage,
     AddEditBankLinkModal
   ],

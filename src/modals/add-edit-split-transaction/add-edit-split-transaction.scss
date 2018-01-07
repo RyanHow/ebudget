@@ -3,4 +3,47 @@
     .reconcile-selected {
         background-color: blue;
     }
+
+    .transaction-type-label {
+        color: color($colors, primary);
+    }
+
+    .item-right {
+        order:10;
+        min-width:18px;
+        margin-right: 0;
+        padding-right: 14px;
+        padding-left: 14px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .account-select {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .datetime-md {
+        padding-left: 8px;
+    }
+
+    .datetime-ios {
+        padding-left: 0;
+    }
+
+    .blank-icon {
+        visibility: hidden;
+    }
+    
+}
+
+.toolbar-category-label {
+    text-align: right;
+    padding: 0 5px;
+    margin: 0 2px;
+    font-style: italic;
+}
+
+.extended-toolbar {
+    min-height: 0;
 }

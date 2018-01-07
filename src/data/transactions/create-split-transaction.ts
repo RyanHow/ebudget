@@ -3,7 +3,17 @@ import {Transaction as TransactionRecord} from '../records/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
 import { Big } from 'big.js';
 
-
+/**
+ * Think of this like multiple linked budget transactions. It is in a single DbTransaction
+ * so we can operate on it atomically - eg. delete the group of transactions, add it as a
+ * single group of transactions. They don't really make sense to have them reside individually.
+ * 
+ * For Example: A TV is purchased, but needs to be accounted for in multiple categories,
+ * or under multiple accounts. eg. a Cash payment and a bank account payment. This TV may
+ * also go under 2 different accounts (eg. some of it was to replace an old broken TV and
+ * comes under the maintenance, but it was an upgrade and some comes from savings).
+ * 
+ */
 export class CreateSplitTransaction extends DbTransaction {
 
     description: string;

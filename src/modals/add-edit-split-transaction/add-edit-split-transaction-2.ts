@@ -11,9 +11,9 @@ import { Big } from 'big.js';
 import {AddEditSplitTransactionLineModal} from './add-edit-split-transaction-line';
 
 @Component({
-  templateUrl: 'add-edit-split-transaction.html'
+  templateUrl: 'add-edit-split-transaction-2.html'
 })
-export class AddEditSplitTransactionModal {
+export class AddEditSplitTransactionModal2 {
 
   data: {
     expense: boolean;
@@ -88,6 +88,11 @@ export class AddEditSplitTransactionModal {
 
     }
     
+  }
+
+  showTypeToggle(event: any) {
+    let popover = this.popoverController.create(TransactionTypePopover, {parentPage: this});
+    popover.present({ev: event, duration: 100});
   }
 
 
@@ -180,5 +185,29 @@ export class AddEditSplitTransactionModal {
   }
 
 
+
+}
+
+
+@Component({
+  template: `
+    <ion-list>
+      <button ion-item detail-none (mouseup)="select('Expense')">Expense</button>
+      <button ion-item detail-none (mouseup)="select('Income')">Income</button>
+    </ion-list>
+  `
+})
+export class TransactionTypePopover {
+
+  private parentPage: AddEditSplitTransactionModal2;
+
+  constructor(private viewCtrl: ViewController) {
+    this.parentPage = <AddEditSplitTransactionModal2>viewCtrl.data.parentPage;
+  }
+
+  select(transactionType: string) {
+    this.parentPage.transactionType = transactionType;
+    this.viewCtrl.dismiss(undefined, undefined, {animate: false, duration: 0});
+  }
 
 }
