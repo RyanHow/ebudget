@@ -72,6 +72,7 @@ import { BankAutoSync } from "../bank/bank-auto-sync";
 import { Status } from "../components/status/status";
 import { ReconciliationStatus } from "../services/reconciliation-status";
 import { AddEditSplitTransactionModal2, TransactionTypePopover } from "../modals/add-edit-split-transaction/add-edit-split-transaction-2";
+import { AddEditSplitTransactionRoot } from "../modals/add-edit-split-transaction/add-edit-split-transaction-root";
 
 @NgModule({
   declarations: [
@@ -92,6 +93,7 @@ import { AddEditSplitTransactionModal2, TransactionTypePopover } from "../modals
     AddEditTransactionModal,
     AddEditSplitTransactionModal,
     AddEditSplitTransactionModal2,
+    AddEditSplitTransactionRoot,
     AddEditSplitTransactionLineModal,
     AddEditSplitTransferModal,
     AddEditSplitTransferLineModal,
@@ -140,6 +142,7 @@ import { AddEditSplitTransactionModal2, TransactionTypePopover } from "../modals
     AddEditTransactionModal,
     AddEditSplitTransactionModal,
     AddEditSplitTransactionModal2,
+    AddEditSplitTransactionRoot,
     AddEditSplitTransactionLineModal,
     AddEditSplitTransferModal,
     AddEditSplitTransferLineModal,

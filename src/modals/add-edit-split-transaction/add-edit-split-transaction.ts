@@ -9,6 +9,8 @@ import {Component} from '@angular/core';
 import {Utils} from '../../services/utils';
 import { Big } from 'big.js';
 import {AddEditSplitTransactionLineModal} from './add-edit-split-transaction-line';
+import { AddEditSplitTransactionModal2 } from "./add-edit-split-transaction-2";
+import { AddEditSplitTransactionRoot } from "./add-edit-split-transaction-root";
 
 @Component({
   templateUrl: 'add-edit-split-transaction.html'
@@ -41,8 +43,9 @@ export class AddEditSplitTransactionModal {
 
   showAccount: boolean = true;
   
-  constructor(private configuration: Configuration, private modalController: ModalController, public viewCtrl: ViewController, private navParams: NavParams, private engineFactory: EngineFactory, private nav: NavController, private alertController: AlertController, private popoverController: PopoverController) {
+  constructor(private configuration: Configuration, private modalController: ModalController, public viewCtrl: ViewController, private navParams: NavParams, private engineFactory: EngineFactory, private nav: NavController, private alertController: AlertController, private popoverController: PopoverController, private addEditSplitTransactionRoot: AddEditSplitTransactionRoot) {
     this.engine = engineFactory.getEngineById(navParams.data.budgetId);
+
     if (navParams.data.categoryId != null) {
       this.engine.getCategory(navParams.data.categoryId);
       this.category = this.engine.db.transactionProcessor.table(Category).by('id', navParams.data.categoryId);
@@ -138,7 +141,7 @@ export class AddEditSplitTransactionModal {
   }
   
   cancel() {
-    this.viewCtrl.dismiss();    
+    this.addEditSplitTransactionRoot.dismiss();
   }
   
   deleteTransactionConfirm() {
@@ -179,6 +182,8 @@ export class AddEditSplitTransactionModal {
     return new Big('0');
   }
 
-
+  goNext() {
+    this.nav.push(AddEditSplitTransactionModal2, this.navParams.data, {animate: false, minClickBlockDuration: 1, duration: 1});
+  }
 
 }

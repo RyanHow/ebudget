@@ -77,9 +77,18 @@ export class CreateTransactionReconciliation extends DbTransaction {
 
         let transactionTable = tp.table(Transaction);
         let transaction = transactionTable.by('id', <any> this.transactionId);
+        if (transaction == null) {
+            Logger.get('create-transaction-reconciliation').info('Trying to reconcile against deleted transaction. Skipping. TODO: Fix this in undo');
+            return;
+        }
+
 
         let bankTransactionTable = tp.table(BankTransaction);
         let bankTransaction = bankTransactionTable.by('id', <any> this.bankTransactionId);
+        if (bankTransaction == null) {
+            Logger.get('create-transaction-reconciliation').info('Trying to reconcile against deleted bank transaction. Skipping. TODO: Fix this in undo');
+            return;
+        }
         this.updateBankTransactionReconciliationFlags(bankTransaction);
         bankTransactionTable.update(bankTransaction);
 
@@ -99,12 +108,14 @@ export class CreateTransactionReconciliation extends DbTransaction {
 
         let transactionTable = tp.table(Transaction);
         let transaction = transactionTable.by('id', <any> this.transactionId);
+
         transaction.x.reconciliationRecords.splice(transaction.x.reconciliationRecords.indexOf(t), 1);
         this.updateTransactionReconciliationFlags(transaction);
         transactionTable.update(transaction);
 
         let bankTransactionTable = tp.table(BankTransaction);
         let bankTransaction = bankTransactionTable.by('id', <any> this.bankTransactionId);
+
         bankTransaction.x.reconciliationRecords.splice(bankTransaction.x.reconciliationRecords.indexOf(t), 1);
         this.updateBankTransactionReconciliationFlags(bankTransaction);
         bankTransactionTable.update(bankTransaction);

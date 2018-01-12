@@ -11,6 +11,7 @@
 
         <ion-buttons end>
             <button ion-button (click)="submit($event)" [disabled]="!form.valid">{{editing ? "Save" : "Create"}}</button>
+            <button ion-button (click)="goNext()">Next</button>
         </ion-buttons>
 
     </ion-toolbar>

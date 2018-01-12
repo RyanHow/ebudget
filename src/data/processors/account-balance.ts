@@ -6,6 +6,7 @@ import {Category} from '../records/category';
 import {Transaction} from '../records/transaction';
 import { Big } from 'big.js';
 import { Utils } from "../../services/utils";
+import { Logger } from "../../services/logger";
 
 export class AccountBalanceProcessor extends Processor {
     
@@ -30,7 +31,14 @@ export class AccountBalanceProcessor extends Processor {
         });
         let accountTransactions = <Transaction[]> <any> tp.table(Transaction).find({'accountId': this.account.id});
         this.account.balance = accountTransactions.filter(t => !t.status || (t.status === 'realised' && t.date >= currentDate)).reduce((total, transaction) => {
-
+            let c = categoriesMap.get(transaction.categoryId);
+            if (c == null) {
+                Logger.get('account-balance-processor').info("Category does not exist for category id " + transaction.categoryId + ". Creating a dummy category to calculate a balance and account balance");
+                c = new Category();
+                categoriesMap.set(transaction.categoryId, c);
+                if (!c.x.accountBalances) c.x.accountBalances = new Map<number, Big>();
+                c.x.accountBalances.clear();
+            }
             let accountBalances = categoriesMap.get(transaction.categoryId).x.accountBalances;
             let categoryTotal = accountBalances.get(transaction.accountId || null) || new Big("0")
             accountBalances.set(transaction.accountId || null, categoryTotal.minus(transaction.amount));

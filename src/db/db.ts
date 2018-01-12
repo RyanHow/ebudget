@@ -116,7 +116,7 @@ export class Db {
             this.activating = false;
             this.active = false;
             this.batchProcessing = false;
-            this.logger.error("Error activating db", reason);
+            this.logger.error("Error activating db", reason, reason.stack);
         });
 
         return p;
@@ -207,13 +207,23 @@ export class Db {
                 // Process transactions
                 if (this.active || this.activating) {
                     if (!transaction.applied) {
-                        transaction.apply(this.transactionProcessor);
+                        try {
+                            transaction.apply(this.transactionProcessor);
+                        } catch (err) {
+                            this.logger.info("Error applying transaction: Transaction info: " + JSON.stringify(transaction));
+                            throw err;
+                        }
                         transaction.applied = true;
                         
                     } else {
                         updated = true;
                         updatedOriginalTransaction = this.persistenceProvider.getTransaction(this.id, transaction.id); 
-                        transaction.update(this.transactionProcessor, updatedOriginalTransaction);
+                        try {
+                            transaction.update(this.transactionProcessor, updatedOriginalTransaction);
+                        } catch (err) {
+                            this.logger.info("Error updating transaction: Transaction info: " + JSON.stringify(transaction));
+                            throw err;
+                        }
                     }
                 }
                 if (!this.activating) {
@@ -269,7 +279,12 @@ export class Db {
     
     undoTransaction(transaction: DbTransaction) {
         if (!transaction.applied) return;
-        transaction.undo(this.transactionProcessor);
+        try {
+            transaction.undo(this.transactionProcessor);
+        } catch (err) {
+            this.logger.info("Error undoing transaction: Transaction info: " + JSON.stringify(transaction));
+            throw err;
+        }
         transaction.applied = false;
         this.fireEvent({eventName: 'transaction-undone', data: {transaction: transaction}});
     }
