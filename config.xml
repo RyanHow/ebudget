@@ -98,6 +98,6 @@
     <plugin name="cordova-plugin-secure-storage" spec="^2.6.8" />
     <plugin name="cordova-plugin-ionic-webview" spec="^1.1.16" />
     <plugin name="cordova-plugin-ios-non-exempt-encryption" spec="^1.0.0" />
-    <engine name="ios" spec="4.5.4" />
-    <engine name="android" spec="6.3.0" />
+    <engine name="android" spec="~6.3.0" />
+    <engine name="ios" spec="~4.5.4" />
 </widget>
