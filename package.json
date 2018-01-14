@@ -8,7 +8,7 @@
   "scripts": {
     "hard-clean": "rm -r node_modules && rm -r plugins && rm -r platforms && (cd www && rm -r *)",
     "cordova-check-plugins": "cordova-check-plugins --update=auto --target=config",
-    "pull:after": "npm install && npm prune && npm run cordova-check-plugins && rm -r platforms && ionic cordova platform add android && ionic cordova platform add ios",
+    "pull:after": "npm install && npm prune && npm run cordova-check-plugins && rm -r platforms && cordova platform add android && cordova platform add ios",
     "clean": "ionic-app-scripts clean",
     "version-patch": "npm version patch --no-git-tag-version",
     "version": "node scripts/sync-cordova-package-version.js",
