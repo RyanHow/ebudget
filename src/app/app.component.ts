@@ -41,6 +41,7 @@ import { SetAccountBankLink } from "../data/transactions/set-account-bank-link";
 import { BankTransactionIgnore } from "../data/transactions/bank-transaction-ignore";
 import { BankTransactionDelete } from "../data/transactions/bank-transaction-delete";
 import { AddEditSplitTransactionRoot } from "../modals/add-edit-split-transaction/add-edit-split-transaction-root";
+import { TransactionWizard } from "../modals/transaction-wizard/transaction-wizard";
 
 @Component({
   templateUrl: 'app.html'
@@ -120,7 +121,7 @@ export class App {
   registerEditorProviders() {
     this.editorProvider.registerModalProvider(new TransactionModalProvider(new InitCategoryTransferTransaction().getTypeId(), AddEditTransferModal));
     this.editorProvider.registerModalProvider(new TransactionModalProvider(new InitSimpleTransaction().getTypeId(), AddEditTransactionModal));
-    this.editorProvider.registerModalProvider(new TransactionModalProvider(new CreateSplitTransaction().getTypeId(), AddEditSplitTransactionRoot));
+    this.editorProvider.registerModalProvider(new TransactionModalProvider(new CreateSplitTransaction().getTypeId(), TransactionWizard));
     this.editorProvider.registerModalProvider(new TransactionModalProvider(new CreateSplitTransfer().getTypeId(), AddEditSplitTransferModal));
   }
 

@@ -18,6 +18,7 @@ import {AddEditSplitTransferModal} from '../../modals/add-edit-split-transfer/ad
 import {AddEditTransferModal} from '../../modals/add-edit-transfer/add-edit-transfer';
 import {Logger} from '../../services/logger';
 import {Configuration} from '../../services/configuration-service';
+import { TransactionWizard } from "../../modals/transaction-wizard/transaction-wizard";
 
 @Component({
   templateUrl: 'category.html'
@@ -105,8 +106,13 @@ export class CategoryPage {
   addSplitTransaction() {
     let modal = this.modalController.create(AddEditSplitTransactionModal, {budgetId: this.budget.id, categoryId: this.category.id});
     modal.present();
-
   }
+
+  addTransactionWizard() {
+    let modal = this.modalController.create('TransactionWizard', {budgetId: this.budget.id, categoryId: this.category.id});
+    modal.present();
+  }
+
 
   addSplitTransfer() {
     let modal = this.modalController.create(AddEditSplitTransferModal, {budgetId: this.budget.id, categoryId: this.category.id});
@@ -169,6 +175,7 @@ export class CategoryPage {
       <button ion-item detail-none (click)="close(categoryPage.editSimpleWeekly)">Weekly Amount</button>
       <button ion-item detail-none (click)="close(categoryPage.editCategory)">Edit / Delete Category</button>
       <button ion-item detail-none (click)="close(categoryPage.addTransaction)">New Transaction</button>
+      <button ion-item detail-none (click)="close(categoryPage.addTransactionWizard)">Transaction Wizard</button>
       <button *ngIf="configuration.optionBooleanAccessor('experimental.modals.show-split-transaction').value" ion-item detail-none (click)="close(categoryPage.addSplitTransaction)">New Split Transaction</button>
       <button *ngIf="configuration.optionBooleanAccessor('experimental.modals.show-split-transaction').value" ion-item detail-none (click)="close(categoryPage.addSplitTransfer)">New Split Transfer</button>
       <button ion-item detail-none (click)="close(categoryPage.addTransfer)">Transfer Funds</button>

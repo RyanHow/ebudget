@@ -1,0 +1,14 @@
+<ion-header>
+    <transaction-wizard-step-header [form]="form"></transaction-wizard-step-header>
+</ion-header>
+
+<ion-content class="transaction-wizard-description-step">
+    <div responsive-padding>
+        <form (submit)="submit($event)" novalidate #form="ngForm">
+            <ion-item>
+                <ion-icon name="pricetag" item-start></ion-icon>
+                <ion-input required type="text" placeholder="Enter a description" [(ngModel)]="datadescription" name="description" autofocus></ion-input>
+            </ion-item>
+        </form>
+    </div>
+</ion-content>

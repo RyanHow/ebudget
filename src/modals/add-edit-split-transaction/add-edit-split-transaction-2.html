@@ -1,24 +1,26 @@
 <ion-header>
-    <ion-toolbar>
+    <div>
+        <ion-toolbar>
 
-        <ion-buttons start>
-            <button ion-button (click)="cancel()">Cancel</button>
-        </ion-buttons>
+            <ion-buttons start>
+                <button ion-button (click)="cancel()">Cancel</button>
+            </ion-buttons>
 
-        <ion-title>
-            <div class="transaction-type-label" item-content (mousedown)="showTypeToggle($event)">{{transactionType}} <ion-icon name="arrow-dropdown"></ion-icon></div>            
-        </ion-title>
+            <ion-title>
+                <div class="transaction-type-label" item-content (mousedown)="showTypeToggle($event)">{{transactionType}} <ion-icon name="arrow-dropdown"></ion-icon></div>            
+            </ion-title>
 
-        <ion-buttons end>
-            <button ion-button (click)="submit($event)" [disabled]="!form.valid">{{editing ? "Save" : "Create"}}</button>
-        </ion-buttons>
+            <ion-buttons end>
+                <button ion-button (click)="submit($event)" [disabled]="!form.valid">{{editing ? "Save" : "Create"}}</button>
+            </ion-buttons>
 
-    </ion-toolbar>
-    <ion-toolbar class="extended-toolbar">
-        <div class="toolbar-category-label">
-            in {{category?.name}}
-        </div>
-    </ion-toolbar>
+        </ion-toolbar>
+        <ion-toolbar class="extended-toolbar">
+            <div class="toolbar-category-label">
+                in {{category?.name}}
+            </div>
+        </ion-toolbar>
+    </div>
 </ion-header>
 
 <ion-content class="add-edit-split-transaction-modal">

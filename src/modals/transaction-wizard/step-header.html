@@ -1,0 +1,20 @@
+<ion-toolbar>
+    <ion-buttons start>
+        <button ion-button (click)="cancel()">Cancel</button>
+    </ion-buttons>
+
+    <ion-title>
+        {{transactionType}}     
+    </ion-title>
+
+    <ion-buttons end>
+        <button ion-button (click)="submit($event)" [disabled]="!form.valid">{{editing ? "Save" : "Create"}}</button>
+        <button ion-button (click)="goNext()">Next</button>
+    </ion-buttons>
+
+</ion-toolbar>
+<ion-toolbar class="extended-toolbar">
+    <div class="toolbar-category-label">
+        in {{category?.name}}
+    </div>
+</ion-toolbar>
