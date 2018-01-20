@@ -121,7 +121,7 @@ export class App {
   registerEditorProviders() {
     this.editorProvider.registerModalProvider(new TransactionModalProvider(new InitCategoryTransferTransaction().getTypeId(), AddEditTransferModal));
     this.editorProvider.registerModalProvider(new TransactionModalProvider(new InitSimpleTransaction().getTypeId(), AddEditTransactionModal));
-    this.editorProvider.registerModalProvider(new TransactionModalProvider(new CreateSplitTransaction().getTypeId(), TransactionWizard));
+    this.editorProvider.registerModalProvider(new TransactionModalProvider(new CreateSplitTransaction().getTypeId(), 'TransactionWizard'));
     this.editorProvider.registerModalProvider(new TransactionModalProvider(new CreateSplitTransfer().getTypeId(), AddEditSplitTransferModal));
   }
 

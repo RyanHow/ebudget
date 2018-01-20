@@ -3,12 +3,12 @@
     <transaction-wizard-step-header [form]="form"></transaction-wizard-step-header>
 </ion-header>
 
-<ion-content class="transaction-wizard-description-step">
+<ion-content class="transaction-wizard-amount-step">
     <div responsive-padding>
         <form (submit)="$event.preventDefault();wizard.next();" novalidate #form="ngForm">
             <ion-item>
-                <ion-icon name="pricetag" item-start></ion-icon>
-                <ion-input required type="text" placeholder="Enter a description" [(ngModel)]="data.description" name="description"></ion-input>
+                <ion-icon item-start>$</ion-icon>
+                <ion-input required currency-field [(ngModel)]="data.lines[0].amount" name="amount"></ion-input>
             </ion-item>
         </form>
     </div>

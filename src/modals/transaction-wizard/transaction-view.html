@@ -1,0 +1,38 @@
+<ion-header class="transaction-wizard-header">
+    <ion-toolbar>
+        <ion-buttons left>        
+            <button *ngIf="platform.is('android')" ion-button icon-only (click)="wizard.dismiss()"><ion-icon name="close"></ion-icon></button>
+            <button *ngIf="!platform.is('android')" ion-button icon-only (click)="wizard.dismiss()">Cancel</button>
+        </ion-buttons>
+            
+        <ion-title>
+            {{data.transactionType}}
+        </ion-title>
+
+        <ion-buttons end>
+            <button ion-button *ngIf="data.dirty || !data.editing" (click)="wizard.done()">{{data.editing ? 'Save' : 'Create'}}</button>
+            <button ion-button icon-only *ngIf="data.editing" (click)="more($event)"><ion-icon name="more"></ion-icon></button>
+        </ion-buttons>
+
+    </ion-toolbar>
+
+    <ion-toolbar class="extended-toolbar">
+        <div class="toolbar-category-label">
+            in {{data.category?.name}}
+        </div>
+    </ion-toolbar>
+
+</ion-header>
+
+<ion-content class="transaction-wizard-view-page">
+    <div responsive-padding>
+        <ion-item>
+            <ion-icon name="pricetag" item-start></ion-icon>
+            <ion-label>{{data.description}}</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-icon item-start>$</ion-icon>
+            <ion-label><currency-display [value]="data.lines[0].amount"></currency-display></ion-label>
+        </ion-item>
+    </div>
+</ion-content>

@@ -1,4 +1,4 @@
-transaction-wizard-step-header {
+transaction-wizard-step-header, .transaction-wizard-header {
 
     .toolbar-category-label {
         text-align: right;
@@ -10,5 +10,17 @@ transaction-wizard-step-header {
     .extended-toolbar {
         min-height: 0;
     }
-    
+
+    .custom-header-spacer {
+        min-height: 0 !important;
+        max-height: 0 !important;
+        padding: 0 !important;
+
+        &.toolbar-ios.statusbar-padding {
+            padding-top: 20px !important;
+            padding-top: constant(safe-area-inset-top) !important;
+            padding-top: env(safe-area-inset-top) !important;
+        }
+    }
+
 }

@@ -12,17 +12,15 @@
 <ion-content class="category-page">
   <replication-error></replication-error>
 
-  <!--
   <ion-fab right bottom>
-    <button ion-fab color="primary"><ion-icon name="add"></ion-icon></button>
-    <ion-fab-list side="top">
+    <button ion-fab color="primary" mini (click)="addTransactionWizard()"><ion-icon name="add"></ion-icon></button>
+    <!--<ion-fab-list side="top">
       <button ion-fab><ion-icon name="logo-facebook"></ion-icon></button>
       <button ion-fab><ion-icon name="logo-twitter"></ion-icon></button>
       <button ion-fab><ion-icon name="logo-vimeo"></ion-icon></button>
       <button ion-fab><ion-icon name="logo-googleplus"></ion-icon></button>
-    </ion-fab-list>
+    </ion-fab-list>-->
   </ion-fab>  
-  -->
 
   <ion-list>
     <button ion-item detail-none (click)="editSimpleWeekly()">

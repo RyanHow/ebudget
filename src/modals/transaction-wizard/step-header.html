@@ -1,20 +1,22 @@
 <ion-toolbar>
-    <ion-buttons start>
-        <button ion-button (click)="cancel()">Cancel</button>
+    <ion-buttons left>        
+        <button *ngIf="platform.is('android')" ion-button icon-only (click)="wizard.dismiss()"><ion-icon name="close"></ion-icon></button>
+        <button *ngIf="!platform.is('android')" ion-button icon-only (click)="wizard.dismiss()">Cancel</button>
     </ion-buttons>
 
     <ion-title>
-        {{transactionType}}     
+        {{data.transactionType}}     
     </ion-title>
 
     <ion-buttons end>
-        <button ion-button (click)="submit($event)" [disabled]="!form.valid">{{editing ? "Save" : "Create"}}</button>
-        <button ion-button (click)="goNext()">Next</button>
+        <button ion-button (click)="wizard.back()" *ngIf="wizard.canGoBack()">Back</button>
+        <button ion-button (click)="wizard.next()" [disabled]="form && !form.valid">Next</button>
     </ion-buttons>
 
 </ion-toolbar>
+
 <ion-toolbar class="extended-toolbar">
     <div class="toolbar-category-label">
-        in {{category?.name}}
+        in {{data.category?.name}}
     </div>
 </ion-toolbar>

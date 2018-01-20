@@ -1,5 +1,7 @@
 import {Component, Input} from '@angular/core';
 import { TransactionWizard } from "./transaction-wizard";
+import { TransactionWizardDataModel } from "./transaction-data-model";
+import { Platform } from "ionic-angular";
 
 @Component({
   selector: 'transaction-wizard-step-header',
@@ -9,12 +11,13 @@ export class TransactionWizardStepHeader {
 
     @Input()
     form: any;
+    data: TransactionWizardDataModel;
 
-    constructor(private transactionWizard: TransactionWizard) {
-
+    constructor(private wizard: TransactionWizard, private platform: Platform) {
+        this.data = wizard.data;
     }
 
     cancel() {
-        this.transactionWizard.dismiss();
+        this.wizard.dismiss();
     }
 }

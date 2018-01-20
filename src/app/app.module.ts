@@ -44,13 +44,10 @@ import {CurrencyFormatter} from '../services/currency-formatter';
 import {Notifications} from '../services/notifications';
 import {TransactionSerializer} from '../db/transaction-serializer';
 import {EngineFactory} from '../engine/engine-factory';
-import {CurrencyField} from '../components/currency-field';
 import {NoFocusDirective} from '../components/no-focus';
 import {ErrorLabel} from '../components/error-label';
 import {ReplicationErrorDisplay} from '../components/replication-error-display';
-import {CurrencyDisplay} from '../components/currency-display';
 import {DFormatPipe} from '../components/date-format';
-import {CFormatPipe} from '../components/currency-format';
 import {CuteProgressBar} from '../components/cute-progress-bar';
 import {SplashScreen} from '@ionic-native/splash-screen';
 import {StatusBar} from '@ionic-native/status-bar';
@@ -73,6 +70,7 @@ import { Status } from "../components/status/status";
 import { ReconciliationStatus } from "../services/reconciliation-status";
 import { AddEditSplitTransactionModal2, TransactionTypePopover } from "../modals/add-edit-split-transaction/add-edit-split-transaction-2";
 import { AddEditSplitTransactionRoot } from "../modals/add-edit-split-transaction/add-edit-split-transaction-root";
+import { SharedModule } from "./shared.module";
 
 @NgModule({
   declarations: [
@@ -101,17 +99,14 @@ import { AddEditSplitTransactionRoot } from "../modals/add-edit-split-transactio
     AddEditAccountModal,
     AddEditCategorySimpleWeeklyModal,
     ViewBankTransactionModal,
-    CurrencyField,
     Status,
     NoFocusDirective,
     ErrorLabel,
     ReplicationErrorDisplay,
-    CurrencyDisplay,
     DFormatPipe,
     MainMenuContent,
     CategoryPopover,
     TransactionTypePopover,
-    CFormatPipe,
     CuteProgressBar,
     MainMenuIcon,
     NotificationList,
@@ -121,7 +116,8 @@ import { AddEditSplitTransactionRoot } from "../modals/add-edit-split-transactio
   imports: [
     BrowserModule,
     HttpModule,
-    IonicModule.forRoot(App, { swipeBackEnabled: false })
+    IonicModule.forRoot(App, { swipeBackEnabled: false }),
+    SharedModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
