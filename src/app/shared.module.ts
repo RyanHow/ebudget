@@ -1,11 +1,13 @@
 import { NgModule, ErrorHandler } from '@angular/core';
 import { CurrencyField } from "../components/currency-field";
 import { CurrencyDisplay } from "../components/currency-display";
+import { CFormatPipe } from "../components/currency-format";
 
 @NgModule({
   declarations: [
     CurrencyField,
-    CurrencyDisplay
+    CurrencyDisplay,
+    CFormatPipe
   ],
   imports: [
   ],
@@ -13,7 +15,8 @@ import { CurrencyDisplay } from "../components/currency-display";
   ],
   exports: [
     CurrencyField,
-    CurrencyDisplay
+    CurrencyDisplay,
+    CFormatPipe
   ]
 })
 export class SharedModule {

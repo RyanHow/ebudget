@@ -36,13 +36,18 @@ $colors: (
 // App iOS Variables
 // --------------------------------------------------
 // iOS only Sass variables can go here
-
+.md .ios-only {
+  display: none;
+}
 
 
 
 // App Material Design Variables
 // --------------------------------------------------
 // Material Design only Sass variables can go here
+.ios .md-only {
+  display: none;
+}
 
 
 

@@ -8,6 +8,7 @@ import { Transaction } from "../../data/records/transaction";
 import { EngineFactory } from "../../engine/engine-factory";
 import { TransactionWizardDataModel } from "./transaction-data-model";
 import { Big } from 'big.js';
+import { TransactionWizardPage } from "./transaction-wizard-page";
 
 @IonicPage()
 @Component({
@@ -22,6 +23,7 @@ export class TransactionWizard {
 
     data: TransactionWizardDataModel;
 
+    currentPage: TransactionWizardPage;
 
     showAccount: boolean = true;
 
@@ -131,15 +133,20 @@ export class TransactionWizard {
             'TransactionWizardAmountStep'
         ]
 
-        if (this.nav.getActive().name === 'TransactionWizardDescriptionStep') {
-            this.nav.push('TransactionWizardAmountStep', this.modalPageParams); 
+        if (this.currentPage.static_name === 'TransactionWizardDescriptionStep') {
+            this.navPush('TransactionWizardAmountStep'); 
         } else {
-            this.nav.setRoot('TransactionWizardViewPage', this.modalPageParams); 
+            this.navRoot('TransactionWizardViewPage'); 
         }
 
+    }
 
+    navPush(page: string): Promise<any> {
+        return this.nav.push(page, this.modalPageParams, {animate: false});
+    }
 
-
+    navRoot(page: string): Promise<any> {
+        return this.nav.setRoot(page, this.modalPageParams);
     }
 
     back() {
@@ -150,7 +157,4 @@ export class TransactionWizard {
         return this.nav.canGoBack();
     }
     
-    currentPage() {
-        this.nav.getActive().component;
-    }
 }

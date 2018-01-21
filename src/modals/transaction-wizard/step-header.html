@@ -1,7 +1,7 @@
 <ion-toolbar>
     <ion-buttons left>        
-        <button *ngIf="platform.is('android')" ion-button icon-only (click)="wizard.dismiss()"><ion-icon name="close"></ion-icon></button>
-        <button *ngIf="!platform.is('android')" ion-button icon-only (click)="wizard.dismiss()">Cancel</button>
+        <button class="md-only" ion-button icon-only (click)="wizard.dismiss()"><ion-icon name="close"></ion-icon></button>
+        <button class="ios-only" ion-button icon-only (click)="wizard.dismiss()">Cancel</button>
     </ion-buttons>
 
     <ion-title>

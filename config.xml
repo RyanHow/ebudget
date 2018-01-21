@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.ebudgetapp.live" version="0.0.140" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.ebudgetapp.live" version="0.0.141" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>eBudget</name>
     <description>eBudget Live Budgeting</description>
     <author email="ryan@bitworks.com.au" href="http://www.bitworks.com.au/">BitWorks</author>
@@ -98,6 +98,6 @@
     <plugin name="cordova-plugin-secure-storage" spec="^2.6.8" />
     <plugin name="cordova-plugin-ionic-webview" spec="^1.1.16" />
     <plugin name="cordova-plugin-ios-non-exempt-encryption" spec="^1.0.0" />
-    <engine name="android" spec="~6.3.0" />
-    <engine name="ios" spec="~4.5.4" />
+    <engine name="ios" spec="^4.5.4" />
+    <engine name="android" spec="^6.3.0" />
 </widget>

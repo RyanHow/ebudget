@@ -24,7 +24,7 @@ export class TransactionWizardViewMenu {
 
   edit() {
     this.viewCtrl.dismiss(undefined, undefined, { animate: false, duration: 0 }).then(() => {
-      this.wizard.nav.push('TransactionWizardDescriptionStep', this.wizard.modalPageParams);
+      this.wizard.navPush('TransactionWizardDescriptionStep');
     });
     
   }

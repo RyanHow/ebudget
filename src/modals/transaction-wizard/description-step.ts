@@ -8,14 +8,19 @@ import { TransactionWizardDataModel } from "./transaction-data-model";
   templateUrl: 'description-step.html'
 })
 export class TransactionWizardDescriptionStep {
-    data: TransactionWizardDataModel;
 
-    constructor(private wizard: TransactionWizard, private elementRef: ElementRef) {
-      this.data = this.wizard.data;
+  public static_name = 'TransactionWizardDescriptionStep';
 
-    }
+  data: TransactionWizardDataModel;
 
-    ionViewDidEnter() {
-      setTimeout(() => this.elementRef.nativeElement.querySelector('input').focus(), 500);
-    }
+  constructor(private wizard: TransactionWizard, private elementRef: ElementRef) {
+    if (!this.wizard) return; // Allow for parameterless initialisation so we can get the static_name field above
+
+    this.data = this.wizard.data;
+  }
+
+  ionViewDidEnter() {
+    this.wizard.currentPage = this;
+    setTimeout(() => this.elementRef.nativeElement.querySelector('input').focus(), 500);
+  }
 }
