@@ -69,9 +69,8 @@ export class AddEditSplitTransactionModal {
       this.data.expense = this.transaction.amounts[0].amount.cmp(Big(0)) >= 0;
       this.data.amount = this.totalAmount().toString();
       this.data.description = this.transaction.description;
-      this.data.status = this.transaction.status;
       this.transaction.amounts.forEach(l => {
-        this.data.lines.push({categoryId: l.categoryId, amount: l.amount.times(this.data.expense ? 1 : -1)+"", accountId: l.accountId});
+        this.data.lines.push({categoryId: l.categoryId, amount: l.amount.times(this.data.expense ? 1 : -1)+""});
       });
     } else {
       this.editing = false;
@@ -121,7 +120,6 @@ export class AddEditSplitTransactionModal {
     
     t.date = Utils.toYYYYMMDDFromIonic(this.data.date);
     t.description = this.data.description;
-    t.status = this.data.status;
 
     // Always clear out the records in the transaction and not "merge" them
     // Our indexes should be preserved...
@@ -129,9 +127,7 @@ export class AddEditSplitTransactionModal {
     this.data.lines.forEach((line) => {
       t.amounts.push({
         categoryId: line.categoryId,
-        amount: new Big((line.amount || '0').replace(',', '')).times(this.data.expense ? 1 : -1),
-        accountId: Number(line.accountId)
-      });
+        amount: new Big((line.amount || '0').replace(',', '')).times(this.data.expense ? 1 : -1)      });
     });
 
 

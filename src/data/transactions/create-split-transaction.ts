@@ -17,14 +17,16 @@ import { Big } from 'big.js';
 export class CreateSplitTransaction extends DbTransaction {
 
     description: string;
-    status?: 'realised' | 'anticipated';
+//    status?: 'realised' | 'anticipated';
     date: string;
     amounts: Array<{
         amount: Big;
         categoryId: number;
-        accountId?: number;
-        status?: 'realised' | 'anticipated';
-        date?: string;
+    }>;
+    accountAmounts: Array<{
+        amount: Big;
+        accountId: number;
+
     }>;
 
     getTypeId(): string {
@@ -46,16 +48,20 @@ export class CreateSplitTransaction extends DbTransaction {
             let t = new TransactionRecord();
             t.id = this.id * 100000 + i;
             t.amount = this.amounts[i].amount;
-            t.date = this.amounts[i].date || this.date;
+            t.date = this.date;
             t.description = this.description;  
             t.categoryId = this.amounts[i].categoryId;
-            t.accountId = this.amounts[i].accountId;
+            //t.accountId = this.amounts[i].accountId;
             t.x.transactions = transactions;
-            t.status = this.amounts[i].status || this.status;
+            //t.status = this.amounts[i].status || this.status;
 
             transactions.push(t);
             table.insert(t);        
             tp.mapTransactionAndRecord(this, t);
+        }
+
+        if (this.accountAmounts) for (let i = 0; i < this.accountAmounts.length; i++) {
+            
         }
         
     }

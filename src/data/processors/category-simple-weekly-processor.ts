@@ -30,7 +30,7 @@ export class CategorySimpleWeeklyProcessor extends Processor {
         } catch (e) {
             throw e;
         }
-        this.category.balance = transactions.filter(t => !t.status || (t.status === 'realised' && t.date >= currentDate)).reduce((a, b) => {
+        this.category.balance = transactions.reduce((a, b) => {
             if (b.date < this.balanceDate) return a;
             return a.minus(b.amount);
         }, startBalance);

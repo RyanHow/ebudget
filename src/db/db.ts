@@ -210,7 +210,7 @@ export class Db {
                         try {
                             transaction.apply(this.transactionProcessor);
                         } catch (err) {
-                            this.logger.info("Error applying transaction: Transaction info: " + JSON.stringify(transaction));
+                            this.logger.info("Error applying transaction: Transaction info: ", transaction);
                             throw err;
                         }
                         transaction.applied = true;
@@ -221,7 +221,7 @@ export class Db {
                         try {
                             transaction.update(this.transactionProcessor, updatedOriginalTransaction);
                         } catch (err) {
-                            this.logger.info("Error updating transaction: Transaction info: " + JSON.stringify(transaction));
+                            this.logger.info("Error updating transaction: Transaction info: ", transaction);
                             throw err;
                         }
                     }

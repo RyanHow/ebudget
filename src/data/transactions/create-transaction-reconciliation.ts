@@ -128,13 +128,15 @@ export class CreateTransactionReconciliation extends DbTransaction {
     }
 
     updateTransactionReconciliationFlags(transaction: Transaction) {
-        let reconTotal = transaction.x.reconciliationRecords.reduce((tot, t) => tot.plus(t.amount), new Big('0'));
+        let reconTotal = (<TransactionReconciliation[]> transaction.x.reconciliationRecords).reduce((tot, t) => tot.plus(t.amount), new Big('0'));
         transaction.x.reconciled = reconTotal.eq(transaction.amount);
+        transaction.x.reconciledRemaining = transaction.amount.minus(reconTotal);
     }
 
     updateBankTransactionReconciliationFlags(bankTransaction: BankTransaction) {
-        let reconTotal = bankTransaction.x.reconciliationRecords.reduce((tot, t) => tot.minus(t.amount), new Big('0'));
+        let reconTotal = (<TransactionReconciliation[]> bankTransaction.x.reconciliationRecords).reduce((tot, t) => tot.minus(t.amount), new Big('0'));
         bankTransaction.x.reconciled = reconTotal.eq(bankTransaction.amount);
+        bankTransaction.x.reconciledRemaining = bankTransaction.amount.minus(reconTotal);
     }
     
     deserialize(field: string, value: any): any {

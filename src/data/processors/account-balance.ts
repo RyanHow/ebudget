@@ -30,7 +30,7 @@ export class AccountBalanceProcessor extends Processor {
             c.x.accountBalances.clear();
         });
         let accountTransactions = <Transaction[]> <any> tp.table(Transaction).find({'accountId': this.account.id});
-        this.account.balance = accountTransactions.filter(t => !t.status || (t.status === 'realised' && t.date >= currentDate)).reduce((total, transaction) => {
+        this.account.balance = accountTransactions.reduce((total, transaction) => {
             let c = categoriesMap.get(transaction.categoryId);
             if (c == null) {
                 Logger.get('account-balance-processor').info("Category does not exist for category id " + transaction.categoryId + ". Creating a dummy category to calculate a balance and account balance");

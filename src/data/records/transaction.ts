@@ -9,7 +9,6 @@ export class Transaction extends Record<Transaction> {
     public amount: Big;
     public categoryId: number;
     public accountId?: number;
-    public status?: 'realised' | 'anticipated';
 
     tableName(): string {
         return 'Transaction';

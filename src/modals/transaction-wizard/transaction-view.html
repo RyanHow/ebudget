@@ -11,7 +11,7 @@
 
         <ion-buttons end>
             <button ion-button *ngIf="data.dirty || !data.editing" (click)="wizard.done()">{{data.editing ? 'Save' : 'Create'}}</button>
-            <button ion-button icon-only *ngIf="data.editing" (click)="more($event)"><ion-icon name="more"></ion-icon></button>
+            <button ion-button icon-only (click)="more($event)"><ion-icon name="more"></ion-icon></button>
         </ion-buttons>
 
     </ion-toolbar>
@@ -35,4 +35,9 @@
             <ion-label><currency-display [value]="data.lines[0].amount"></currency-display></ion-label>
         </ion-item>
     </div>
+
+    <ion-fab *ngIf="false" top left edge>
+        <button ion-fab mini (click)="wizard.navPush('TransactionWizardDescriptionStep')"><ion-icon name="build"></ion-icon></button>
+    </ion-fab>
+
 </ion-content>

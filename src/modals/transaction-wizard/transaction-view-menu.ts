@@ -6,7 +6,7 @@ import { ViewController, IonicPage } from "ionic-angular";
 @Component({
   template: `
     <button ion-item detail-none no-lines (click)="edit()"><ion-icon item-start name="build"></ion-icon>Edit</button>
-    <button ion-item detail-none no-lines (click)="delete()"><ion-icon item-start name="trash"></ion-icon>Delete</button>
+    <button ion-item detail-none no-lines *ngIf="wizard.data.editing" (click)="delete()"><ion-icon item-start name="trash"></ion-icon>Delete</button>
   `
 })
 export class TransactionWizardViewMenu {
