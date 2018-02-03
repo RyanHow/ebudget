@@ -7,6 +7,9 @@ import { BankTransaction } from "../records/bank-transaction";
 import { Logger } from "../../services/logger";
 
 
+/**
+ * @deprecated Use ReconcilebankTransaction - this is here for legacy purposes
+ */
 export class CreateTransactionReconciliation extends DbTransaction {
 
     amount: Big;
@@ -49,7 +52,7 @@ export class CreateTransactionReconciliation extends DbTransaction {
         }
             
         if (!bankTransaction.x.reconciliationRecords) bankTransaction.x.reconciliationRecords = []; 
-        bankTransaction.x.reconciliationRecords.push(t);
+        bankTransaction.x.reconciliationRecords.push(<any> t);
         this.updateBankTransactionReconciliationFlags(bankTransaction);
         bankTransactionTable.update(bankTransaction);
 
@@ -116,7 +119,7 @@ export class CreateTransactionReconciliation extends DbTransaction {
         let bankTransactionTable = tp.table(BankTransaction);
         let bankTransaction = bankTransactionTable.by('id', <any> this.bankTransactionId);
 
-        bankTransaction.x.reconciliationRecords.splice(bankTransaction.x.reconciliationRecords.indexOf(t), 1);
+        bankTransaction.x.reconciliationRecords.splice(bankTransaction.x.reconciliationRecords.indexOf(<any> t), 1);
         this.updateBankTransactionReconciliationFlags(bankTransaction);
         bankTransactionTable.update(bankTransaction);
 
@@ -134,7 +137,7 @@ export class CreateTransactionReconciliation extends DbTransaction {
     }
 
     updateBankTransactionReconciliationFlags(bankTransaction: BankTransaction) {
-        let reconTotal = (<TransactionReconciliation[]> bankTransaction.x.reconciliationRecords).reduce((tot, t) => tot.minus(t.amount), new Big('0'));
+        let reconTotal = (<TransactionReconciliation[]> <any> bankTransaction.x.reconciliationRecords).reduce((tot, t) => tot.minus(t.amount), new Big('0'));
         bankTransaction.x.reconciled = reconTotal.eq(bankTransaction.amount);
         bankTransaction.x.reconciledRemaining = bankTransaction.amount.minus(reconTotal);
     }

@@ -1,7 +1,9 @@
 import {DbTransaction, TransactionStringEnv} from '../../db/transaction';
-import {Transaction as TransactionRecord} from '../records/transaction';
+import {Transaction} from '../records/transaction';
 import {TransactionProcessor} from '../../db/transaction-processor';
 import { Big } from 'big.js';
+import { AccountTransaction } from "../records/account-transaction";
+import { Logger } from "../../services/logger";
 
 /**
  * Think of this like multiple linked budget transactions. It is in a single DbTransaction
@@ -26,7 +28,6 @@ export class CreateSplitTransaction extends DbTransaction {
     accountAmounts: Array<{
         amount: Big;
         accountId: number;
-
     }>;
 
     getTypeId(): string {
@@ -35,34 +36,65 @@ export class CreateSplitTransaction extends DbTransaction {
 
     apply(tp: TransactionProcessor) {
 
-        // TODO: Validation
+        // TODO: Validation account amount total = category amount total
 
-        let table = tp.table(TransactionRecord);
+
+        let transactionTable = tp.table(Transaction);
+        let accountTransactionTable = tp.table(AccountTransaction);
         
-        // In the records, keep a list to all the other records, cached...
-        // TODO: Change this to a transaction group record?, can keep the total, etc on there, rather than just an array and totals in the cache if needed ?
-        // TODO: Also, technically, this shouldn't be in the cache. it can be well defined here and is always available...
-        let transactions = new Array<TransactionRecord>();
+        let categoryTotal = new Big('0');
+        let accountTotal = new Big('0');
+
 
         for (let i = 0; i < this.amounts.length; i++) {
-            let t = new TransactionRecord();
+            let t = new Transaction();
             t.id = this.id * 100000 + i;
             t.amount = this.amounts[i].amount;
             t.date = this.date;
             t.description = this.description;  
             t.categoryId = this.amounts[i].categoryId;
-            //t.accountId = this.amounts[i].accountId;
-            t.x.transactions = transactions;
-            //t.status = this.amounts[i].status || this.status;
 
-            transactions.push(t);
-            table.insert(t);        
+            transactionTable.insert(t);        
             tp.mapTransactionAndRecord(this, t);
+
+            categoryTotal = categoryTotal.plus(t.amount);
         }
 
         if (this.accountAmounts) for (let i = 0; i < this.accountAmounts.length; i++) {
-            
+            let t = new AccountTransaction();
+            t.id = this.id * 100000 + i;
+            t.amount = this.accountAmounts[i].amount;
+            t.date = this.date;
+            t.description = this.description;  
+            t.accountId = this.accountAmounts[i].accountId;
+
+            accountTransactionTable.insert(t);
+            tp.mapTransactionAndRecord(this, t);
+
+            accountTotal = accountTotal.plus(t.amount);
         }
+
+        if (accountTotal.gt(categoryTotal)) {
+            // TODO: Validation exception - account total cannot be greater than category total - don't process it, how to tell the user? - they need to acknowledge and then skip it next time ?
+            Logger.get('CreateSplitTransaction').info('Account Total > Category Total for transaction id ' + this.id);
+
+        } else if (accountTotal.lt(categoryTotal)) {
+
+            let accountDiff = categoryTotal.minus(accountTotal);
+
+            let t = new AccountTransaction();
+            t.id = this.id * 100000 + 99999;
+            t.amount = accountDiff
+            t.date = this.date;
+            t.description = this.description;  
+
+            accountTransactionTable.insert(t);
+            tp.mapTransactionAndRecord(this, t);
+
+            accountTotal = accountTotal.plus(t.amount);
+        }
+
+        
         
     }
 
@@ -75,10 +107,10 @@ export class CreateSplitTransaction extends DbTransaction {
     }
     
     undo(tp: TransactionProcessor) {
-        let table = tp.table(TransactionRecord);
+        let table = tp.table(Transaction);
 
         tp.findAllRecordsForTransaction(this).slice().forEach((t) => {            
-            table.remove(<TransactionRecord> t);
+            table.remove(<Transaction> t);
             tp.unmapTransactionAndRecord(this, t);
         });
     }
@@ -86,6 +118,11 @@ export class CreateSplitTransaction extends DbTransaction {
     
     deserialize(field: string, value: any): any {
         if (field === 'amounts') {
+            value.forEach(line => {
+                line.amount = new Big(line.amount);
+            });
+        }
+        if (field === 'accountAmounts') {
             value.forEach(line => {
                 line.amount = new Big(line.amount);
             });

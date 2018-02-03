@@ -12,15 +12,14 @@
 <ion-content class="category-page">
   <replication-error></replication-error>
 
-  <ion-fab right bottom>
-    <!--Long press ?-->
-    <button ion-fab color="primary" (click)="addTransactionWizard()"><ion-icon name="add"></ion-icon></button>
-    <!--<ion-fab-list side="top">
-      <button ion-fab><ion-icon name="logo-facebook"></ion-icon></button>
-      <button ion-fab><ion-icon name="logo-twitter"></ion-icon></button>
-      <button ion-fab><ion-icon name="logo-vimeo"></ion-icon></button>
-      <button ion-fab><ion-icon name="logo-googleplus"></ion-icon></button>
-    </ion-fab-list>-->
+  <ion-fab #fab right bottom>
+    <!--double tap ?-->
+    <button ion-fab color="primary" (click)="doubleTapAddTransactionWizard()" (press)="addTransactionWizard({transactionType: 'Expense'})"><ion-icon name="add"></ion-icon></button>
+    <ion-fab-list side="top">
+      <button ion-fab color="primary" (click)="fab.close(); addTransactionWizard({transactionType: 'Expense'})"><ion-icon name="add"></ion-icon></button>
+      <button ion-fab color="primary" (click)="fab.close(); addTransactionWizard({transactionType: 'Transfer'})"><ion-icon name="shuffle"></ion-icon></button>
+      <button ion-fab color="primary" (click)="fab.close(); addTransactionWizard({transactionType: 'Money In'})"><ion-icon name="download"></ion-icon></button>
+    </ion-fab-list>
   </ion-fab>  
 
   <ion-list>

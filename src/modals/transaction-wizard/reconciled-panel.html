@@ -1,0 +1,12 @@
+<ion-item *ngFor="let item of data.reconciliation">
+    <div item-content class="transaction-content">
+        <div class="transaction-description-wrapper">
+            <p class="transaction-description">
+                {{item.bankTransaction.description}}
+            </p>
+        </div>
+        <ion-note>{{item.bankTransaction.date | dFormat | lowercase}}</ion-note>
+        <ion-note *ngIf="item.bankTransaction.status !== 'processed'"><i>{{item.bankTransaction.status}}</i></ion-note>
+    </div>
+    <currency-display item-right highlightPositive showPositive [value]="item.bankTransaction.amount"></currency-display>
+</ion-item>

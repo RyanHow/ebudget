@@ -1,0 +1,58 @@
+#transactionWizardNav {
+    .bank-transaction-item {
+
+        .item-inner {
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+        ion-note {
+            font-size:0.9em;
+        }
+    }
+
+    .last-updated-footer {
+        font-size: 0.85em;
+
+        .icon-md::before {
+            transform: scale(0.8);
+        }
+    }
+
+    .no-bank-transactions-note {
+        text-align: center;
+        display: block;
+        font-size: 0.9em;
+    }
+
+    .bank-transaction-item ion-label {
+        display: none;
+    }
+
+}
+
+.spin {
+    animation-name: spin;
+    animation-duration: 500ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+
+    transition: tranform 1s;
+
+    animation-play-state: running;
+
+    &.paused {
+        animation-play-state: paused;        
+    }
+}
+
+
+
+@keyframes spin {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+}

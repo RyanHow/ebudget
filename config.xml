@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.ebudgetapp.live" version="0.0.144" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.ebudgetapp.live" version="0.0.145" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>eBudget</name>
     <description>eBudget Live Budgeting</description>
     <author email="ryan@bitworks.com.au" href="http://www.bitworks.com.au/">BitWorks</author>

@@ -19,7 +19,8 @@ export class BankAutoSync {
             setTimeout(() => {
                 this.log.info("Starting auto sync scheduler");
                 this.scheduleBankAutoSync();
-            }, 10000);
+                // TODO: Make sure this fires AFTER the repl completes
+            }, 2000);
         });
     }
 

@@ -4,6 +4,9 @@ import {TransactionProcessor} from '../../db/transaction-processor';
 import { Big } from 'big.js';
 
 
+/**
+ * @deprecated Use CreateSplitTransaction with 2 amounts that total in 0
+ */
 export class CreateSplitTransfer extends DbTransaction {
 
     description: string;

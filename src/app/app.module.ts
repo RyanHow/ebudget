@@ -47,7 +47,6 @@ import {EngineFactory} from '../engine/engine-factory';
 import {NoFocusDirective} from '../components/no-focus';
 import {ErrorLabel} from '../components/error-label';
 import {ReplicationErrorDisplay} from '../components/replication-error-display';
-import {DFormatPipe} from '../components/date-format';
 import {CuteProgressBar} from '../components/cute-progress-bar';
 import {SplashScreen} from '@ionic-native/splash-screen';
 import {StatusBar} from '@ionic-native/status-bar';
@@ -103,7 +102,6 @@ import { SharedModule } from "./shared.module";
     NoFocusDirective,
     ErrorLabel,
     ReplicationErrorDisplay,
-    DFormatPipe,
     MainMenuContent,
     CategoryPopover,
     TransactionTypePopover,

@@ -1,5 +1,6 @@
 import {Record} from '../../db/record';
 import { Big } from "big.js";
+import { BankTransactionReconciliation } from "./bank-transaction-reconciliation";
 
 export class BankTransaction extends Record<BankTransaction> {
     
@@ -12,6 +13,8 @@ export class BankTransaction extends Record<BankTransaction> {
     public status: 'recent' | 'authorised' | 'processed';
     public accountId: number;
     public flagRemoved: boolean;
+
+    public x : {reconciliationRecords: BankTransactionReconciliation[]; [keys: string]: any;}
 
     tableName(): string {
         return 'BankTransaction';

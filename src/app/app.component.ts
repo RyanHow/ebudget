@@ -42,6 +42,7 @@ import { BankTransactionIgnore } from "../data/transactions/bank-transaction-ign
 import { BankTransactionDelete } from "../data/transactions/bank-transaction-delete";
 import { AddEditSplitTransactionRoot } from "../modals/add-edit-split-transaction/add-edit-split-transaction-root";
 import { TransactionWizard } from "../modals/transaction-wizard/transaction-wizard";
+import { ReconcileBankTransaction } from "../data/transactions/reconcile-bank-transaction";
 
 @Component({
   templateUrl: 'app.html'
@@ -140,6 +141,7 @@ export class App {
     this.transactionSerializer.registerType(SetAccountBankLink);
     this.transactionSerializer.registerType(BankTransactionIgnore);
     this.transactionSerializer.registerType(BankTransactionDelete);
+    this.transactionSerializer.registerType(ReconcileBankTransaction);
   }
 
   registerBankProviders() {

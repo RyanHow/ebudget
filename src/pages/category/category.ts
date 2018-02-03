@@ -35,6 +35,8 @@ export class CategoryPage {
   transactionDisplayPageSize: number;
   engine: Engine;
 
+  lastDoubleTapAddTransactionWizard: number;
+
   @ViewChild(InfiniteScroll)
   infiniteScroll: InfiniteScroll;
 
@@ -108,8 +110,18 @@ export class CategoryPage {
     modal.present();
   }
 
-  addTransactionWizard() {
-    let modal = this.modalController.create('TransactionWizard', {budgetId: this.budget.id, categoryId: this.category.id});
+
+
+  doubleTapAddTransactionWizard() {
+    if (Date.now() - this.lastDoubleTapAddTransactionWizard < 800) {
+      this.addTransactionWizard({transactionType: 'Expense'});
+    } else {
+      this.lastDoubleTapAddTransactionWizard = Date.now();
+    }
+  }
+
+  addTransactionWizard(navParams?: any) {
+    let modal = this.modalController.create('TransactionWizard', {budgetId: this.budget.id, categoryId: this.category.id, ...navParams});
     modal.present();
   }
 

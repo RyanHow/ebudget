@@ -33,11 +33,12 @@ export class ViewBankTransactionModal {
     this.engine = engineFactory.getEngine(this.budget);
     this.t = this.budget.transactionProcessor.table(BankTransaction).by('id', navParams.data.bankTransactionId);
 
+    // TODO: This all needs redoing with the new reconciliation
     this.initialSelectedTransactions = new Map();
     if (this.t.x.reconciliationRecords) {
       this.t.x.reconciliationRecords.forEach(transactionReconciliation => {
-        let transaction = this.budget.transactionProcessor.table(Transaction).by('id', transactionReconciliation.transactionId);
-        this.initialSelectedTransactions.set(transaction, transactionReconciliation);
+        let transaction = this.budget.transactionProcessor.table(Transaction).by('id', (<any> transactionReconciliation).transactionId);
+        this.initialSelectedTransactions.set(transaction, (<any> transactionReconciliation));
       });
     }
 

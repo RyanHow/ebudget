@@ -3,11 +3,13 @@ import { IonicPageModule } from 'ionic-angular';
 import { SharedModule } from "../../app/shared.module";
 import { TransactionWizard } from "./transaction-wizard";
 import { TransactionWizardStepHeader } from "./step-header";
+import { ReconciledPanel } from "./reconciled-panel";
 
 @NgModule({
   declarations: [
     TransactionWizard,
-    TransactionWizardStepHeader
+    TransactionWizardStepHeader,
+    ReconciledPanel
   ],
   imports: [
     IonicPageModule.forChild(TransactionWizard),
@@ -15,7 +17,8 @@ import { TransactionWizardStepHeader } from "./step-header";
   ],
   exports: [
     TransactionWizard,
-    TransactionWizardStepHeader
+    TransactionWizardStepHeader,
+    ReconciledPanel
   ]
 })
 export class TransactionWizardModule {}

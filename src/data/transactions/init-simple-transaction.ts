@@ -4,6 +4,9 @@ import {TransactionProcessor} from '../../db/transaction-processor';
 import { Big } from 'big.js';
 
 
+/**
+ * @deprecated Use CreateSplitTransaction. This is here for legacy purposes
+ */
 export class InitSimpleTransaction extends DbTransaction {
 
     description: string;
