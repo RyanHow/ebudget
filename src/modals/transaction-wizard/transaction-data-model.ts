@@ -48,7 +48,7 @@ export class TransactionWizardDataModel {
         bankTransaction: BankTransaction;
         accountId: number; // This assumes we can only have 1 account transaction per account... that would be correct wouldn't it ?!?
         amount: Big;
-        transaction: ReconcileBankTransaction;
+        transaction?: ReconcileBankTransaction;
     }>;
 
 
