@@ -92,8 +92,9 @@ export class TransactionWizardStartStep implements TransactionWizardPage {
   }
 
   selectBankTransaction(bankTransaction: BankTransaction) {
-    this.data.lines[0].amount = bankTransaction.amount.toString();
-    this.data.accountLines.push({accountId: bankTransaction.accountId, amount: bankTransaction.amount.toString(), negative: this.data.negative});
+    this.data.lines[0].amount = bankTransaction.amount.abs().toString();
+    this.data.lines[0].negative = bankTransaction.amount.lt(0);
+    this.data.accountLines.push({accountId: bankTransaction.accountId, amount: bankTransaction.amount.abs().toString(), negative: bankTransaction.amount.lt(0)});
     this.data.reconciliation.push({bankTransaction: bankTransaction, accountId: bankTransaction.accountId, amount: bankTransaction.amount});
     this.wizard.next();
   }

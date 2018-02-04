@@ -37,7 +37,6 @@ export class TransactionWizard {
 
         this.data = new TransactionWizardDataModel();
         this.data.transactionType = 'Expense';
-        this.data.negative = true;
         this.data.lines = [];
         this.data.accountLines = [];
         this.data.reconciliation = [];
@@ -84,6 +83,7 @@ export class TransactionWizard {
         } else {
           this.data.editing = false;
           this.data.transactionType = this.navParams.data.transactionType || 'Expense';
+          this.data.negative = this.data.transactionType === 'Expense';
           this.data.date = Utils.toIonicFromYYYYMMDD(this.navParams.data.date || Utils.nowYYYYMMDD());
           this.data.description = this.navParams.data.description;
           this.data.lines.push({
@@ -117,7 +117,7 @@ export class TransactionWizard {
         this.data.lines.forEach((line) => {
           t.amounts.push({
             categoryId: line.categoryId,
-            amount: new Big((line.amount || '0').replace(',', '')).times(line.negative ? -1 : 0)
+            amount: new Big((line.amount || '0').replace(',', '')).times(line.negative ? 1 : -1) // Note: Negative is inverted here
           });
         });
     
@@ -126,7 +126,7 @@ export class TransactionWizard {
         this.data.accountLines.forEach((line) => {
             t.accountAmounts.push({
                 accountId: line.accountId,
-                amount: new Big((line.amount || '0').replace(',', '')).times(line.negative ? -1 : 0)
+                amount: new Big((line.amount || '0').replace(',', '')).times(line.negative ? 1 : -1) // Note: Negative is inverted here
             });
         });
 
