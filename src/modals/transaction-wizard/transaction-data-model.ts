@@ -9,6 +9,7 @@ import { EngineFactory } from "../../engine/engine-factory";
 import { Big } from "big.js";
 import { BankTransaction } from "../../data/records/bank-transaction";
 import { ReconcileBankTransaction } from "../../data/transactions/reconcile-bank-transaction";
+import stringify from 'json-stable-stringify';
 
 export class TransactionWizardDataModel {
 
@@ -24,11 +25,15 @@ export class TransactionWizardDataModel {
     engine: Engine;
     transaction: CreateSplitTransaction;
 
+    /**
+     * If the default for new "amounts" is a negative number. ie. expense
+     */
+    negative: boolean;
+
+
     // Actual data
     date: string;
     description: string;
-
-    negative: boolean;
 
     lines: Array<{
         categoryId: number;
@@ -41,6 +46,12 @@ export class TransactionWizardDataModel {
         amount: string;
         negative: boolean;
     }>;
+
+
+    /**
+     * A copy of the original data for dirty comparision
+     */
+    originalData: string;
 
     // TODO: Reconciliations - The records AND the transactions AND the changes, eg. adding, editing, removing - At the moment they are all "Adding"    
 
@@ -57,5 +68,27 @@ export class TransactionWizardDataModel {
         return this.lines.reduce((tot, line) => tot.plus(line.amount ? line.amount : 0), new Big(0));
     }
 
+    snapshotOriginal() {
+        this.originalData = this.stringifyData();
+    }
+
+    private stringifyData(): string {
+        let o = <any> {};
+        o.date = this.date;
+        o.description = this.description;
+        o.lines = this.lines;
+        o.accountLines = this.accountLines;        
+        return stringify(o);
+    }
+
+    isLocked(): boolean {
+        return this.editing && this.reconciliation.length > 0;
+    }
+
+    isDirty(): boolean {
+        if (!this.editing) return true;
+
+        return this.originalData !== this.stringifyData();
+    }
 
 }

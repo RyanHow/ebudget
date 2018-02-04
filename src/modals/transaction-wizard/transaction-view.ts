@@ -9,10 +9,12 @@ import { TransactionWizardPage } from "./transaction-wizard-page";
   templateUrl: 'transaction-view.html'
 })
 export class TransactionWizardViewPage implements TransactionWizardPage {
-    
+
     public static_name = 'TransactionWizardViewPage';
 
     data: TransactionWizardDataModel;
+
+    dirty: boolean;
 
     constructor(private wizard: TransactionWizard , private popoverController: PopoverController, private platform: Platform) {
       this.data = this.wizard.data;
@@ -25,6 +27,7 @@ export class TransactionWizardViewPage implements TransactionWizardPage {
 
     ionViewDidEnter() {
         this.wizard.currentPage = this;
+        this.dirty = this.data.isDirty();
     }
 
 }

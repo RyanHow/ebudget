@@ -62,11 +62,11 @@ export class TransactionWizard {
           this.data.description = this.data.transaction.description;
           
           this.data.transaction.amounts.forEach(l => {
-            this.data.lines.push({categoryId: l.categoryId, amount: l.amount.toString(), negative: l.amount.lt(0)});
+            this.data.lines.push({categoryId: l.categoryId, amount: l.amount.abs().toString(), negative: l.amount.gt(0)});
           });
 
           this.data.transaction.accountAmounts.forEach(l => {
-            this.data.accountLines.push({accountId: l.accountId, amount: l.amount.toString(), negative: l.amount.lt(0)});
+            this.data.accountLines.push({accountId: l.accountId, amount: l.amount.abs().toString(), negative: l.amount.gt(0)});
           });
 
           this.data.engine.db.transactionProcessor.findRecordsForTransaction(this.data.transaction, AccountTransaction).forEach(at => {
@@ -80,6 +80,8 @@ export class TransactionWizard {
           this.data.transactionType = this.data.total.eq(0) ? 'Transfer' : this.data.total.gt(0) ? 'Expense' : 'Money In';
           this.data.negative = this.data.transactionType === 'Expense';
           
+          this.data.snapshotOriginal();
+
         } else {
           this.data.editing = false;
           this.data.transactionType = this.navParams.data.transactionType || 'Expense';

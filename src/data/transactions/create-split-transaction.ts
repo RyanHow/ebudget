@@ -74,11 +74,11 @@ export class CreateSplitTransaction extends DbTransaction {
             accountTotal = accountTotal.plus(t.amount);
         }
 
-        if (accountTotal.gt(categoryTotal)) {
+        if (accountTotal.abs().gt(categoryTotal.abs())) {
             // TODO: Validation exception - account total cannot be greater than category total - don't process it, how to tell the user? - they need to acknowledge and then skip it next time ?
-            Logger.get('CreateSplitTransaction').info('Account Total > Category Total for transaction id ' + this.id);
+            Logger.get('CreateSplitTransaction').info('Account Total ' + accountTotal + ' > Category Total ' + categoryTotal + ' for transaction id ' + this.id);
 
-        } else if (accountTotal.lt(categoryTotal)) {
+        } else if (accountTotal.abs().lt(categoryTotal.abs())) {
 
             let accountDiff = categoryTotal.minus(accountTotal);
 
@@ -107,12 +107,20 @@ export class CreateSplitTransaction extends DbTransaction {
     }
     
     undo(tp: TransactionProcessor) {
-        let table = tp.table(Transaction);
+        let transactionTable = tp.table(Transaction);
 
-        tp.findAllRecordsForTransaction(this).slice().forEach((t) => {            
-            table.remove(<Transaction> t);
+        tp.findRecordsForTransaction(this, Transaction).slice().forEach((t) => {            
+            transactionTable.remove(t);
             tp.unmapTransactionAndRecord(this, t);
         });
+
+        let accountTransactionTable = tp.table(AccountTransaction);
+
+        tp.findRecordsForTransaction(this, AccountTransaction).slice().forEach((t) => {            
+            accountTransactionTable.remove(t);
+            tp.unmapTransactionAndRecord(this, t);
+        });
+
     }
 
     
