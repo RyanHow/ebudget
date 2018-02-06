@@ -3,7 +3,7 @@ import {Platform} from 'ionic-angular';
 
 @Directive({
   host: {
-    '(mousedown)': 'onMouseDown()',
+    '(mousedown)': 'onMouseDown($event)',
     '(click)': 'onClick()'
   },
   selector: '[no-click-focus]'
@@ -21,8 +21,9 @@ export class NoClickFocus {
 
     }
 
-    onMouseDown(): boolean {
+    onMouseDown(ev): boolean {
         this.mouseDownActiveElement = <any> document.activeElement;
+        ev.preventDefault();
         return false;
     }
 
