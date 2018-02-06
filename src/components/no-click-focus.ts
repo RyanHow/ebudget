@@ -9,7 +9,7 @@ import {Platform} from 'ionic-angular';
   selector: '[no-click-focus]'
 })
 export class NoClickFocus {
-    mouseDownActiveElement: any;
+    mouseDownActiveElement: HTMLElement;
     
     constructor(private elementRef: ElementRef, private platform: Platform) {
         if (!(this.platform.is('ios') || this.platform.is('android'))) {
@@ -28,9 +28,20 @@ export class NoClickFocus {
     }
 
     onClick() {
-        if (this.mouseDownActiveElement && this.mouseDownActiveElement.focus && document.activeElement !== this.mouseDownActiveElement) {
-            this.mouseDownActiveElement.focus();
-            this.mouseDownActiveElement = null;
+        if (this.mouseDownActiveElement && this.mouseDownActiveElement.focus && this.mouseDownActiveElement) {
+            if (this.mouseDownActiveElement === document.activeElement) {
+                let eventListener = () => {
+                    let e = this.mouseDownActiveElement;
+                    e.focus();
+                    setTimeout(() => e.focus());
+                    e.removeEventListener('blur', eventListener);
+                    this.mouseDownActiveElement = null;
+                }
+                this.mouseDownActiveElement.addEventListener('blur', eventListener);
+            } else {
+                this.mouseDownActiveElement.focus();
+                this.mouseDownActiveElement = null;
+            }
         }
     }
 
