@@ -34,6 +34,10 @@
             <ion-icon item-start>$</ion-icon>
             <ion-label><currency-display [value]="data.lines[0].amount"></currency-display></ion-label>
         </ion-item>
+        <ion-item *ngIf="data.accountLines.length > 0">
+            <ion-label>{{data.accountLines[0].accountId}}</ion-label>
+            <currency-display [value]="data.accountLines[0].amount"></currency-display>
+        </ion-item>
     </div>
 
     <reconciled-panel></reconciled-panel>

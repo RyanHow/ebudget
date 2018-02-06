@@ -65,9 +65,11 @@ export class TransactionWizard {
             this.data.lines.push({categoryId: l.categoryId, amount: l.amount.abs().toString(), negative: l.amount.gt(0)});
           });
 
-          this.data.transaction.accountAmounts.forEach(l => {
-            this.data.accountLines.push({accountId: l.accountId, amount: l.amount.abs().toString(), negative: l.amount.gt(0)});
-          });
+          if (this.data.transaction.accountAmounts) {
+              this.data.transaction.accountAmounts.forEach(l => {
+              this.data.accountLines.push({accountId: l.accountId, amount: l.amount.abs().toString(), negative: l.amount.gt(0)});
+            });
+          }
 
           this.data.engine.db.transactionProcessor.findRecordsForTransaction(this.data.transaction, AccountTransaction).forEach(at => {
               if (at.x.reconciliationRecords) at.x.reconciliationRecords.forEach(r => {
@@ -126,10 +128,12 @@ export class TransactionWizard {
         // TODO: only 1 of each account ID - merge them first ?
         t.accountAmounts = [];
         this.data.accountLines.forEach((line) => {
-            t.accountAmounts.push({
-                accountId: line.accountId,
-                amount: new Big((line.amount || '0').replace(',', '')).times(line.negative ? 1 : -1) // Note: Negative is inverted here
-            });
+            if (line.accountId != null && line.amount != null && line.amount.trim() !== '0' && line.amount.length > 0) {
+                t.accountAmounts.push({
+                    accountId: line.accountId,
+                    amount: new Big((line.amount || '0').replace(',', '')).times(line.negative ? 1 : -1) // Note: Negative is inverted here
+                });
+            }
         });
 
     

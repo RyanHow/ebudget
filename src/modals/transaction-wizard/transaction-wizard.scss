@@ -29,6 +29,9 @@
         display: none;
     }
 
+    .account-select-button:not(.button-outline) {
+        border: 1px transparent solid;
+    }
 }
 
 .spin {
