@@ -14,8 +14,5 @@
         <ion-item no-lines>            
             <button no-click-focus [disabled]="data.reconciliation.length > 0" *ngFor="let a of accounts" class="account-select-button" ion-button [outline]="data.accountLines.length === 0 || a.id !== data.accountLines[0].accountId" small icon-start (click)="selectAccount(a.id)"><ion-icon name="card"></ion-icon>{{a.name}}</button>
         </ion-item>
-        <ion-item no-lines>
-            <button *ngFor="let a of accounts" class="account-select-button" ion-button [outline]="data.accountLines.length === 0 || a.id !== data.accountLines[0].accountId" small icon-start (click)="selectAccount(a.id)"><ion-icon name="card"></ion-icon>{{a.name}}</button>
-        </ion-item>
     </div>
 </ion-content>

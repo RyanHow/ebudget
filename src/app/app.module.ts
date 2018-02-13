@@ -70,6 +70,7 @@ import { ReconciliationStatus } from "../services/reconciliation-status";
 import { AddEditSplitTransactionModal2, TransactionTypePopover } from "../modals/add-edit-split-transaction/add-edit-split-transaction-2";
 import { AddEditSplitTransactionRoot } from "../modals/add-edit-split-transaction/add-edit-split-transaction-root";
 import { SharedModule } from "./shared.module";
+import { AccountsPage } from "../pages/accounts/accounts";
 
 @NgModule({
   declarations: [
@@ -109,7 +110,8 @@ import { SharedModule } from "./shared.module";
     MainMenuIcon,
     NotificationList,
     BankLinkPage,
-    AddEditBankLinkModal
+    AddEditBankLinkModal,
+    AccountsPage
   ],
   imports: [
     BrowserModule,
@@ -147,7 +149,8 @@ import { SharedModule } from "./shared.module";
     CategoryPopover,
     TransactionTypePopover,
     BankLinkPage,
-    AddEditBankLinkModal
+    AddEditBankLinkModal,
+    AccountsPage
   ],
   providers: [
   {provide: ErrorHandler, useClass: AppExceptionHandler},

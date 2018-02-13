@@ -20,6 +20,7 @@ import { BankSyncMonitor } from "../../bank/bank-sync-monitor";
 import { EngineFactory } from "../../engine/engine-factory";
 import { Engine } from "../../engine/engine";
 import { BankSyncUtils } from "../../bank/bank-sync-utils";
+import { AccountsPage } from "../../pages/accounts/accounts";
 
 @Component({
   selector: 'main-menu-content',
@@ -98,6 +99,10 @@ export class MainMenuContent {
 
   goBudgetSettings() {
     this.nav.setRoot(BudgetSettingsPage, {budgetId: this.lastOpenedBudget().id});
+  }
+
+  goAccounts() {
+    this.nav.setRoot(AccountsPage, {budgetId: this.lastOpenedBudget().id});
   }
 
   goAbout() {
@@ -190,6 +195,11 @@ export class MainMenuContent {
     });
   }
 
-
+  accountUnreconciledCount(): number {
+    return this.engine().getAccounts().reduce((total, account) => total += account.x.unreconciledCount, 0)
+  }
+  bankUnreconciledCount(): number {
+    return this.engine().getAccounts().reduce((total, account) => total += account.x.bankUnreconciledCount, 0)
+  }
 
 }

@@ -14,7 +14,7 @@ export class AccountTransaction extends Record<AccountTransaction> {
      */
     public accountId?: number;
 
-    public x : {reconciliationRecords: BankTransactionReconciliation[]; [keys: string]: any;}
+    public x : {reconciliationRecords: BankTransactionReconciliation[]; reconciled?: boolean; reconciledRemaining: Big; [keys: string]: any;}
 
     tableName(): string {
         return 'AccountTransaction';

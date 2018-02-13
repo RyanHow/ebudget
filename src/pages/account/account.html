@@ -4,11 +4,50 @@
       <main-menu-icon></main-menu-icon>
     </button>
     <ion-title>{{account.name}}</ion-title>
+    <ion-buttons end>
+        <button ion-button (click)="editAccount()">Edit</button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
-<ion-content>
-  <button ion-item (click)="editAccount()">Edit</button>
-  <ion-item>{{account.balance}}</ion-item>
-  <button *ngIf="account.accountType == 'Bank'" ion-item (click)="gotoBank()">Bank Account</button>
+<ion-content class="account-page">
+  <ion-card>
+    <ion-item no-lines>
+      <h1 no-margin>Account Balance</h1>
+      <h1 item-end><currency-display [value]="account.balance" highlightNegative></currency-display></h1>
+    </ion-item>
+
+  </ion-card>
+
+  <div class="tabbed-section">
+    <ion-item-divider style="background-color: white;" sticky>
+      <ion-segment [(ngModel)]="currentSlide">
+        <ion-segment-button *ngIf="account.accountType == 'Bank'" [value]="0" (ionSelect)="changeSlide()">
+          Bank Link
+        </ion-segment-button>
+        <ion-segment-button value="account-transactions" [value]="1" (ionSelect)="changeSlide()">
+          Transactions
+        </ion-segment-button>
+        <ion-segment-button *ngIf="account.bankLinkId" [value]="2" (ionSelect)="changeSlide()">
+          Bank Transactions
+        </ion-segment-button>
+      </ion-segment>
+    </ion-item-divider>
+
+    <ion-slides centeredSlides="false" (ionSlideDidChange)="slideChanged()">
+      <ion-slide>
+          <button ion-item (click)="gotoBank()">Bank Account</button>
+      </ion-slide>
+      <ion-slide>
+        <ion-list *ngIf="slides.getActiveIndex() == 1">
+          <ion-item *ngFor="let t of accountTransactions.data()">{{t.description}} {{t.amount}}</ion-item>
+        </ion-list>
+      </ion-slide>
+      <ion-slide>
+        <ion-list *ngIf="slides.getActiveIndex() == 2">
+            <ion-item>Bank Transactions List</ion-item>
+        </ion-list>
+      </ion-slide>
+    </ion-slides>
+  </div>
 </ion-content>

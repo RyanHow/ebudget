@@ -144,7 +144,7 @@ export class CategoryPage {
   }
 
   ionViewWillEnter() {
-    this.transactions = this.transactionTable.addDynamicView('categoryTransactions_' + this.category.id)
+    this.transactions = this.transactionTable.addDynamicView('categoryTransactions_' + this.category.id, {persistent : true, sortPriority: 'active'})
     .applyFind({'categoryId': this.category.id})
     .applySortCriteria([['date', true], ['id', true]]);
 

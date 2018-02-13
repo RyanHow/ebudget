@@ -1,6 +1,7 @@
 import {Record} from '../../db/record';
 import {Processor} from '../../engine/processor';
 import { Big } from "big.js";
+import { BankLink } from "./bank-link";
 
 export class Account extends Record<Account> {
     
@@ -12,6 +13,8 @@ export class Account extends Record<Account> {
     public bankLinkId: number;
     public bankLinkConfiguration: any;
     
+    public x : {bankLink?: BankLink; unreconciledCount?: number; [keys: string]: any;}
+
     processors: Processor[] = [];
     
     tableName(): string {

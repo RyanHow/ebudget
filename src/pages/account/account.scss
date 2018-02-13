@@ -1,0 +1,19 @@
+.account-page {
+    .segment-button {
+        max-width: 200px;
+    }
+
+    ion-slide {
+        min-height: 400px;
+        align-items: flex-start;
+    }
+
+    .tabbed-section {
+        min-height: 100%;
+        margin: 0;
+    }
+
+    [no-margin] {
+        margin: 0;
+    }
+}

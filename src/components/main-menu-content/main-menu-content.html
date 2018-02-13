@@ -7,6 +7,11 @@
         <ion-spinner *ngIf="bankSync.activeSyncs.length" name="bubbles" style="position:absolute; top:0; bottom:0; margin-top:auto; margin-bottom:auto;"></ion-spinner>
     </button>
     <button ion-item menuClose (click)="goBudgetSettings()">Budget Settings</button>
+    <button ion-item menuClose (click)="goAccounts()">
+        Accounts
+        <ion-badge item-right *ngIf="accountUnreconciledCount()">{{accountUnreconciledCount()}}</ion-badge>
+        <ion-badge item-right *ngIf="accountUnreconciledCount()" color="secondary">{{bankUnreconciledCount()}}</ion-badge>
+    </button>
 </ion-item-group>
 <ion-item-group *ngIf="notifications.notifications.length">
     <ion-item-divider light>

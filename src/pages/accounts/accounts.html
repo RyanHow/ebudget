@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <main-menu-icon></main-menu-icon>
+    </button>
+    <ion-title>Accounts</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="budget-settings-page">
+
+  <ion-list responsive-padding>
+    <ion-list-header>
+      Accounts
+    </ion-list-header>
+    <button ion-item (click)="goAccount(account)" *ngFor="let account of accounts">
+      {{account.name}}
+      <currency-display item-right [value]="account.balance" highlightNegative></currency-display>
+      <ion-icon *ngIf="account.bankLinkId" name="link"></ion-icon>
+      <ion-badge *ngIf="account.x.unreconciledCount">{{account.x.unreconciledCount}}</ion-badge>
+      <ion-badge *ngIf="account.x.bankUnreconciledCount" color="secondary">{{account.x.bankUnreconciledCount}}</ion-badge>
+      <ion-icon [name]="account.accountType == 'Cash' ? 'cash' : 'card'" item-left></ion-icon>
+    </button>
+    <button ion-item detail-none (click)="addAccount()">Add New Account...</button>
+  </ion-list>
+
+
+</ion-content>
+
