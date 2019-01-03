@@ -1,0 +1,15 @@
+<ion-header class="transaction-wizard-header">
+    <ion-toolbar class="custom-header-spacer"></ion-toolbar>
+    <transaction-wizard-step-header [form]="form"></transaction-wizard-step-header>
+</ion-header>
+
+<ion-content class="transaction-wizard-account-step">
+    <div class="account-grid">
+        <button *ngFor="let a of accounts" class="account-select-button" ion-button
+            [outline]="data.accountLines.length === 0 || a.id !== data.accountLines[0].accountId"
+            (click)="selectAccount(a.id)">
+            <ion-icon [name]="a.accountType == 'Cash' ? 'cash' : 'card'" icon-left></ion-icon>
+            <div lang="en" class="account-button-name">{{a.name}}</div>
+        </button>
+    </div>
+</ion-content>

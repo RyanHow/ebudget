@@ -32,30 +32,31 @@
     .account-select-button:not(.button-outline) {
         border: 1px transparent solid;
     }
-}
 
-.spin {
-    animation-name: spin;
-    animation-duration: 500ms;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
+    .account-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill,minmax(170px, 1fr));
+        grid-gap: 6px;
+        grid-auto-rows: max-content;
 
-    transition: tranform 1s;
+        >.account-select-button {
+            min-height: 80px;
+            display: flex;
 
-    animation-play-state: running;
+            ion-icon {
+                padding: 10px;
+                font-size: 24px;
+            }
 
-    &.paused {
-        animation-play-state: paused;        
+            .account-button-name {
+                flex-grow: 1;
+                white-space: normal;
+                overflow: visible;
+                hyphens: auto;
+            }
+
+            
+        }
     }
-}
 
-
-
-@keyframes spin {
-    from {
-        transform:rotate(0deg);
-    }
-    to {
-        transform:rotate(360deg);
-    }
 }

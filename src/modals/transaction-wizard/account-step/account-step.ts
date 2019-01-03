@@ -1,17 +1,17 @@
 import {Component, ElementRef} from '@angular/core';
-import { TransactionWizard } from "./transaction-wizard";
+import { TransactionWizard } from "../transaction-wizard";
 import { IonicPage } from "ionic-angular";
-import { TransactionWizardDataModel } from "./transaction-data-model";
-import { TransactionWizardPage } from "./transaction-wizard-page";
-import { Account } from "../../data/records/account";
+import { TransactionWizardDataModel } from "../transaction-data-model";
+import { TransactionWizardPage } from "../transaction-wizard-page";
+import { Account } from "../../../data/records/account";
 
 @IonicPage()
 @Component({
-  templateUrl: 'amount-step.html'
+  templateUrl: 'account-step.html'
 })
-export class TransactionWizardAmountStep implements TransactionWizardPage {
+export class TransactionWizardAccountStep implements TransactionWizardPage {
 
-  public static_name = 'TransactionWizardAmountStep';
+  public static_name = 'TransactionWizardAccountStep';
 
   data: TransactionWizardDataModel;
 
@@ -24,26 +24,20 @@ export class TransactionWizardAmountStep implements TransactionWizardPage {
 
   ionViewDidEnter() {
     this.wizard.currentPage = this;
-    setTimeout(() => this.elementRef.nativeElement.querySelector('input').focus(), 500);
   }
 
   selectAccount(accountId: number) {
     if (this.data.accountLines.length === 0) {
       this.data.accountLines.push({
         accountId: accountId,
-        amount: "0", // Note: This is set on "leave"
+        amount: "0",
         negative: this.data.negative
       });
+      this.wizard.next();
     } else if (this.data.accountLines[0].accountId === accountId) {
       this.data.accountLines[0].accountId = null;
     } else {
       this.data.accountLines[0].accountId = accountId;
-    }
-  }
-
-  ionViewWillLeave() {
-    if (this.data.accountLines.length > 0) {
-      this.data.accountLines[0].amount = this.data.lines[0].amount;
     }
   }
 }

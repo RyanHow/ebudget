@@ -8,7 +8,7 @@
         <form (submit)="$event.preventDefault();wizard.next();" novalidate #form="ngForm">
             <ion-item>
                 <ion-icon name="pricetag" item-start></ion-icon>
-                <ion-input required type="text" placeholder="Enter a description" [(ngModel)]="data.description" name="description"></ion-input>
+                <ion-input required type="text" [attr.autofocus]="true" placeholder="Enter a description" [(ngModel)]="data.description" name="description"></ion-input>
             </ion-item>
         </form>
 

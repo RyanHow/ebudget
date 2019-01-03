@@ -1,0 +1,20 @@
+<ion-header class="transaction-wizard-header">
+    <ion-toolbar class="custom-header-spacer"></ion-toolbar>
+    <transaction-wizard-step-header [form]="form"></transaction-wizard-step-header>
+</ion-header>
+
+<ion-content class="transaction-wizard-description-step">
+    <div responsive-padding>
+        <form (submit)="$event.preventDefault();wizard.next();" novalidate #form="ngForm">
+            <ion-list inset>
+                <ion-item>
+                    <ion-icon name="pricetag" item-start></ion-icon>
+                    <ion-input required type="text" [attr.autofocus]="true" placeholder="Enter a description. eg. Food Shopping." [(ngModel)]="data.description" name="description"></ion-input>
+                </ion-item>
+            </ion-list>
+        </form>
+        <ion-list-header no-lines>
+            Or are you adding any of these?
+        </ion-list-header>
+    </div>
+</ion-content>
