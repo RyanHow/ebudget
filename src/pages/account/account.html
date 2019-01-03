@@ -13,7 +13,7 @@
 <ion-content class="account-page">
   <ion-card>
     <ion-item no-lines>
-      <h1 no-margin>Account Balance</h1>
+      <h1 no-margin>Balance</h1>
       <h1 item-end><currency-display [value]="account.balance" highlightNegative></currency-display></h1>
     </ion-item>
 
@@ -35,19 +35,44 @@
     </ion-item-divider>
 
     <ion-slides centeredSlides="false" (ionSlideDidChange)="slideChanged()">
+
       <ion-slide>
+        <ng-container *ngIf="slides.getActiveIndex() == 0">
           <button ion-item (click)="gotoBank()">Bank Account</button>
+          <ng-container *ngIf="account.x.bankUnreconciledCount === 0">
+            <div style="text-align:center"><div style="display:inline-block; width:100px; height: 100px;">
+              <svg version="1.1" id="share-tick" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 37 37" style="enable-background:new 0 0 37 37;" xml:space="preserve">
+                <path class="circ path" style="fill:none;stroke:#0B0;stroke-width:3;stroke-linejoin:round;stroke-miterlimit:10;" d="M30.5,6.5L30.5,6.5c6.6,6.6,6.6,17.4,0,24l0,0c-6.6,6.6-17.4,6.6-24,0l0,0c-6.6-6.6-6.6-17.4,0-24l0,0C13.1-0.2,23.9-0.2,30.5,6.5z"/>
+                <polyline class="tick path" style="fill:none;stroke:#0B0;stroke-width:3;stroke-linejoin:round;stroke-miterlimit:10;" points="11.6,20 15.9,24.2 26.4,13.8 "/>
+              </svg>
+            </div></div>
+          </ng-container>
+          <ion-list *ngIf="account.x.bankUnreconciledCount > 0">
+            <ion-card *ngFor="let bankTransaction of toReconcile.data()">
+              <ion-item>
+                {{bankTransaction.description}}
+                <currency-display item-end [value]="bankTransaction.amount" highlightPositive showPositive></currency-display>
+              </ion-item>
+            </ion-card>
+          </ion-list>
+        </ng-container>
       </ion-slide>
+
       <ion-slide>
         <ion-list *ngIf="slides.getActiveIndex() == 1">
           <ion-item *ngFor="let t of accountTransactions.data()">{{t.description}} {{t.amount}}</ion-item>
         </ion-list>
       </ion-slide>
+
       <ion-slide>
         <ion-list *ngIf="slides.getActiveIndex() == 2">
-            <ion-item>Bank Transactions List</ion-item>
-        </ion-list>
+            <ion-item *ngFor="let bankTransaction of bankTransactions.data()">
+                {{bankTransaction.description}}
+                <currency-display item-end [value]="bankTransaction.amount" highlightPositive showPositive></currency-display>
+              </ion-item>
+            </ion-list>
       </ion-slide>
+
     </ion-slides>
   </div>
 </ion-content>

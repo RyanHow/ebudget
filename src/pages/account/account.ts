@@ -11,6 +11,7 @@ import {Logger} from '../../services/logger';
 import {StandardHostInterface} from '../../bank/standard-host-interface';
 import {BankAccountPage} from '../bank-account/bank-account';
 import { AccountTransaction } from "../../data/records/account-transaction";
+import { BankTransaction } from "../../data/records/bank-transaction";
 
 @Component({
   templateUrl: 'account.html'
@@ -25,6 +26,10 @@ export class AccountPage {
   accountTransactionTable: LokiCollection<AccountTransaction>;
   accountTransactions: LokiDynamicView<AccountTransaction>;
 
+  bankTransactionTable: LokiCollection<BankTransaction>;
+  bankTransactions: LokiDynamicView<BankTransaction>;
+  toReconcile: LokiDynamicView<BankTransaction>;
+
   @ViewChild(Slides) slides: Slides;
   currentSlide: number = 0;
   
@@ -33,6 +38,9 @@ export class AccountPage {
     this.account = this.engine.getRecordById(Account, navParams.data.accountId);
     this.accountTransactionTable = this.engine.db.transactionProcessor.table(AccountTransaction);
     this.accountTransactions = <any> {data: function() {return []; }};
+    this.bankTransactionTable = this.engine.db.transactionProcessor.table(BankTransaction);
+    this.toReconcile = <any> {data: function() {return []; }};
+    this.bankTransactions = <any> {data: function() {return []; }};
 
   }
   
@@ -50,6 +58,16 @@ export class AccountPage {
     .applyFind({'accountId': this.account.id})
     .applySortCriteria([['date', true], ['id', true]]);
 
+
+    this.toReconcile = this.bankTransactionTable.addDynamicView('bankTransactionsToReconcile_' + this.account.id, {persistent : true, sortPriority: 'active'})
+    .applyFind({'accountId': this.account.id})
+    .applyWhere(t => !t.x.reconciled && !t.x.ignored)
+    .applySortCriteria([['date', true], ['id', true]]);
+
+    this.bankTransactions = this.bankTransactionTable.addDynamicView('bankTransactionsAll_' + this.account.id, {persistent : true, sortPriority: 'active'})
+    .applyFind({'accountId': this.account.id})
+    .applySortCriteria([['date', true], ['id', true]]);
+
     // TODO: Infinite scroll (or virtualscroll would be better once it can have a static header)
     //if (this.accountTransactions.data().length <= this.transactionDisplayLimit) {
     //  this.transactionDisplayLimit = 0;
@@ -61,6 +79,13 @@ export class AccountPage {
   ionViewDidLeave() {
     this.accountTransactionTable.removeDynamicView(this.accountTransactions.name);
     this.accountTransactions = <any> {data: function() {return []; }};
+
+    this.bankTransactionTable.removeDynamicView(this.toReconcile.name);
+    this.bankTransactionTable.removeDynamicView(this.bankTransactions.name);
+
+    this.bankTransactions = <any> {data: function() {return []; }};
+    this.toReconcile = <any> {data: function() {return []; }};
+
   }
 
   slideChanged() {
