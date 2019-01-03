@@ -16,5 +16,3 @@ xcopy /E /Y www\* ..\ebudget-pwa-dist\
 git -C ..\ebudget-pwa-dist add .
 git -C ..\ebudget-pwa-dist commit -a -m "Automatic Deploy"
 git -C ..\ebudget-pwa-dist push
-ping -n 10 127.0.0.1 > nul
-node scripts\purge-keycdn.js
