@@ -2,7 +2,7 @@
   "name": "ebudget",
   "description": "eBudget",
   "version": "0.0.149",
-  "author": "BitWorks",
+  "author": "Ryan How",
   "homepage": "https://ebudgetapp.com",
   "private": true,
   "scripts": {
