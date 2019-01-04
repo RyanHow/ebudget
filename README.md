@@ -9,7 +9,7 @@ It was built out of the need for families, especially with newborn kids, to keep
 
 With a few seconds (let's face it, it's hard to fine time for most things, yet alone budgeting) and a smart phone or web browser you'll forever be able to answer the questions when going to make a purchase, "Can I afford it?", and keep your spending habits in line with what you really want.
 
-I conducted interviews of new parents about money and budgeting. Everyone has different approaches to it, some worked better than others. But they all agreed that they were super busy, and generally found managing money stressful.
+I conducted interviews of new parents about money and budgeting. Everyone has different approaches to it, some worked better than others. But they all agreed that they were super busy, and generally found managing money very hard to find time for. When under stress we default to our old ways and don't keep on top of it. There are some scarey and sometimes funny "critical mass" stories of when managing money between couples got out of hand and it results in a huge conflict. It seems to be a turning point for many to look into some kind of budgeting solutions, even if that is as crude as separate bank accounts for bills and spending. But it also seems when life starts putting the pressure on again, the systems and discipline to keep to those systems breaks down. eBudget is meant to keep you on top of it.
 
 ## Here are a few key features
 - **Share your budget**, so you and your partner can always be on the same page. Guaranteed to result in less fights about money*. (* Not a real guarantee, but pretty close)
@@ -40,7 +40,7 @@ For application help, I want an interactive how to guide on how to budget and tr
 I also want to couple all of this with an active and connected community who can help and support each other on their budgeting journey. We want to keep people engaged and budgeting!
 
 ## Author Note
-eBudget has been in the making for many many years. It's been through a few rewrites and I have spent countless planning out features, nutting out design problems, coming up with business plans and dreaming of the possibilities. It's only now the technology to enable what I originally envisioned is finally coming to the world.
+eBudget has been in the making for many many years. It's been through a few rewrites and I have spent countless hours planning out features, nutting out design problems, coming up with business plans and dreaming of the possibilities. It's only now the technology to enable what I originally envisioned is finally coming to the world.
 
 I intended for this build of eBudget to be a commercial application, but I think it's best chance of success is in the open source world and be a community based app. So I'm changing my focus from development, to fostering a community.
 
