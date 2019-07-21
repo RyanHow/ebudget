@@ -1,0 +1,23 @@
+<button class="bank-transaction-item" detail-none ion-item *ngFor="let t of availableBankTransactions() | slice:0:3" (click)="selectBankTransaction(t)">
+    <div item-content class="transaction-content">
+        <div class="transaction-description-wrapper">
+            <p class="transaction-description">
+                {{t.description}}
+            </p>
+        </div>
+        <ion-note>{{t.date | dFormat | lowercase}}</ion-note>
+        <ion-note *ngIf="t.status !== 'processed'"><i>{{t.status}}</i></ion-note>
+    </div>
+    <currency-display item-right highlightPositive showPositive [value]="t.amount"></currency-display>
+</button>
+<ion-item no-lines *ngIf="availableBankTransactions().length == 0">
+    <ion-note class="no-bank-transactions-note">No outstanding bank transactions</ion-note>
+</ion-item>
+<ion-item *ngIf="availableBankTransactions().length > 3">
+    More...
+</ion-item>
+<ion-item class="last-updated-footer" no-lines>
+    <ion-note item-right>{{latestSyncDate()}}
+    </ion-note>
+    <ion-icon item-right *ngIf="isCurrentValidAutomaticBankLinks()" tappable (click)="runBankLinks()" class="spin" [class.paused]="!bankSync.activeSyncs.length" name="refresh"></ion-icon>
+</ion-item>

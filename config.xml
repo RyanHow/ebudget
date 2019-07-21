@@ -6,7 +6,6 @@
     <content src="index.html" />
     <access origin="*" />
     <allow-navigation href="http://ionic.local/*" />
-    <allow-navigation href="http://192.168.2.182:8100" />
     <allow-navigation href="http://localhost:8080/*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -87,8 +86,6 @@
     <preference name="SplashScreenDelay" value="3000" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <icon src="resources/android/icon/drawable-xhdpi-icon.png" />
-    <allow-navigation href="http://192.168.2.62:8100" />
-    <allow-navigation href="http://192.168.2.100:8100" />
     <engine name="android" spec="^6.4.0" />
     <plugin name="cordova-plugin-clipboard" spec="^1.0.0" />
     <plugin name="cordova-plugin-device" spec="^1.1.7" />

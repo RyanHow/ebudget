@@ -1,20 +1,22 @@
 import {Component, ViewChild, ElementRef} from '@angular/core';
-import { TransactionWizard } from "./transaction-wizard";
+import { TransactionWizard } from "../transaction-wizard";
 import { IonicPage } from "ionic-angular";
-import { TransactionWizardDataModel } from "./transaction-data-model";
+import { TransactionWizardDataModel } from "../transaction-data-model";
+import { TransactionWizardPage } from "../transaction-wizard-page";
 
 @IonicPage()
 @Component({
-  templateUrl: 'description-step.html'
+  templateUrl: 'description-quick-step.html'
 })
-export class TransactionWizardDescriptionStep {
+export class TransactionWizardDescriptionQuickStep implements TransactionWizardPage {
 
-  public static_name = 'TransactionWizardDescriptionStep';
+  public static_name = 'TransactionWizardDescriptionQuickStep';
 
   data: TransactionWizardDataModel;
 
+
   constructor(private wizard: TransactionWizard, private elementRef: ElementRef) {
-    if (!this.wizard) return; // Allow for parameterless initialisation so we can get the static_name field above
+    if (!this.wizard) return;
 
     this.data = this.wizard.data;
   }
@@ -22,5 +24,9 @@ export class TransactionWizardDescriptionStep {
   ionViewDidEnter() {
     this.wizard.currentPage = this;
     //setTimeout(() => this.elementRef.nativeElement.querySelector('input').focus(), 500);
+
   }
+
+
+
 }

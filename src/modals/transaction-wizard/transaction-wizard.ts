@@ -33,7 +33,7 @@ export class TransactionWizard {
 
     constructor(private navParams: NavParams, private viewCtrl: ViewController, private engineFactory: EngineFactory) {
         this.modalPageParams = this.navParams.data;
-        this.modalPage = this.navParams.data.transactionId ? 'TransactionWizardViewPage' : 'TransactionWizardStartStep';
+        this.modalPage = this.navParams.data.transactionId ? 'TransactionWizardViewPage' : 'TransactionWizardAccountStep';
 
         this.data = new TransactionWizardDataModel();
         this.data.transactionType = 'Expense';
@@ -183,17 +183,18 @@ export class TransactionWizard {
         // Which simply handles the "next" step and when done - back can be handle by the nav stack
 
         let wizardPages = [
-            'TransactionWizardStartStep',
+            'TransactionWizardAccountStep',
             'TransactionWizardDescriptionStep',
-            'TransactionWizardAmountStep'
+            'TransactionWizardAmountStep',
+            'TransactionWizardDescriptionQuickStep'
         ]
 
-        if (this.currentPage.static_name === 'TransactionWizardStartStep' && (this.data.description == null || this.data.description.trim().length === 0)) {
-            this.navPush('TransactionWizardDescriptionStep');
+        if (this.currentPage.static_name === 'TransactionWizardAccountStep' && (this.data.description == null || this.data.description.trim().length === 0)) {
+            this.navPush('TransactionWizardDescriptionQuickStep');
             return;
         }
         
-        if ((this.currentPage.static_name === 'TransactionWizardDescriptionStep' || this.currentPage.static_name === 'TransactionWizardStartStep') && (this.data.total.eq(0) && this.data.lines.length < 2)) {
+        if ((this.currentPage.static_name === 'TransactionWizardDescriptionStep' || this.currentPage.static_name === 'TransactionWizardAccountStep') && (this.data.total.eq(0) && this.data.lines.length < 2)) {
             this.navPush('TransactionWizardAmountStep');
             return;
         }
@@ -204,7 +205,7 @@ export class TransactionWizard {
     }
 
     navPush(page: string): Promise<any> {
-        return this.nav.push(page, this.modalPageParams, {animate: false});
+        return this.nav.push(page, this.modalPageParams, {animate: false, keyboardClose: false});
     }
 
     navRoot(page: string): Promise<any> {

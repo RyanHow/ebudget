@@ -8,7 +8,7 @@
         <form (submit)="$event.preventDefault();wizard.next();" novalidate #form="ngForm">
             <ion-item>
                 <ion-icon item-start>$</ion-icon>
-                <ion-input required currency-field [(ngModel)]="data.lines[0].amount" name="amount"></ion-input>
+                <ion-input required [attr.autofocus]="true" currency-field [(ngModel)]="data.lines[0].amount" name="amount"></ion-input>
             </ion-item>
         </form>
         <ion-item no-lines>            

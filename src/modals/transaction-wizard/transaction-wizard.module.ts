@@ -4,11 +4,13 @@ import { SharedModule } from "../../app/shared.module";
 import { TransactionWizard } from "./transaction-wizard";
 import { TransactionWizardStepHeader } from "./step-header";
 import { ReconciledPanel } from "./reconciled-panel";
+import { TransactionWizardReconciliationFooter } from "./reconciliation-footer/reconciliation-footer";
 
 @NgModule({
   declarations: [
     TransactionWizard,
     TransactionWizardStepHeader,
+    TransactionWizardReconciliationFooter,
     ReconciledPanel
   ],
   imports: [
@@ -18,6 +20,7 @@ import { ReconciledPanel } from "./reconciled-panel";
   exports: [
     TransactionWizard,
     TransactionWizardStepHeader,
+    TransactionWizardReconciliationFooter,
     ReconciledPanel
   ]
 })
