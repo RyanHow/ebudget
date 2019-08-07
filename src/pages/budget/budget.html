@@ -3,7 +3,7 @@
     <button ion-button menuToggle>
       <main-menu-icon></main-menu-icon>
     </button>
-    <ion-title>{{budget.name()}}</ion-title>
+    <ion-title>{{budget.name()}} • <currency-display highlightNegative [value]="categoryBalanceSum()"></currency-display></ion-title>
     <ion-buttons end>
       <button ion-button icon-only (click)="addCategory()">
         <ion-icon name="add"></ion-icon>

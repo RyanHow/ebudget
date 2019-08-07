@@ -11,6 +11,7 @@ import {Engine} from '../../engine/engine';
 import {Configuration} from '../../services/configuration-service';
 import {InitCategorySimpleWeeklyTransaction} from '../../data/transactions/init-category-simple-weekly-transaction';
 import {Logger} from '../../services/logger';
+import {Big} from 'big.js';
 
 
 @Component({
@@ -57,6 +58,10 @@ export class BudgetPage {
     // TODO get cache it in the category record and get it straight from there
     let t = this.budget.transactionProcessor.findTransactionsForRecord(category, InitCategorySimpleWeeklyTransaction)[0];
     if (t) return t.weeklyAmount;
+  }
+
+  categoryBalanceSum() {
+    return this.engine.getCategories().reduce((total, category) => category.balance ? category.balance.plus(total) : total, Big(0));
   }
 
 
