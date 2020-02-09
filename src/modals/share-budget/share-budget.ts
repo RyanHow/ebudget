@@ -89,7 +89,7 @@ export class ShareBudgetModal {
 
     if (this.linkingSubscription && !this.linkingSubscription.closed) this.linkingSubscription.unsubscribe();
       
-    this.linkingSubscription = this.http.post('https://api.freebudgetapp.com/link', JSON.stringify({ 'dbId': budgetId, 'deviceId': this.configuration.deviceInstallationId, 'deviceName': this.configuration.deviceName }))
+    this.linkingSubscription = this.http.post('https://api.ebudget.live/link', JSON.stringify({ 'dbId': budgetId, 'deviceId': this.configuration.deviceInstallationId, 'deviceName': this.configuration.deviceName }))
       .map(response => response.json())
       .subscribe(response => {
 
@@ -169,7 +169,7 @@ export class ShareBudgetModal {
   }
 
   static postShare(http: Http, budgetId: string, budgetName: string, deviceInstallationId: string, deviceName: string): Observable<Response> {
-    return http.post('https://api.freebudgetapp.com/share', JSON.stringify({'dbId': budgetId, 'dbName': budgetName, 'deviceId': deviceInstallationId, 'deviceName': deviceName}))
+    return http.post('https://api.ebudget.live/share', JSON.stringify({'dbId': budgetId, 'dbName': budgetName, 'deviceId': deviceInstallationId, 'deviceName': deviceName}))
   }
   
   shareOptions() {

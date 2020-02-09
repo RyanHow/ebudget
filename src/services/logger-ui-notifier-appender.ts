@@ -528,7 +528,7 @@ class DefaultLoggerUINotifierAppenderHandler implements LoggerUINotifierAppender
             (<HTMLLinkElement> document.getElementById('error-email-button')).href += encodeURIComponent(errorReportData.split('\n').join('\\n'));
         };
 
-        xmlhttp.open('POST', 'https://api.freebudgetapp.com/submiterror');
+        xmlhttp.open('POST', 'https://api.ebudget.live/submiterror');
         xmlhttp.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
         let data = this.getErrorHeaderData();
         data['log'] = this.errorLogData;

@@ -332,7 +332,7 @@ export class Replication {
             this.logger.info('Pushing ' + totalPushCount + ' Records');
         }
 
-        this.http.post('https://api.freebudgetapp.com/sync', JSON.stringify(replData))
+        this.http.post('https://api.ebudget.live/sync', JSON.stringify(replData))
         .map(res => res.json())
         .subscribe((response) => {
             this.logger.debug(() => response);
