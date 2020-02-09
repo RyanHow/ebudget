@@ -1,7 +1,7 @@
 {
     "name": "eBudget",
     "short_name": "eBudget",
-    "display": "fullscreen",
+    "display": "standalone",
     "icons": [
         {
             "src": "/android-chrome-192x192.png?v=pgqo394kx5",
