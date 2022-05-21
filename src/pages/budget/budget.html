@@ -3,10 +3,13 @@
     <button ion-button menuToggle>
       <main-menu-icon></main-menu-icon>
     </button>
-    <ion-title>{{budget.name()}} • <currency-display highlightNegative [value]="categoryBalanceSum()"></currency-display></ion-title>
+    <ion-title>{{budget.name()}} &nbsp; <div class="budget-title-summary"><currency-display highlightNegative [value]="categoryBalanceSum()"></currency-display><ion-note><currency-display [value]="categoryWeeklySum()"></currency-display></ion-note></div></ion-title>
     <ion-buttons end>
       <button ion-button icon-only (click)="addCategory()">
         <ion-icon name="add"></ion-icon>
+      </button>
+      <button ion-button icon-only (click)="downloadCSV()">
+        <ion-icon name="download"></ion-icon>
       </button>
     </ion-buttons>
   </ion-navbar>

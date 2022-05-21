@@ -12,6 +12,7 @@ import {Configuration} from '../../services/configuration-service';
 import {InitCategorySimpleWeeklyTransaction} from '../../data/transactions/init-category-simple-weekly-transaction';
 import {Logger} from '../../services/logger';
 import {Big} from 'big.js';
+import { Exporter } from '../../engine/exporter';
 
 
 @Component({
@@ -53,11 +54,23 @@ export class BudgetPage {
   openCategory(category: Category) {
     this.nav.push(CategoryPage, {'budget': this.budget, 'categoryId': category.id});
   }
+
+  downloadCSV() {
+    new Exporter(this.engine).downloadAllTransactions();
+  }
   
   categoryWeeklyAmount(category: Category): any {
     // TODO get cache it in the category record and get it straight from there
     let t = this.budget.transactionProcessor.findTransactionsForRecord(category, InitCategorySimpleWeeklyTransaction)[0];
     if (t) return t.weeklyAmount;
+  }
+
+  categoryWeeklySum() {
+    return this.engine.getCategories().reduce((total, category) => {
+      let t = this.budget.transactionProcessor.findTransactionsForRecord(category, InitCategorySimpleWeeklyTransaction)[0];
+      return t ? t.weeklyAmount.plus(total) : total;
+    }, Big(0));
+
   }
 
   categoryBalanceSum() {

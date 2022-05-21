@@ -11,3 +11,11 @@
   opacity: 1;
   transition: opacity 0.5s;
 }
+
+.budget-title-summary {
+  display: inline-flex;
+  flex-direction: column;
+  font-size: 0.7em;
+  vertical-align: middle;
+  font-weight: normal;
+}

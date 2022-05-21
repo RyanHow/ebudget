@@ -14,7 +14,7 @@ export class CategorySimpleWeeklyProcessor extends Processor {
     balance: Big;
     transactionId: number;
     
-    getTypeId(): String {
+    getTypeId(): string {
         return 'CategorySimpleWeeklyProcessor';
     }
         
