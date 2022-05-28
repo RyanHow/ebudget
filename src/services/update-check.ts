@@ -136,7 +136,7 @@ export class UpdateCheck {
     }
 
     runWebUpdateCheck(): Observable<Response> {
-        let observable = this.http.get('https://ebudget.live/info.json');
+        let observable = this.http.get('https://ebudget.live/info.json?cachebust=' + new Date().getTime());
 
         observable.map(res => res.json())
         .subscribe((response) => {
