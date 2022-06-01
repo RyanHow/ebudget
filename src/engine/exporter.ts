@@ -56,6 +56,9 @@ export class Exporter {
             categoryWeeklyAmounts[t.categoryId] = t.x.repl.map(replRecord => replRecord.transaction).sort((a,b) => a.balanceDate.localeCompare(b.balanceDate));
         });
 
+        // Remove all categories without a weekly amount (they don't track balance)
+        categories = categories.filter(t => categoryWeeklyAmounts[t.id]);
+
         // Deleted categories end with a 0 balance
         categories.filter(t => t.deleted).forEach(t => {
             let deletedTimestamp = Math.max(...(t.x.repl.map(r => r.timestamp) as number[]));
