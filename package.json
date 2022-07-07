@@ -68,7 +68,7 @@
     "json-stable-stringify": "1.0.1",
     "later": "1.2.0",
     "lokijs": "1.5.1",
-    "moment": "2.20.1",
+    "moment": "2.29.4",
     "rxjs": "5.5.2",
     "sw-toolbox": "3.6.0",
     "zone.js": "0.8.18"
