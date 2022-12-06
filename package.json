@@ -77,7 +77,7 @@
     "@ionic/app-scripts": "^3.2.4",
     "@ionic/cli": "^6.0.1",
     "cli-real-favicon": "0.0.6",
-    "keycdn": "0.2.0",
+    "keycdn": "0.2.2",
     "mailgun-js": "0.14.0",
     "replace-in-file": "3.1.0",
     "typescript": "2.4.2",
