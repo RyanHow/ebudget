@@ -35,7 +35,7 @@ class DefaultLoggerUINotifierAppenderHandler implements LoggerUINotifierAppender
                 right: 15%;
             }
         }
-        
+
         #error-overlay:after {
             content: '';
             display: block;
@@ -222,7 +222,7 @@ class DefaultLoggerUINotifierAppenderHandler implements LoggerUINotifierAppender
                 <label>Contact Information
                     <textarea id="error-contact-info" placeholder="eg. me@email.com, a phone number and timezone/time to call, Skype, Hangouts, Facebook, etc."></textarea>
                 </label>
-                <label><input type="checkbox" id="error-do-not-contact"></input> Do not contact me</label>                
+                <label><input type="checkbox" id="error-do-not-contact"></input> Do not contact me</label>
             </div>
             <div class="error-buttons">
                 <div id="error-contact-next-button" class="error-button">Next &gt;</div>
@@ -394,7 +394,7 @@ class DefaultLoggerUINotifierAppenderHandler implements LoggerUINotifierAppender
         (<HTMLInputElement> document.getElementById('error-do-not-contact')).addEventListener('change', ev => { this.validateContactInfo(); });
         (<HTMLInputElement> document.getElementById('error-contact-info')).addEventListener('input', ev => { this.validateContactInfo(); });
 
-        this.validateContactInfo();        
+        this.validateContactInfo();
 
         for (let i = this.errorOverlayDiv.children.length - 1; i >= 0; i--) {
             this.errorOverlayDiv.children.item(i).remove();
@@ -508,18 +508,18 @@ class DefaultLoggerUINotifierAppenderHandler implements LoggerUINotifierAppender
     submitErrorReportData() {
         var xmlhttp = new XMLHttpRequest();
 
-        xmlhttp.onreadystatechange = ev => {  
-            if (xmlhttp.readyState === 4) {  
+        xmlhttp.onreadystatechange = ev => {
+            if (xmlhttp.readyState === 4) {
                 if (xmlhttp.status === 200) {
                     this.goToPage(this.errorSentPage);
-                } else {  
+                } else {
                     this.goToPage(this.errorErrorPage);
                     let errorReportData = this.getErrorReportData();
                     if (errorReportData.length > 20000) errorReportData = errorReportData.substr(0, 20000);
                     (<HTMLLinkElement> document.getElementById('error-email-button')).href += encodeURIComponent(errorReportData.split('\n').join('\\n'));
-                }  
-            }  
-        }; 
+                }
+            }
+        };
 
         xmlhttp.onerror = ev => {
             this.goToPage(this.errorErrorPage);
@@ -528,7 +528,7 @@ class DefaultLoggerUINotifierAppenderHandler implements LoggerUINotifierAppender
             (<HTMLLinkElement> document.getElementById('error-email-button')).href += encodeURIComponent(errorReportData.split('\n').join('\\n'));
         };
 
-        xmlhttp.open('POST', 'https://api.ebudget.live/submiterror');
+        xmlhttp.open('POST', 'https://ebudget-api.bitworks.com.au/submiterror');
         xmlhttp.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
         let data = this.getErrorHeaderData();
         data['log'] = this.errorLogData;

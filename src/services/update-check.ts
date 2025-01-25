@@ -10,7 +10,7 @@ import { Utils } from "./utils";
 
 @Injectable()
 export class UpdateCheck {
-    
+
     private logger: Logger = Logger.get('notifications');
 
     public serviceWorkerUpdateAvailable: boolean;
@@ -42,7 +42,7 @@ export class UpdateCheck {
 
             }, 5000);
 
-            
+
             this.serviceWorkerVersion = (<any>window).activeServiceWorkerVersion;
             this.checkServiceWorkerVersionMismatch();
             window.addEventListener('activeserviceworkerversionreported', (ev) => {
@@ -136,7 +136,7 @@ export class UpdateCheck {
     }
 
     runWebUpdateCheck(): Observable<Response> {
-        let observable = this.http.get('https://ebudget.live/info.json?cachebust=' + new Date().getTime());
+        let observable = this.http.get('https://ebudget.bitworks.com.au/info.json?cachebust=' + new Date().getTime());
 
         observable.map(res => res.json())
         .subscribe((response) => {
@@ -146,7 +146,7 @@ export class UpdateCheck {
                     this.webUpdateAvailable = true;
                     this.logger.info("Web update is available. Version: " + this.webVersion);
                     if (!this.isServiceWorkerAvailable() && !this.configuration.native) {
-                        let message = "An update is available (" + this.webVersion + "). Refresh to update.";                    
+                        let message = "An update is available (" + this.webVersion + "). Refresh to update.";
                         this.logger.info(message);
                         this.notifications.show({message: message, popup: true, silent: true, category: 'update-check'});
                     }

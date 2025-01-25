@@ -25,7 +25,7 @@ The project is at a MVP stage. It works. It's been in production usage for quite
 
 The UI is not at production quality (It is modern, it just isn't polished nor intuitive in some places), and quite a few features are in progress and in testing.
 
-The current build is available at https://ebudget.live
+The current build is available at https://ebudget.bitworks.com.au
 
 ## Developers
 The app is written in Ionic 3 and runs as a PWA. It is easy to get started and nice to develop with. Changes are live loaded in the browser. All the scripts are there to build it for web, iOS and Android.

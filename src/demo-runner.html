@@ -15,26 +15,26 @@
   ["root", "budget", {"budgetId": "${current-db-id}"}]
   ],
   "queue":[
-  ["show-pointer"], 
-  ["wait", 1000], 
-  ["move", ".bar-buttons"], 
-  ["click", ".bar-buttons"], 
-  ["wait", 1000], 
-  ["move", "#main-menu-home"], 
-  ["click", "#main-menu-home"], 
-  ["wait", 1000], 
-  ["move", "#home-create-new-budget"], 
+  ["show-pointer"],
+  ["wait", 1000],
+  ["move", ".bar-buttons"],
+  ["click", ".bar-buttons"],
+  ["wait", 1000],
+  ["move", "#main-menu-home"],
+  ["click", "#main-menu-home"],
+  ["wait", 1000],
+  ["move", "#home-create-new-budget"],
   ["click", "#home-create-new-budget"],
-  ["wait", 1000], 
-  ["move", "#add-budget-budget-name"], 
+  ["wait", 1000],
+  ["move", "#add-budget-budget-name"],
   ["click", "#add-budget-budget-name"],
   ["type", "#add-budget-budget-name", "My First Budget"],
-  ["move", "#add-budget-create"], 
+  ["move", "#add-budget-create"],
   ["click", "#add-budget-create"],
-  ["hide-pointer"], 
-  ["wait", 5000], 
+  ["hide-pointer"],
+  ["wait", 5000],
   ["loop"]
-  ]}    
+  ]}
       </textarea><br>
   <input type="button" id="demo1setup" value="Setup" disabled onclick="document.querySelector('#demo1').contentWindow.postMessage({'demo' : {'command' : 'script', 'script' : document.getElementById('demo1script').value}}, 'http://localhost2:8100');">
   <input type="button" id="demo1stop" value="Stop" disabled onclick="document.querySelector('#demo1').contentWindow.postMessage({'demo' : {'command' : 'stop'}}, 'http://localhost2:8100');"><br>
@@ -48,7 +48,7 @@
 
   <script>
 
-    var ebudgetDemoPostMessageUrls =  ['http://localhost2:8100', 'https://ebudget.live']; // TODO Allow override when constructing - default to ebudget.live
+    var ebudgetDemoPostMessageUrls =  ['http://localhost2:8100', 'https://ebudget.bitworks.com.au']; // TODO Allow override when constructing - default to ebudget.bitworks.com.au
 
     function demoListener(event) {
           if (ebudgetDemoPostMessageUrls.indexOf(event.origin) >= 0) {
@@ -62,7 +62,7 @@
               document.getElementById('demo1pause').disabled = event.data.state != 'running';
               document.getElementById('demo1reset').disabled = event.data.state != 'stopped';
               document.getElementById('demo1clear').disabled = event.data.state != 'stopped' && event.data.state != 'ready';
-              
+
             }
         }
 

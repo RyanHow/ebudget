@@ -26,9 +26,9 @@ export class Replication {
     processingTransaction: boolean;
 
     constructor(private dbms: Dbms, private http: Http, private transactionSerializer: TransactionSerializer, private configuration: Configuration) {
-        
+
         // TODO: Move the syncing promise to an observable, so we can just "subscribe" ?
-        
+
         this.syncing.running = false; // Is there currently a sync running?
         this.syncing.q = null; // The latest syncing call
         this.syncing.nextTimeout = null;
@@ -38,14 +38,14 @@ export class Replication {
         this.syncing.consecutiveErrorCount = 0;
 
     }
-    
+
     init() {
-        
+
         this.dbms.dbs.forEach((db) => {
             if (this.enabled(db)) {
                 this.processDb(db);
                 this.monitorDb(db);
-            }            
+            }
         });
 
 
@@ -95,7 +95,7 @@ export class Replication {
     processDb(db: Db) {
 
         this.updateHead(db, { 'id': 0, 'deviceReplId': this.enabled(db) });
-        
+
         let sortedDbTransactions = db.sortedTransactions.data();
         for (let i = 0; i < sortedDbTransactions.length; i++) {
             let t = sortedDbTransactions[i];
@@ -150,7 +150,7 @@ export class Replication {
                 this.processingTransaction = false;
             }
             this.logger.debug('inserted repl record:', () => JSON.stringify(transaction));
-        } 
+        }
 
         for (let i = 0; i < transaction.x.repl.length; i++) {
             let record = transaction.x.repl[i];
@@ -332,7 +332,7 @@ export class Replication {
             this.logger.info('Pushing ' + totalPushCount + ' Records');
         }
 
-        this.http.post('https://api.ebudget.live/sync', JSON.stringify(replData))
+        this.http.post('https://ebudget-api.bitworks.com.au/sync', JSON.stringify(replData))
         .map(res => res.json())
         .subscribe((response) => {
             this.logger.debug(() => response);
@@ -397,7 +397,7 @@ export class Replication {
                         replRecord.replId = parseInt(replRecord.replId);
                         let dbId = replRecord.dbId;
                         let db = this.dbms.getDb(dbId);
-                        
+
                         if (db.isActivating()) {
                             return false;
                         }
@@ -413,7 +413,7 @@ export class Replication {
                         this.logger.debug(() => JSON.stringify(transaction));
                         if (!transaction) transaction = this.transactionSerializer.cloneTransaction(replData.transaction);
                         if (!transaction.x.repl) transaction.x.repl = [];
-                        if (transaction.x.repl.some((e) => { 
+                        if (transaction.x.repl.some((e) => {
                                 this.logger.debug('Check: ' + e.id + ' === ' + replRecord.replId + ' && ' + e.deviceReplId + ' === ' + replRecord.deviceReplId);
                                 return e.id === replRecord.replId && e.deviceReplId === replRecord.deviceReplId; })) {
                             // We've already got it... do something ? Like a checksum?
@@ -421,7 +421,7 @@ export class Replication {
 
                             // TODO: What if it isn't the head repl record ? - that is ok, they should be sorted anyway....
                             // TODO: Check all the checksums just to make sure we are good here.. foreach... this.checksumObject(transaction);
-                            
+
                             this.logger.info('Repl record already exists for transaction. Skipping.', replRecord);
                             skippedCount++;
                             return true;
@@ -463,7 +463,7 @@ export class Replication {
                                 if (key !== '$loki' && key !== 'meta' && key !== 'applied')
                                     transaction[key] = transaction.deserialize(key, JSON.parse(JSON.stringify(updatedTransaction[key])));
                             });
- 
+
                             transaction.x.repl = repl;
                         }
 
@@ -516,8 +516,8 @@ export class Replication {
             error(errorData);
         });
     }
-    
-    
+
+
 }
 
 export class Repl {

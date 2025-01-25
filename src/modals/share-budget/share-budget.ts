@@ -33,7 +33,7 @@ export class ShareBudgetModal {
   sharingError: boolean;
   sharingErrorMessage: string;
   closed: boolean;
-  
+
   constructor(public viewCtrl: ViewController, private formBuilder: FormBuilder, private http: Http, navParams: NavParams, private dbms: Dbms, private configuration: Configuration, private replication: Replication, private nav: NavController, private actionSheetCtrl: ActionSheetController, private toastCtrl: ToastController, private nativeClipboard: NativeClipboard) {
     this.viewCtrl = viewCtrl;
     this.form = formBuilder.group({
@@ -42,11 +42,11 @@ export class ShareBudgetModal {
 
     if (navParams.data.budgetId) {
       this.budget = dbms.getDb(navParams.data.budgetId);
-      
+
     }
-    
+
   }
-    
+
   close() {
     if (this.closed) return;
     this.closed = true;
@@ -71,11 +71,11 @@ export class ShareBudgetModal {
     }
     this.sharing = false;
   }
-  
+
   isShared(): boolean {
     return this.budget && this.replication.enabled(this.budget);
   }
-  
+
   tryLink(budgetId: string) {
     this.linkingError = false;
     this.doLink(budgetId, err => {
@@ -88,8 +88,8 @@ export class ShareBudgetModal {
     if (this.newlyLinkedBudget) return;
 
     if (this.linkingSubscription && !this.linkingSubscription.closed) this.linkingSubscription.unsubscribe();
-      
-    this.linkingSubscription = this.http.post('https://api.ebudget.live/link', JSON.stringify({ 'dbId': budgetId, 'deviceId': this.configuration.deviceInstallationId, 'deviceName': this.configuration.deviceName }))
+
+    this.linkingSubscription = this.http.post('https://ebudget-api.bitworks.com.au/link', JSON.stringify({ 'dbId': budgetId, 'deviceId': this.configuration.deviceInstallationId, 'deviceName': this.configuration.deviceName }))
       .map(response => response.json())
       .subscribe(response => {
 
@@ -100,7 +100,7 @@ export class ShareBudgetModal {
         this.dbms.createDb(budgetId).then(budget => {
           this.budget = budget;
           this.budget.name(budgetName);
-          
+
           this.replication.enable(this.budget, deviceReplId);
           this.replication.safeSync();
 
@@ -131,7 +131,7 @@ export class ShareBudgetModal {
           } else if (message) {
             this.linkingErrorMessage = 'Error: ' + message;
           }
-          
+
         } catch (e) {
           this.linkingErrorMessage = err && err.status ? 'Error Code: ' + err.status + ' - ' + err.statusText : 'Uh Oh! Something has gone wrong. Please try again.';
         }
@@ -140,7 +140,7 @@ export class ShareBudgetModal {
         setTimeout(() => this.close(), 3000);
       });
   }
-  
+
   shareBudget() {
 
     if (this.sharingSubscription && !this.sharingSubscription.closed) this.sharingSubscription.unsubscribe();
@@ -169,9 +169,9 @@ export class ShareBudgetModal {
   }
 
   static postShare(http: Http, budgetId: string, budgetName: string, deviceInstallationId: string, deviceName: string): Observable<Response> {
-    return http.post('https://api.ebudget.live/share', JSON.stringify({'dbId': budgetId, 'dbName': budgetName, 'deviceId': deviceInstallationId, 'deviceName': deviceName}))
+    return http.post('https://ebudget-api.bitworks.com.au/share', JSON.stringify({'dbId': budgetId, 'dbName': budgetName, 'deviceId': deviceInstallationId, 'deviceName': deviceName}))
   }
-  
+
   shareOptions() {
     let actionSheet = this.actionSheetCtrl.create({
       title: 'Share',
@@ -232,4 +232,4 @@ export class ShareBudgetModal {
     });
   }
 
-} 
+}
