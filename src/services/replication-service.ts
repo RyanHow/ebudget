@@ -332,7 +332,7 @@ export class Replication {
             this.logger.info('Pushing ' + totalPushCount + ' Records');
         }
 
-        this.http.post('http://ebudget-api.bitworks.com.au/sync', JSON.stringify(replData))
+        this.http.post('https://ebudget-api.bitworks.com.au/sync', JSON.stringify(replData))
         .map(res => res.json())
         .subscribe((response) => {
             this.logger.debug(() => response);
